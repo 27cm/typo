@@ -2,7 +2,6 @@
 
 namespace Typo\Module;
 
-use Typo;
 use Typo\Module;
 
 /**
@@ -38,9 +37,55 @@ class Filepath extends Module
 
     // --- Заменитель ---
 
-    const REPLACER = 'FILE';
+    const REPLACER = '[[[FILE%u]]]';
 
+    // --- Регулярные выражения ---
+    /** Файловый разделитель */
+    const DELIMETER = '[\\\\/]';
 
+    private $extensions = array(
+        // Текст
+        'txt',
+        // Изображения
+        'jpg',
+        'jpeg',
+        'gif',
+        'bmp',
+        'png',
+        // Исполняемые файлы
+        'exe',
+        'bat',
+        // MS Office
+        'doc',
+        'docx',
+        'xls',
+        'xlsx',
+        // Аудио
+        'mp3',
+        'wav',
+        'mid',
+        // Видео
+        'mp4',
+        'avi',
+        'mov',
+        'wmv',
+        'vlc',
+        // Исходные коды
+        'htm', // HTML
+        'java', // Java
+        'class',
+        'php', // PHP
+        'cpp', // C++
+        'py', // Pyhton
+        'hs', // Haskell
+        'cs', //C#
+        'sln',
+        'suo',
+        // Разные
+        'djvu',
+        'conf',
+        'ini',
+    );
     // --- Защищенные методы класса ---
 
     /**
@@ -52,8 +97,11 @@ class Filepath extends Module
      */
     protected function stageA()
     {
-        //
-        // $this->text->preg_replace_storage($pattern, self::REPLACER);
+        usort($this->extensions,function ($a,$b){ return strlen($b)-strlen($a);});
+        $extensionAlterations = '(' . implode('|',$this->extensions) . ')';
+        $windowsRestrictedSymbols = '[^' . preg_quote('<>:"/\|?*') . ']';
+        $pattern = '~(([A-Z]\:(?=\\\\))?' . self::DELIMETER . ')?(' . $windowsRestrictedSymbols . '+' . self::DELIMETER . ')*' . $windowsRestrictedSymbols . '*\.'. $extensionAlterations . '\b~u';
+        $this->text->preg_replace_storage($pattern, self::REPLACER);
     }
 
     /**
@@ -65,6 +113,6 @@ class Filepath extends Module
      */
     protected function stageC()
     {
-        $this->text->popStorage(self::REPLACER, Typo::VISIBLE);
+        $this->text->popStorage(self::REPLACER);
     }
 }
