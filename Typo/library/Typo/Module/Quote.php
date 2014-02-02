@@ -81,7 +81,6 @@ class Quote extends Module
             case 'quote-close' :
             case 'subquote-open' :
             case 'subquote-close' :
-                $value = strtolower($value);
                 if(!array_key_exists($value, Typo::$chars))
                     return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный символ '&{$value};' (параметр '$name')");
             break;

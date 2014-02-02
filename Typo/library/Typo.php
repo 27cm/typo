@@ -80,7 +80,16 @@ class Typo extends Module
         'ldquo'  => array('name' => '&ldquo;',  'code' => 8220),   // Двойная левая кавычка
         'rdquo'  => array('name' => '&rdquo;',  'code' => 8221),   // Двойная правая кавычка
         'permil' => array('name' => '&permil;', 'code' => 8240),   // Промилле
-        'numb'   => array('name' => '№',        'code' => 769),    // Знак номера
+        'larr'   => array('name' => '&larr;',   'code' => 8592),   // Стрелка влево
+        'uarr'   => array('name' => '&uarr;',   'code' => 8593),   // Стрелка вверх
+        'rarr'   => array('name' => '&rarr;',   'code' => 8594),   // Стрелка вправо
+        'darr'   => array('name' => '&darr;',   'code' => 8595),   // Стрелка вниз
+        'harr'   => array('name' => '&harr;',   'code' => 8596),   // Стрелка влево-вправо
+        'lArr'   => array('name' => '&lArr;',   'code' => 8656),   // Двойная стрелка влево
+        'uArr'   => array('name' => '&uArr;',   'code' => 8657),   // Двойная стрелка вверх
+        'rArr'   => array('name' => '&rArr;',   'code' => 8658),   // Двойная стрелка вправо
+        'dArr'   => array('name' => '&dArr;',   'code' => 8659),   // Двойная стрелка вниз
+        'hArr'   => array('name' => '&hArr;',   'code' => 8660),   // Двойная стрелка влево-вправо
     );
 
     /**
