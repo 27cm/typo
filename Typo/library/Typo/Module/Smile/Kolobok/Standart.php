@@ -26,11 +26,15 @@ class Standart extends Kolobok
      *
      * @var array
      */
-    static public $smiles = array(
+    public $smiles = array(
         ':)'  => 'smile3',
         ':-)' => 'smile3',
         '=)'  => 'smile3',
-        /* ... */
+        ':('  => 'sad',
+        ':-(' => 'sad',
+        '=('  => 'sad',
+        '=D'  => 'rofl',
+        ':D'  => 'rofl',
     );
 
 
@@ -49,16 +53,9 @@ class Standart extends Kolobok
 
         $callback = function($search) use($_this)
         {
-            // ...
-            return $_this->text->pushStorage($data, Smile::REPLACER); // return [[[SMILE1]]]
+            $data = "<img alt='{$search}' title='{$search}' src='http://www.kolobok.us/smiles/standart/{$_this->smiles[$search]}.gif'>";
+            return $_this->text->pushStorage($data, Smile::REPLACER); 
         };
-
-        // ...
-
-        // @see \Typo\Module\Url::stageA()
-        // :-)
-        // <img alt=":-)" title=":-)" src="http://www.kolobok.us/smiles/standart/smile3.gif">
-        // Но всместо $this->typo->text->preg_replace_callback($pattern, $callback);
-        // написать и использовать $this->typo->text->replace($search, $callback);
+        $this->typo->text->replace_callback(array_keys($this->smiles), $callback);
     }
 }
