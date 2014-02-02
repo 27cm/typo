@@ -54,7 +54,7 @@ class Standart extends Kolobok
         $callback = function($search) use($_this)
         {
             $data = "<img alt='{$search}' title='{$search}' src='http://www.kolobok.us/smiles/standart/{$_this->smiles[$search]}.gif'>";
-            return $_this->text->pushStorage($data, Smile::REPLACER); 
+            return $_this->text->pushStorage($data, self::REPLACER, Typo::VISIBLE);
         };
         $this->typo->text->replace_callback(array_keys($this->smiles), $callback);
     }

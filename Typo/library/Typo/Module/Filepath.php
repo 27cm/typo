@@ -2,6 +2,7 @@
 
 namespace Typo\Module;
 
+use Typo;
 use Typo\Module;
 
 /**
@@ -37,9 +38,11 @@ class Filepath extends Module
 
     // --- Заменитель ---
 
-    const REPLACER = '[[[FILE%u]]]';
+    const REPLACER = 'FILE';
+
 
     // --- Регулярные выражения ---
+
     /** Файловый разделитель */
     const DELIMETER = '[\\\\/]';
 
@@ -86,6 +89,8 @@ class Filepath extends Module
         'conf',
         'ini',
     );
+
+
     // --- Защищенные методы класса ---
 
     /**
@@ -113,6 +118,6 @@ class Filepath extends Module
      */
     protected function stageC()
     {
-        $this->text->popStorage(self::REPLACER);
+        $this->text->popStorage(self::REPLACER, Typo::VISIBLE);
     }
 }

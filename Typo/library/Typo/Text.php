@@ -253,7 +253,25 @@ class Text
      */
     public function replace_callback($search, $callback)
     {
+        if (is_array($search)) {
+            $searchArray = $search;
+        }
+        else if (is_string($search))
+            $searchArray = array($search);
 
+        foreach($searchArray as $searchValue) {
+            $length = strlen($searchValue);
+            $count = 0;
+            $replacedLength = 0;
+            $pos = 0;
+            while(($pos = $this->pos($searchValue,$pos + $replacedLength)) !== false)
+            {
+                $replaced = $callback(substr($this->text,$pos,$length));
+                $this->substr_replace($replaced, $pos, $length);
+                $replacedLength = strlen($replaced);
+                $count++;
+            }
+        }
     }
 
     /**
