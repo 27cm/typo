@@ -132,7 +132,7 @@ class Text
             $k = sprintf($replacement, $name, $i);
             $i++;
         }
-        while($this->pos($k) !== false);
+        while($this->strpos($k) !== false);
 
         $this->storage[$key][$k] = $data;
 
@@ -232,7 +232,7 @@ class Text
         {
             $count = 0;
             $length = strlen($search);
-            while(($pos = $this->pos($search)) !== false)
+            while(($pos = $this->strpos($search)) !== false)
             {
                 $this->substr_replace(array_shift($replace), $pos, $length);
                 $count++;
@@ -269,7 +269,7 @@ class Text
      */
     public function substr_replace($replacement, $start, $length = null)
     {
-        $this->text = substr_replace($this->text, $replacement, $start, $length);
+        $this->text = mb_substr_replace($this->text, $replacement, $start, $length);
     }
 
     /**
@@ -282,9 +282,35 @@ class Text
      *                  Также обратите внимание на то, что позиция строки отсчитывается от 0, а не от 1.
      *                  Возвращает FALSE, если искомая строка не найдена.
      */
-    public function pos($needle, $offset = 0)
+    // @todo: doc fix
+    public function strpos($needle, $offset = 0)
     {
-        return strpos($this->text, $needle, $offset);
+        if(is_array($needle))
+    	{
+    		$m = false;
+    		$w = false;
+    		foreach($needle as $n)
+    		{
+    			$p = mb_strpos($this->text, $n, $offset);
+
+    			if($p === false)
+                    continue;
+
+    			if($m === false || $p < $m)
+    			{
+    				$m = $p;
+    				$w = $n;
+    			}
+
+    			if($m === false)
+                    continue;
+    		}
+    		if($m === false)
+                return false;
+
+    		return array('pos' => $m, 'str' => $w);
+    	}
+        return mb_strpos($this->text, $needle, $offset);
     }
 
     /**

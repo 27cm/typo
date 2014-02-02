@@ -21,6 +21,7 @@ if (!defined('PS')) define('PS', PATH_SEPARATOR);
  */
 define('TYPO_DIR', realpath(dirname(__FILE__)));
 
+require_once TYPO_DIR . DS . 'Typo' . DS . 'functions.php';
 require_once TYPO_DIR . DS . 'Typo' . DS . 'Loader.php';
 $loader = new Loader('Typo', TYPO_DIR);
 $loader->register();
@@ -29,11 +30,18 @@ $loader->register();
  * Типограф.
  *
  * @copyright Copyright (c) Захаров А. Е., 2012 - 2014
- * 
- * @version 0.1 2014-02-01
+ *
+ * @version 0.2 2014-02-02
  */
 class Typo extends Module
 {
+    /**
+     * Используемые коды символов.
+     *
+     * @var string[]
+     */
+    public $chr = array();
+
     /**
      * Спецсимволы
      *
@@ -41,7 +49,39 @@ class Typo extends Module
      *
      * @var array
      */
-    public $chars = array();
+    static public $chars = array(
+        'nbsp'   => array('name' => '&nbsp;',   'code' => 160),    // Неразрывный пробел
+        'thinsp' => array('name' => '&thinsp;', 'code' => 8201),   // Полупробел
+        'sect'   => array('name' => '&sect;',   'code' => 167),    // Знак параграфа
+        'copy'   => array('name' => '&copy;',   'code' => 169),    // Знак охраны авторского права
+        'reg'    => array('name' => '&reg;',    'code' => 174),    // Знак правовой охраны товарного знака
+        'trade'  => array('name' => '&trade;',  'code' => 8482),   // Товарный знак
+        'deg'    => array('name' => '&deg;',    'code' => 176),    // Знак градуса
+        'sup1'   => array('name' => '&sup1;',   'code' => 185),    // Верхний индекс "1"
+        'sup2'   => array('name' => '&sup2;',   'code' => 178),    // Верхний индекс "2"
+        'sup3'   => array('name' => '&sup3;',   'code' => 179),    // Верхний индекс "3"
+        'frac14' => array('name' => '&frac14;', 'code' => 188),    // Простая дробь "одна четвёртая"
+        'frac12' => array('name' => '&frac12;', 'code' => 189),    // Простая дробь "одна вторая"
+        'frac13' => array('name' => '1/3',      'code' => 8531),   // Простая дробь "одна треть"
+        'frac34' => array('name' => '&frac34;', 'code' => 190),    // Простая дробь "три четверти"
+        'times'  => array('name' => '&times;',  'code' => 215),    // Знак умножения
+        'bull'   => array('name' => '&bull;',   'code' => 8226),   // Маркер списка (буллит)
+        'hellip' => array('name' => '&hellip;', 'code' => 8230),   // Горизонтальное многоточие
+        'le'     => array('name' => '&le;',     'code' => 8804),   // Меньше или равно
+        'ge'     => array('name' => '&ge;',     'code' => 8805),   // Больше или равно
+        'cong'   => array('name' => '&cong;',   'code' => 8773),   // Приблизительно равно
+        'plusmn' => array('name' => '&plusmn;', 'code' => 177),    // Плюс-минус
+        'ndash'  => array('name' => '&ndash;',  'code' => 8211),   // Тире длины N
+        'mdash'  => array('name' => '&mdash;',  'code' => 8212),   // Тире длины M
+        'ne'     => array('name' => '&ne;',     'code' => 8800),   // Не равно
+        'minus'  => array('name' => '&minus;',  'code' => 8722),   // Знак минус
+        'laquo'  => array('name' => '&laquo;',  'code' => 171),    // Направленная влево двойная угловая кавычка
+        'raquo'  => array('name' => '&raquo;',  'code' => 187),    // Направленная вправо двойная угловая кавычка
+        'ldquo'  => array('name' => '&ldquo;',  'code' => 8220),   // Двойная левая кавычка
+        'rdquo'  => array('name' => '&rdquo;',  'code' => 8221),   // Двойная правая кавычка
+        'permil' => array('name' => '&permil;', 'code' => 8240),   // Промилле
+        'numb'   => array('name' => '№',        'code' => 769),    // Знак номера
+    );
 
     /**
      * Настройки типографа по умолчанию
@@ -68,7 +108,7 @@ class Typo extends Module
          *
          * @var string[]
          */
-        'modules' => array('html', 'punct', 'space', 'url', 'math', 'filepath', 'smile'),
+        'modules' => array('html', 'punct', 'space', 'url', 'quote', 'math', 'filepath', 'smile'),
 
         /**
          * Включение HTML в тексте на входе.
@@ -297,8 +337,24 @@ class Typo extends Module
             }
         }
 
+        $charset = $this->options['charset'];
+        $int_encoding = mb_internal_encoding();
+        $default_charset = 'UTF-8';
+
+
+        // Меняем кодировку текста
+        mb_internal_encoding($default_charset);
+        if($charset != $default_charset)
+            $this->text->iconv($charset, $default_charset);
+
+        // Выполнение всех стадий
         foreach(self::getStages() as $stage)
             $this->setStage($stage)->executeStage();
+
+        // Восстанавливаем кодировку текста
+        if($charset != $default_charset)
+            $this->text->iconv($default_charset, $charset);
+        mb_internal_encoding($int_encoding);
 
         return $this->text;
     }
@@ -313,12 +369,7 @@ class Typo extends Module
      */
     protected function stageA()
     {
-        $charset = $this->options['charset'];
-        $default_charset = 'UTF-8';
 
-        // Меняем кодировку текста
-        if($charset != $default_charset)
-            $this->text->iconv($charset, $default_charset);
     }
 
     /**
@@ -370,57 +421,23 @@ class Typo extends Module
             case 'encoding' :
                 if($value != self::AUTO)
                 {
-                    $chars = array(
-                        'nbsp'   => array('name' => '&nbsp;',   'code' => 160),    // Неразрывный пробел
-                        'thinsp' => array('name' => '&thinsp;', 'code' => 8201),   // Полупробел
-                        'sect'   => array('name' => '&sect;',   'code' => 167),    // Знак параграфа
-                        'copy'   => array('name' => '&copy;',   'code' => 169),    // Знак охраны авторского права
-                        'reg'    => array('name' => '&reg;',    'code' => 174),    // Знак правовой охраны товарного знака
-                        'trade'  => array('name' => '&trade;',  'code' => 8482),   // Товарный знак
-                        'deg'    => array('name' => '&deg;',    'code' => 176),    // Знак градуса
-                        'sup1'   => array('name' => '&sup1;',   'code' => 185),    // Верхний индекс "1"
-                        'sup2'   => array('name' => '&sup2;',   'code' => 178),    // Верхний индекс "2"
-                        'sup3'   => array('name' => '&sup3;',   'code' => 179),    // Верхний индекс "3"
-                        'frac14' => array('name' => '&frac14;', 'code' => 188),    // Простая дробь "одна четвёртая"
-                        'frac12' => array('name' => '&frac12;', 'code' => 189),    // Простая дробь "одна вторая"
-                        'frac13' => array('name' => '1/3',      'code' => 8531),   // Простая дробь "одна треть"
-                        'frac34' => array('name' => '&frac34;', 'code' => 190),    // Простая дробь "три четверти"
-                        'times'  => array('name' => '&times;',  'code' => 215),    // Знак умножения
-                        'bull'   => array('name' => '&bull;',   'code' => 8226),   // Маркер списка (буллит)
-                        'hellip' => array('name' => '&hellip;', 'code' => 8230),   // Горизонтальное многоточие
-                        'le'     => array('name' => '&le;',     'code' => 8804),   // Меньше или равно
-                        'ge'     => array('name' => '&ge;',     'code' => 8805),   // Больше или равно
-                        'cong'   => array('name' => '&cong;',   'code' => 8773),   // Приблизительно равно
-                        'plusmn' => array('name' => '&plusmn;', 'code' => 177),    // Плюс-минус
-                        'ndash'  => array('name' => '&ndash;',  'code' => 8211),   // Тире длины N
-                        'mdash'  => array('name' => '&mdash;',  'code' => 8212),   // Тире длины M
-                        'ne'     => array('name' => '&ne;',     'code' => 8800),   // Не равно
-                        'minus'  => array('name' => '&minus;',  'code' => 8722),   // Знак минус
-                        'laquo'  => array('name' => '&laquo;',  'code' => 171),    // Направленная влево двойная угловая кавычка
-                        'raquo'  => array('name' => '&raquo;',  'code' => 187),    // Направленная вправо двойная угловая кавычка
-                        'ldquo'  => array('name' => '&ldquo;',  'code' => 8220),   // Двойная левая кавычка
-                        'rdquo'  => array('name' => '&rdquo;',  'code' => 8221),   // Двойная правая кавычка
-                        'permil' => array('name' => '&permil;', 'code' => 8240),   // Промилле
-                        'numb'   => array('name' => '№',        'code' => 769),    // Знак номера
-                    );
-
                     switch($value)
                     {
                         case self::MODE_NONE :
-                            foreach($chars as $key => $c)
-                                $this->chars[$key] = Utility::chr($c['code']);
+                            foreach(self::$chars as $key => $c)
+                                $this->chr[$key] = Utility::chr($c['code']);
                         break;
                         case self::MODE_CODES :
-                            foreach($chars as $key => $c)
-                                $this->chars[$key] = sprintf('&#%u;', $c['code']);
+                            foreach(self::$chars as $key => $c)
+                                $this->chr[$key] = sprintf('&#%u;', $c['code']);
                         break;
                         case self::MODE_HEX_CODES :
-                            foreach($chars as $key => $c)
-                                $this->chars[$key] = sprintf('&#x%x;', $c['code']);
+                            foreach(self::$chars as $key => $c)
+                                $this->chr[$key] = sprintf('&#x%x;', $c['code']);
                         break;
                         case self::MODE_NAMES :
-                            foreach($chars as $key => $c)
-                                $this->chars[$key] = $c['name'];
+                            foreach(self::$chars as $key => $c)
+                                $this->chr[$key] = $c['name'];
                         break;
                     }
                 }

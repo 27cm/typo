@@ -34,7 +34,7 @@ class Math extends Module
     );
 
 
-    // --- Открытые методы класса ---
+    // --- Защищенные методы класса ---
 
     /**
      * Стадия B.
@@ -45,7 +45,7 @@ class Math extends Module
      */
     protected function stageB()
     {
-        $s =& $this->typo->chars;
+        $s =& $this->typo->chr;
 
         $rules = array(
             // Минус перед числом
@@ -65,12 +65,6 @@ class Math extends Module
             '~>=~' => $s['ge'],
             '~\~=~' => $s['cong'],
             '~(\+-|-\+)~' => $s['plusmn'],
-
-            // Полупробел между симоволом номера и числом
-            '~(№|\&#8470\;)\h?(\d)~u' => $s['numb'] . $s['thinsp'] . '$2',
-
-            // Полупробел между параграфом и числом
-			'/(§|\&sect\;)\h?(\d)/ui' => $s['sect'] . $s['thinsp'] . '$2',
         );
 
         if($this->typo->options['html-out-enabled'])

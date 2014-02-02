@@ -31,7 +31,7 @@ TEXT;
 try
 {
     $typo = new Typo(array(
-        'encoding' => Typo::MODE_NAMES
+        // 'encoding' => Typo::MODE_NAMES
     ));
     $executed_text = $typo->execute($text);
 }
