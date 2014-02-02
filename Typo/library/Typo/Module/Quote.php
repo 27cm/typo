@@ -134,7 +134,7 @@ class Quote extends Module
         );
 
         $this->applyRules($rules);
-        // $this->subQuotes();
+        $this->subQuotes();
     }
 
     protected function subQuotes()
@@ -155,13 +155,9 @@ class Quote extends Module
 		$level = 0;
 		$offset = 0;
 
-        echo '<pre>';
-        $i = 0;
-		while($i < 5)
+		while(true)
 		{
-            $i++;
             $p = $this->text->strpos($q1, $offset);
-            var_dump($p);
 
 			if($p === false)
                 break;
@@ -180,7 +176,7 @@ class Quote extends Module
 			}
 
 			$offset = $p['pos'] + mb_strlen($p['str']);
-            echo 'offset = ' . $offset . '<br>';
+
 			if($level == 0)
 			{
 				$okpos = $offset;

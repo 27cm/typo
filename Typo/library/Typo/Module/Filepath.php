@@ -46,48 +46,24 @@ class Filepath extends Module
     /** Файловый разделитель */
     const DELIMETER = '[\\\\/]';
 
-    private $extensions = array(
-        // Текст
-        'txt',
-        // Изображения
-        'jpg',
+    /**
+     * Расширения файлов.
+     *
+     * @link  http://en.wikipedia.org/wiki/List_of_file_formats
+     *
+     * @var string[]
+     */
+    private $ext = array(
+        '[a-z]{2,3}',
         'jpeg',
-        'gif',
-        'bmp',
-        'png',
-        // Исполняемые файлы
-        'exe',
-        'bat',
-        // MS Office
-        'doc',
         'docx',
-        'xls',
         'xlsx',
-        // Аудио
-        'mp3',
-        'wav',
-        'mid',
-        // Видео
-        'mp4',
-        'avi',
-        'mov',
-        'wmv',
-        'vlc',
-        // Исходные коды
-        'htm', // HTML
-        'java', // Java
+        'pptx',
+        'html',
+        'java',
         'class',
-        'php', // PHP
-        'cpp', // C++
-        'py', // Pyhton
-        'hs', // Haskell
-        'cs', //C#
-        'sln',
-        'suo',
-        // Разные
         'djvu',
         'conf',
-        'ini',
     );
 
 
@@ -102,11 +78,11 @@ class Filepath extends Module
      */
     protected function stageA()
     {
-        usort($this->extensions,function ($a,$b){ return strlen($b)-strlen($a);});
-        $extensionAlterations = '(' . implode('|',$this->extensions) . ')';
+        usort($this->ext,function ($a,$b){ return strlen($b)-strlen($a);});
+        $extensionAlterations = '(' . implode('|', $this->ext) . ')';
         $windowsRestrictedSymbols = '[^' . preg_quote('<>:"/\|?*') . ']';
-        $pattern = '~(([A-Z]\:(?=\\\\))?' . self::DELIMETER . ')?(' . $windowsRestrictedSymbols . '+' . self::DELIMETER . ')*' . $windowsRestrictedSymbols . '*\.'. $extensionAlterations . '\b~u';
-        $this->text->preg_replace_storage($pattern, self::REPLACER);
+        $pattern = '~(([a-z]\:(?=\\\\))?' . self::DELIMETER . ')?(' . $windowsRestrictedSymbols . '+' . self::DELIMETER . ')*' . $windowsRestrictedSymbols . '*\.'. $extensionAlterations . '\b~iu';
+        $this->text->preg_replace_storage($pattern, self::REPLACER, Typo::VISIBLE);
     }
 
     /**

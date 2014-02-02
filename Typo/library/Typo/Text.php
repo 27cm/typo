@@ -260,18 +260,23 @@ class Text
             $searchArray = array($search);
 
         foreach($searchArray as $searchValue) {
-            $length = strlen($searchValue);
+            $length = mb_strlen($searchValue);
             $count = 0;
             $replacedLength = 0;
             $pos = 0;
-            while(($pos = $this->pos($searchValue,$pos + $replacedLength)) !== false)
+            while(($pos = $this->strpos($searchValue, $pos + $replacedLength)) !== false)
             {
-                $replaced = $callback(substr($this->text,$pos,$length));
+                $replaced = $callback($this->substr($pos, $length));
                 $this->substr_replace($replaced, $pos, $length);
-                $replacedLength = strlen($replaced);
+                $replacedLength = mb_strlen($replaced);
                 $count++;
             }
         }
+    }
+
+    public function substr ($str, $start, $length = NULL)
+    {
+        return mb_substr($this->text, $start, $length);
     }
 
     /**
