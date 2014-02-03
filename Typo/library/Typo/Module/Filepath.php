@@ -43,9 +43,6 @@ class Filepath extends Module
 
     // --- Регулярные выражения ---
 
-    /** Файловый разделитель */
-    const DELIMETER = '[\\\\/]';
-
     /**
      * Расширения файлов.
      *
@@ -64,6 +61,9 @@ class Filepath extends Module
         'class',
         'djvu',
         'conf',
+        'mp3',
+        'mp4',
+        'properties'
     );
 
 
@@ -81,8 +81,9 @@ class Filepath extends Module
         usort($this->ext,function ($a,$b){ return strlen($b)-strlen($a);});
         $extensionAlterations = '(' . implode('|', $this->ext) . ')';
         $windowsRestrictedSymbols = '[^' . preg_quote('<>:"/\|?*') . ']';
-        $pattern = '~(([a-z]\:(?=\\\\))?' . self::DELIMETER . ')?(' . $windowsRestrictedSymbols . '+' . self::DELIMETER . ')*' . $windowsRestrictedSymbols . '*\.'. $extensionAlterations . '\b~iu';
-        $this->text->preg_replace_storage($pattern, self::REPLACER, Typo::VISIBLE);
+        $windowsPath = '(([a-z]\:)?\\\\)?(' . $windowsRestrictedSymbols . '+\\\\)*' . $windowsRestrictedSymbols . '*\.'. $extensionAlterations;
+        $otherPaths = '/?(\w+/)*\w*\.'. $extensionAlterations;
+        $this->text->preg_replace_storage('~\b((' . $windowsPath  . ')|(' . $otherPaths . '))(?=(\{\{\{\w+\}\}\})*\b)~iu', self::REPLACER, Typo::VISIBLE);
     }
 
     /**
