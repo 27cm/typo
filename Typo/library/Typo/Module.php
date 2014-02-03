@@ -74,8 +74,8 @@ abstract class Module
      * Установливает значения параметров настроек по умолчанию,
      * затем установливает заданные значения параметров настроек.
      *
-     * @param array   $options  Ассоциативный массив ('название параметра' => 'значение').
-     * @param \Module $typo     Типограф, использующий данный модуль.
+     * @param array $options    Ассоциативный массив ('название параметра' => 'значение').
+     * @param \Typo $typo       Типограф, использующий данный модуль.
      *
      * @uses \Typo\Module::setDefaultOptions()
      * @uses \Typo\Module::setOption()
@@ -251,6 +251,31 @@ abstract class Module
     }
 
     /**
+     * Добавляет модуль.
+     *
+     * @param string $module    Название модуля.
+     * @param array $options    Ассоциативный массив ('название параметра' => 'значение').
+     *
+     * @throw \Typo\Exception
+     *
+     * @return void
+     */
+    public function addModule($module, array $options = array())
+    {
+        $classname = self::getModuleClassname($module);
+        if(!class_exists($classname))
+        {
+            return self::throwException(self::E_OPTION_VALUE, "Неизвестный модуль '$module' (класс " . $classname . " не найден)");
+        }
+        elseif(!array_key_exists($classname, $this->modules))
+        {
+            $typo = ($this instanceof Typo) ? $this : $this->typo;
+
+            $this->modules[$classname] = new $classname($options, $typo);
+        }
+    }
+
+    /**
      * Устанавливает стадию работы, сортирует используемые модули по приоритетам выполнения.
      *
      * @param string $stage Стадия работы.
@@ -266,7 +291,7 @@ abstract class Module
             $module->setStage($stage);
         }
 
-        usort($this->modules, function(Module $a, Module $b) {
+        uasort($this->modules, function(Module $a, Module $b) {
             return ($a->getOrder() < $b->getOrder()) ? -1 : 1;
         });
 

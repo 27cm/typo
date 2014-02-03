@@ -34,9 +34,9 @@ class Html extends Module
      * @var array
      */
     static public $order = array(
-        'A' => 15,
+        'A' => 5,
         'B' => 0,
-        'C' => 20,
+        'C' => 30,
         'D' => 0,
         'E' => 0,
         'F' => 0,
@@ -64,6 +64,9 @@ class Html extends Module
 
     /** Блок. */
     const REPLACER_BLOCK = 'BLOCK';
+
+    /** Блок <a>...</a>. */
+    const REPLACER_BLOCK_A = 'BLOCK_A';
 
 
     // --- Открытые методы класса ---
@@ -118,17 +121,18 @@ class Html extends Module
             $safe_blocks_visible = array_diff($this->options['safe-blocks'], self::$invisible_blocks);
             $safe_blocks_invisible = array_intersect($this->options['safe-blocks'], self::$invisible_blocks);
 
-            $this->text->removeBlocks($safe_blocks_visible, self::REPLACER_BLOCK, Typo::VISIBLE);
-            $this->text->removeBlocks($safe_blocks_invisible, self::REPLACER_BLOCK, Typo::INVISIBLE);
+            $this->removeBlocks($safe_blocks_visible, self::REPLACER_BLOCK, Typo::VISIBLE);
+            $this->removeBlocks($safe_blocks_invisible, self::REPLACER_BLOCK, Typo::INVISIBLE);
+            $this->removeBlocks(array('a'), self::REPLACER_BLOCK_A, Typo::VISIBLE);
 
-            $this->text->removeTags(self::$visible_tags, self::REPLACER_TAG, Typo::VISIBLE);
-            $this->text->removeAllTags(self::REPLACER_TAG, Typo::INVISIBLE);
+            $this->removeTags(self::$visible_tags, self::REPLACER_TAG, Typo::VISIBLE);
+            $this->removeAllTags(self::REPLACER_TAG, Typo::INVISIBLE);
         }
         else
         {
-            $this->text->removeBlocks($this->options['safe-blocks'], self::REPLACER_BLOCK, Typo::VISIBLE);
+            $this->removeBlocks($this->options['safe-blocks'], self::REPLACER_BLOCK, Typo::VISIBLE);
 
-            $this->text->removeAllTags(self::REPLACER_TAG, Typo::VISIBLE);
+            $this->removeAllTags(self::REPLACER_TAG, Typo::VISIBLE);
         }
     }
 
@@ -143,11 +147,12 @@ class Html extends Module
     {
         if($this->typo->options['html-in-enabled'])
         {
-            $this->text->popStorage(self::REPLACER_TAG, Typo::VISIBLE);
             $this->text->popStorage(self::REPLACER_TAG, Typo::INVISIBLE);
+            $this->text->popStorage(self::REPLACER_TAG, Typo::VISIBLE);
 
-            $this->text->popStorage(self::REPLACER_BLOCK, Typo::VISIBLE);
+            $this->text->popStorage(self::REPLACER_BLOCK_A, Typo::VISIBLE);
             $this->text->popStorage(self::REPLACER_BLOCK, Typo::INVISIBLE);
+            $this->text->popStorage(self::REPLACER_BLOCK, Typo::VISIBLE);
         }
         else
         {
@@ -155,5 +160,74 @@ class Html extends Module
 
             $this->text->popStorage(self::REPLACER_BLOCK, Typo::VISIBLE);
         }
+    }
+
+    /**
+     * Заменяет блоки в тексте.
+     *
+     * @param array  $blocks    HTML блоки.
+     * @param string $type   Строка для замены.
+     *
+     * @uses \Typo\Text::preg_replace_storage()
+     *
+     * @return void
+     */
+    protected function removeBlocks(array $blocks, $replacer, $type)
+    {
+        $patterns = array();
+        foreach ($blocks as $tag)
+        {
+            switch($tag)
+            {
+                case '<!-- -->' :
+                    $open = '<!--';
+                    $close = '-->';
+                break;
+                default:
+                    $open = "<\h*{$tag}(\h[^>]*)?>";
+                    $close = "<\/{$tag}>";
+            }
+            $patterns[] = "$open.*$close";
+        }
+        $pattern = implode('|', $patterns);
+
+        $this->text->preg_replace_storage("~($pattern)~isU", $replacer, $type);
+    }
+
+    /**
+     * Заменяет теги в тексте.
+     *
+     * @param array  $tags      HTML теги.
+     * @param string $type   Строка для замены.
+     *
+     * @uses \Typo\Text::preg_replace_storage()
+     *
+     * @return void
+     */
+    protected function removeTags(array $tags, $replacer, $type)
+    {
+        $patterns = array();
+        foreach ($tags as $tag)
+        {
+            $patterns[] = "<\h*{$tag}[^>](\h[^>]*)?>";
+        }
+        $pattern = implode('|', $patterns);
+
+        $this->text->preg_replace_storage("~($pattern)~isU", $replacer, $type);
+    }
+
+    /**
+     * Заменяет все теги в тексте.
+     *
+     * @param string $type   Строка для замены.
+     *
+     * @uses \Typo\Text::preg_replace_storage()
+     *
+     * @return void
+     */
+    public function removeAllTags($replacer, $type)
+    {
+        // @todo: типографирование тексте в атрибутах title, alt и др. указанных пользователем
+        $this->text->preg_replace_storage("~<[^>]*>~s", $replacer, $type);
     }
 }

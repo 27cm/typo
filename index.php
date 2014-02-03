@@ -30,9 +30,7 @@ TEXT;
 
 try
 {
-    $typo = new Typo(array(
-        // 'encoding' => Typo::MODE_NAMES
-    ));
+    $typo = new Typo();
     $executed_text = $typo->execute($text);
 }
 catch(\Typo\Exception $e)

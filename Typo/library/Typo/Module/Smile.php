@@ -33,9 +33,9 @@ class Smile extends Module
      * @var array
      */
     static public $order = array(
-        'A' => 0,
+        'A' => 30,
         'B' => 0,
-        'C' => 0,
+        'C' => 5,
         'D' => 0,
         'E' => 0,
         'F' => 0,

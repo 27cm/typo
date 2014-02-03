@@ -54,7 +54,7 @@ class Quote extends Module
      */
     static public $order = array(
         'A' => 0,
-        'B' => 25,
+        'B' => 30,
         'C' => 0,
         'D' => 0,
         'E' => 0,
@@ -107,6 +107,10 @@ class Quote extends Module
             'open'  => $s[$this->options['quote-open']],
             'close' => $s[$this->options['quote-close']],
         );
+        $q2 = array(
+            'open'  => $s[$this->options['subquote-open']],
+            'close' => $s[$this->options['subquote-close']],
+        );
 
         $rules = array(
             // Кавычки вне тэга <a>
@@ -134,21 +138,6 @@ class Quote extends Module
         );
 
         $this->applyRules($rules);
-        $this->subQuotes();
-    }
-
-    protected function subQuotes()
-	{
-        $s =& $this->typo->chr;
-
-        $q1 = array(
-            'open'  => $s[$this->options['quote-open']],
-            'close' => $s[$this->options['quote-close']],
-        );
-        $q2 = array(
-            'open'  => $s[$this->options['subquote-open']],
-            'close' => $s[$this->options['subquote-close']],
-        );
 
         $okposstack = array('0');
 		$okpos = 0;

@@ -191,9 +191,9 @@ class Typo extends Module
      * @var array
      */
     static public $order = array(
-        'A' => 10,
-        'B' => 10,
-        'C' => 25,
+        'A' => 0,
+        'B' => 5,
+        'C' => 35,
         'D' => 0,
         'E' => 0,
         'F' => 0,
@@ -205,6 +205,13 @@ class Typo extends Module
      * @var string
      */
     static private $version = '0.1';
+
+    /**
+     * Контекст.
+     *
+     * @var string[]
+     */
+    private $context = null;
 
 
     // --- Типы документов HTML ---
@@ -372,16 +379,6 @@ class Typo extends Module
     // --- Защищённые методы класса ---
 
     /**
-     * Стадия A.
-     *
-     * @return void
-     */
-    protected function stageA()
-    {
-
-    }
-
-    /**
      * Стадия B.
      */
     protected function stageB()
@@ -422,7 +419,15 @@ class Typo extends Module
            $this->text->nl2br();
     }
 
-    protected function onChangeOption($name, $value)
+    /**
+     * Обработчик события изменения значения параметра.
+     *
+     * @param string $name      Название параметра.
+     * @param mixed  $value     Значение параметра.
+     *
+     * @return void
+     */
+    protected function onChangeOption($name, &$value)
     {
         switch($name)
         {

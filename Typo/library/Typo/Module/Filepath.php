@@ -27,9 +27,9 @@ class Filepath extends Module
      * @var array
      */
     static public $order = array(
-        'A' => 0,
+        'A' => 25,
         'B' => 0,
-        'C' => 0,
+        'C' => 10,
         'D' => 0,
         'E' => 0,
         'F' => 0,

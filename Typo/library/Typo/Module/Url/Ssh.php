@@ -50,9 +50,9 @@ class Ssh extends Url
      * @var array
      */
     static public $order = array(
-        'A' => 20,
+        'A' => 10,
         'B' => 0,
-        'C' => 15,
+        'C' => 25,
         'D' => 0,
         'E' => 0,
         'F' => 0,

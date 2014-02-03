@@ -50,63 +50,6 @@ class Text
     }
 
     /**
-     * Заменяет блоки в тексте.
-     *
-     * @param array  $blocks    HTML блоки.
-     * @param string $replace   Строка для замены.
-     *
-     * @uses \Typo\Text::preg_replace_storage()
-     *
-     * @return void
-     */
-    // @todo: rename
-    public function removeBlocks(array $blocks, $name, $replace)
-    {
-        $patterns = array();
-        foreach ($blocks as $tag)
-        {
-            switch($tag)
-            {
-                case '<!-- -->' :
-                    $open = '<!--';
-                    $close = '-->';
-                break;
-                default:
-                    $open = "<\s*{$tag}[^>]*>";
-                    $close = "<\/{$tag}>";
-            }
-            $patterns[] = "$open.*$close";
-        }
-        $pattern = implode('|', $patterns);
-        unset($patterns);
-
-        $this->preg_replace_storage("~($pattern)~isU", $name, $replace);
-    }
-
-    /**
-     * Заменяет теги в тексте.
-     *
-     * @param array  $tags      HTML теги.
-     * @param string $replace   Строка для замены.
-     *
-     * @uses \Typo\Text::preg_replace_storage()
-     *
-     * @return void
-     */
-    public function removeTags(array $tags, $name, $replace)
-    {
-        $patterns = array();
-        foreach ($tags as $tag)
-        {
-            $patterns[] = "<{$tag}[^>]*>";
-        }
-        $pattern = implode('|', $patterns);
-        unset($patterns);
-
-        $this->preg_replace_storage("~($pattern)~isU", $name, $replace);
-    }
-
-    /**
      * Помещает фрагмент текста в хранилище.
      *
      * @staticvar int $counters Счётчики замен.
@@ -159,15 +102,6 @@ class Text
 
         if(!isset($count))
             unset($this->storage[$key]);
-    }
-
-    /**
-     * Включение/исключение тегов из текста
-     */
-    public function removeAllTags($name, $replace)
-    {
-        // @todo: типографирование тексте в атрибутах title, alt и др. указанных пользователем
-        $this->preg_replace_storage("~<[^>]*>~s", $name, $replace);
     }
 
     public function removeIPs()

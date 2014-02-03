@@ -56,9 +56,9 @@ class Url extends Module
      * @var array
      */
     static public $order = array(
-        'A' => 25,
+        'A' => 15,
         'B' => 0,
-        'C' => 10,
+        'C' => 20,
         'D' => 0,
         'E' => 0,
         'F' => 0,
@@ -320,7 +320,7 @@ class Url extends Module
     protected function stageC()
     {
         $class = get_called_class();
-        
+
         $this->text->popStorage($class::REPLACER, Typo::VISIBLE);
     }
 

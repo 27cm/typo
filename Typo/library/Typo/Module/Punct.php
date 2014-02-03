@@ -39,7 +39,7 @@ class Punct extends Module
      */
     static public $order = array(
         'A' => 0,
-        'B' => 20,
+        'B' => 10,
         'C' => 0,
         'D' => 0,
         'E' => 0,
