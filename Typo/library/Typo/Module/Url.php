@@ -47,7 +47,7 @@ class Url extends Module
          *
          * @var string[]
          */
-        'modules' => array('./ssh', './twitter'),
+        'modules' => array('./ssh'),
     );
 
     /**
