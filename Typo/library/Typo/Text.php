@@ -208,7 +208,7 @@ class Text
         }
     }
 
-    public function substr ($str, $start, $length = NULL)
+    public function substr ($start, $length = NULL)
     {
         return mb_substr($this->text, $start, $length);
     }

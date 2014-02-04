@@ -2,8 +2,6 @@
 
 namespace Typo\Module\Smile\Kolobok;
 
-use Typo;
-use Typo\Module\Smile;
 use Typo\Module\Smile\Kolobok;
 
 /**
@@ -14,20 +12,18 @@ use Typo\Module\Smile\Kolobok;
 class Standart extends Kolobok
 {
     /**
-     * Настройки по умолчанию.
+     * URL изображений.
      *
-     * @var array
+     * @var string
      */
-    protected $default_options = array();
-
-    static public $url = 'standart/';
+    static public $url = 'http://www.kolobok.us/smiles/standart/';
 
     /**
      * Смайлики.
      *
      * @var array
      */
-    public $smiles = array(
+    static public $smiles = array(
         ':)'  => 'smile3',
         ':-)' => 'smile3',
         '=)'  => 'smile3',
@@ -37,26 +33,4 @@ class Standart extends Kolobok
         '=D'  => 'rofl',
         ':D'  => 'rofl',
     );
-
-
-    // --- Защищенные методы класса ---
-
-    /**
-     * Стадия A.
-     *
-     * Заменяет файлы и пути на заменитель.
-     *
-     * @return void
-     */
-    protected function stageA()
-    {
-        $_this = $this;
-
-        $callback = function($search) use($_this)
-        {
-            $data = Typo\Utility::createElement('img',null,array('title' => $search,'src' => "http://www.kolobok.us/smiles/standart/{$_this->smiles[$search]}.gif"));
-            return $_this->text->pushStorage($data, Smile::REPLACER, Typo::VISIBLE);
-        };
-        $this->typo->text->replace_callback(array_keys($this->smiles), $callback);
-    }
 }

@@ -117,7 +117,7 @@ class Typo extends Module
          *
          * @var string[]
          */
-        'modules' => array('html', 'punct', 'space', 'url', 'quote', 'math', 'filepath', 'smile'),
+        'modules' => array('html', 'punct', 'space', 'url', 'quote', 'math', 'filepath', 'smile/kolobok/standart'),
 
         /**
          * Включение HTML в тексте на входе.

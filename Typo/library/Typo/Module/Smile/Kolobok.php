@@ -12,20 +12,9 @@ use Typo\Module\Smile;
 class Kolobok extends Smile
 {
     /**
-     * Настройки по умолчанию.
+     * Расширение файлов изображений.
      *
-     * @var array
+     * @var string
      */
-    protected $default_options = array(
-        /**
-         * Используемые модули.
-         *
-         * @var string[]
-         */
-        'modules' => array('./standart'),
-    );
-
-    static public $url = 'http://www.kolobok.us/smiles/';
-
     static public $ext = 'gif';
 }

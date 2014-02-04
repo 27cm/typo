@@ -4,6 +4,7 @@ namespace Typo\Module;
 
 use Typo;
 use Typo\Module;
+use Typo\Utility;
 
 /**
  * Смайлы.
@@ -18,14 +19,7 @@ class Smile extends Module
      *
      * @var array
      */
-    protected $default_options = array(
-        /**
-         * Используемые модули.
-         *
-         * @var string[]
-         */
-        'modules' => array('./kolobok'),
-    );
+    protected $default_options = array();
 
     /**
      * Приоритет выполнения стадий.
@@ -41,6 +35,27 @@ class Smile extends Module
         'F' => 0,
     );
 
+    /**
+     * Смайлики.
+     *
+     * @var array
+     */
+    static public $smiles = array();
+
+    /**
+     * URL изображений.
+     *
+     * @var string
+     */
+    static public $url = '';
+
+    /**
+     * Расширение файлов изображений.
+     *
+     * @var string
+     */
+    static public $ext = '';
+
 
     // --- Заменитель ---
 
@@ -50,14 +65,54 @@ class Smile extends Module
     // --- Защищенные методы класса ---
 
     /**
+     * Стадия A.
+     *
+     * Заменяет смайлики на заменитель.
+     *
+     * @return void
+     */
+    protected function stageA()
+    {
+        if(!$this->typo->options['html-out-enabled'])
+            return;
+
+        $class = get_called_class();
+        if(empty($class::$smiles))
+            return;
+
+        $_this = $this;
+
+        $callback = function($matches) use($_this, $class)
+        {
+            $smile = $matches[0];
+
+            $attrs = array(
+                'src' => $class::$url . $class::$smiles[$smile] . '.' . $class::$ext,
+                'title' => $smile,
+                'alt' => $smile,
+            );
+            $data = Utility::createElement('img', null, $attrs);
+            return $_this->text->pushStorage($data, Smile::REPLACER, Typo::VISIBLE);
+        };
+
+        $smiles = array_map('preg_quote', array_keys($class::$smiles));
+        $pattern = '~(?<![\wа-яА-ЯёЁ!?:;,.])(?:' . implode('|', $smiles) . ')(?![\wа-яА-ЯёЁ!?:;,.])~u';
+
+        $this->typo->text->preg_replace_callback($pattern, $callback);
+    }
+
+    /**
      * Стадия C.
      *
-     * Восстанавливает файлы и пути.
+     * Восстанавливает смайлики.
      *
      * @return void
      */
     protected function stageC()
     {
-        $this->text->popStorage(self::REPLACER, Typo::VISIBLE);
+        if($this->typo->options['html-out-enabled'])
+        {
+            $this->text->popStorage(self::REPLACER, Typo::VISIBLE);
+        }
     }
 }
