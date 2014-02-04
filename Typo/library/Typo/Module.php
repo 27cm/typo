@@ -338,8 +338,6 @@ abstract class Module
     /**
      * Применяет правила к тексту.
      *
-     * @staticvar array $std_helpers    Стандартные вспомогательные элементы регулярных выражений.
-     *
      * @param array $rules      Набор правил.
      * @param array $helpers    Вспомогательные элементы регулярных выражений.
      *
@@ -347,27 +345,6 @@ abstract class Module
      */
     protected function applyRules(array $rules, array $helpers = array())
     {
-        static $std_helpers = array(
-            // Буквы
-            '{a}' => '[\wа-яА-ЯёЁ]',
-
-            // Знаки препинания
-            '{p}' => '[!?:;,.]',
-
-            // Видимый элемент
-            '{b}' => '(?:\[\[\[\w+\]\]\])',
-
-            // Невидимый элемент
-            '{t}' => '(?:\{\{\{\w+\}\}\})',
-
-          # '{ip}' => '(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)',
-
-            // Меры длинны
-            '{m}' => '(?:[кдсмнпфази]?м|мкм)',
-        );
-
-        $helpers += $std_helpers;
-
         $patterns = array();
         $replaces = array();
         foreach($rules as $key => $value)
@@ -387,10 +364,7 @@ abstract class Module
             }
         }
 
-        $helpers_keys = array_keys($helpers);
-        $helpers_values = array_values($helpers);
-        foreach($patterns as $i => $pattern)
-            $patterns[$i] = str_replace($helpers_keys, $helpers_values, $pattern);
+        self::pregHelpers($patterns, $helpers);
 
         for($i = 0, $count = sizeof($patterns); $i < $count; $i++)
         {
@@ -435,6 +409,59 @@ abstract class Module
 
 
     // --- Статические методы класса ---
+
+    /**
+     * Раскрывает вспомогательные элементы регулярных выражений.
+     *
+     * @staticvar array $std_helpers    Стандартные вспомогательные элементы регулярных выражений.
+     *
+     * @param string|string[] $pattern  Регулярное выражение или массив регулярных выражений.
+     * @param array $helpers            Вспомогательные элементы регулярных выражений.
+     *
+     * @return void
+     */
+    static protected function pregHelpers(&$pattern, array $helpers = array())
+    {
+        static $std_helpers = array(
+            // Буквы
+            '{a}' => '[\wа-яА-ЯёЁ]',
+
+            // Видимый элемент
+            '{b}' => '(?:\[\[\[\w+\]\]\])',
+
+            // Меры длинны
+            '{m}' => '(?:[кдсмнпфази]?м|мкм)',
+
+            // Знаки препинания
+            '{p}' => '[!?:;,.]',
+
+            // Невидимый элемент
+            '{t}' => '(?:\{\{\{\w+\}\}\})',
+        );
+
+        if(is_array($pattern))
+            $patterns = $pattern;
+        else
+            $patterns = array($pattern);
+
+        $helpers = array_merge($std_helpers, $helpers);
+        $helpers_keys = array_keys($helpers);
+        $helpers_values = array_values($helpers);
+
+        foreach($patterns as &$p)
+        {
+            $count = 0;
+            do
+            {
+                $p = str_replace($helpers_keys, $helpers_values, $p, $count);
+            } while($count != 0);
+        }
+
+        if(is_array($pattern))
+            $pattern = $patterns;
+        else
+            $pattern = $patterns[0];
+    }
 
     /**
      * Возвращает название класса по имени модуля.

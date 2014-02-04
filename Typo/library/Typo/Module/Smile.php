@@ -96,7 +96,9 @@ class Smile extends Module
         };
 
         $smiles = array_map('preg_quote', array_keys($class::$smiles));
-        $pattern = '~(?<![\wа-яА-ЯёЁ!?:;,.])(?:' . implode('|', $smiles) . ')(?![\wа-яА-ЯёЁ!?:;,.])~u';
+
+        $pattern = '~(?<!{p})(?:' . implode('|', $smiles) . ')(?!{p})~u';
+        self::pregHelpers($pattern);
 
         $this->typo->text->preg_replace_callback($pattern, $callback);
     }
