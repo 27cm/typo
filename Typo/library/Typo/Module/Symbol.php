@@ -4,7 +4,6 @@ namespace Typo\Module;
 
 use Typo;
 use Typo\Module;
-use Typo\Exception;
 
 /**
  * Кавычки.
@@ -82,7 +81,7 @@ class Quote extends Module
             case 'quote-close' :
             case 'subquote-open' :
             case 'subquote-close' :
-                if(!array_key_exists($value, Typo::$chars['chr']))
+                if(!array_key_exists($value, Typo::$chars))
                     return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный символ '&{$value};' (параметр '$name')");
             break;
 
@@ -113,27 +112,16 @@ class Quote extends Module
             'close' => $s[$this->options['subquote-close']],
         );
 
-        $p = array(
-            'nbsp'   => $s['nbsp'],
-            'thinsp' => $s['thinsp'],
-            'hellip' => $s['hellip'],
-            'quote-open' => $q1['open'],
-            'quote-close' => $q1['close'],
-        );
-        $p = array_map('preg_quote', $p);
-
-        $helpers = array(
-            // Пробелы
-            '{h}' => '(?:\s|' . $p['nbsp'] . '|' . $p['thinsp'] . ')',
-        );
-
         $rules = array(
+            // Кавычки вне тэга <a>
+            '~(\<%%\_\_[^\>]+\>)\"(.+?)\"(\<\/%%\_\_[^\>]+\>)~s' => '"$1$2$3"',
+
             // Открывающая кавычка
-            '~((?:^|\(|{h}){t}*)\"(?={h}?{t}*\S)~iu' => '$1' . $q1['open'],
+            '~(^|\(|\s|\>)(\"|\\\")(\S+)~iu' => '$1' . $q1['open'] . '$3',
 
             // Закрывающая кавычка
-			'~({a}|{b}|[?!:.)]|' . $p['hellip'] . ')(\"+)(?={t}*(?:{h}|[?!:;,.)]|' . $p['hellip'] . '|$))~u' => function ($m) use($q1) {
-                return $m[1] . str_repeat($q1['close'], mb_strlen($m[2]));
+			'~([a-zа-яё0-9]|\.|\&hellip\;|\!|\?|\>|\)|\:)((\"|\\\")+)(\.|\&hellip\;|\;|\:|\?|\!|\,|\s|\)|\<\/|$)~ui' => function($m) use($q1) {
+                return $m[1] . str_repeat($q1['close'], mb_substr_count($m[2],"\"") ) . $m[4];
             },
 
             // Закрывающая кавычка особые случаи
@@ -143,13 +131,18 @@ class Quote extends Module
             '~([a-zа-яё0-9]|\.|\&hellip\;|\!|\?|\>|\)|\:)(\s+)((\"|\\\")+)(\s+)(\.|\&hellip\;|\;|\:|\?|\!|\,|\)|\<\/|$| )~iu' => function($m) use($q1) {
                 return $m[1] .$m[2]. str_repeat($q1['close'], mb_substr_count($m[3],"\"") + mb_substr_count($m[3],"&laquo;")) . $m[5]. $m[6];
             },
+            '~\>(\&laquo\;)\.($|\s|\<)~iu' => '>&raquo;.$2',
+
+            // Открывающая кавычка особые случаи
+            '~(^|\(|\s|\>)(\"|\\\")(\s)(\S+)~iu' => '$1' . $q1['open'] . '$4',
         );
 
-        $this->applyRules($rules, $helpers);
+        $this->applyRules($rules);
 
-        $level = 0;
+        $okposstack = array('0');
+		$okpos = 0;
+		$level = 0;
 		$offset = 0;
-        $stack = array();
 
 		while(true)
 		{
@@ -158,32 +151,87 @@ class Quote extends Module
 			if($p === false)
                 break;
 
-            list($pos, $str) = array_values($p);
-            $offset = $pos + mb_strlen($str);
-
-			if($str == $q1['open'])
+			if($p['str'] == $q1['open'])
 			{
-				if($level != 0)
-                    $stack[] = array($q2['open'], $pos, mb_strlen($str));
+				if($level > 0)
+                    $this->text->substr_replace($q2['open'], $p['pos'], mb_strlen($p['str']));
 				$level++;
 			}
 			else
 			{
 				$level--;
-				if($level != 0)
-                    $stack[] = array($q2['close'], $pos, mb_strlen($str));
+				if($level > 0)
+                    $this->text->substr_replace($q2['close'], $p['pos'], mb_strlen($p['str']));;
 			}
+
+			$offset = $p['pos'] + mb_strlen($p['str']);
 
 			if($level == 0)
 			{
-                $delta = 0;
-                foreach($stack as $data)
-                {
-                    $this->text->substr_replace($data[0], $data[1] + $delta, $data[2]);
-                    $delta += mb_strlen($data[0]) - $data[2];
-                }
-                $offset += $delta;
+				$okpos = $offset;
+				array_push($okposstack, $okpos);
+			}
+            elseif($level < 0)
+			{
+				/*if(!$this->is_on('no_inches'))
+				{
+					do{
+						$lokpos = array_pop($okposstack);
+						$k = substr($this->_text, $lokpos, $offset-$lokpos);
+						$k = str_replace(self::QUOTE_CRAWSE_OPEN, self::QUOTE_FIRS_OPEN, $k);
+						$k = str_replace(self::QUOTE_CRAWSE_CLOSE, $q1['close'], $k);
+						//$k = preg_replace("/(^|[^0-9])([0-9]+)\&raquo\;/ui", '\1\2&Prime;', $k, 1, $amount);
+
+						$amount = 0;
+						$__ax = preg_match_all("/(^|[^0-9])([0-9]+)\&raquo\;/ui", $k, $m);
+						$__ay = 0;
+						if($__ax)
+						{
+							$k = preg_replace_callback("/(^|[^0-9])([0-9]+)\&raquo\;/ui",
+								create_function('$m','global $__ax,$__ay; $__ay++; if($__ay==$__ax){ return $m[1].$m[2]."&Prime;";} return $m[0];'),
+								$k);
+							$amount = 1;
+						}
+
+
+
+					} while(($amount==0) && count($okposstack));
+
+					// успешно сделали замену
+					if($amount == 1)
+					{
+						// заново просмотрим содержимое
+						$this->_text = substr($this->_text, 0, $lokpos). $k . substr($this->_text, $offset);
+						$offset = $lokpos;
+						$level = 0;
+						continue;
+					}
+
+					// иначе просто заменим последнюю явно на &quot; от отчаяния
+					if($amount == 0)
+					{
+						// говорим, что всё в порядке
+						$level = 0;
+						$this->_text = substr($this->_text, 0, $p['pos']). '&quot;' . substr($this->_text, $offset);
+						$offset = $p['pos'] + strlen('&quot;');
+						$okposstack = array($offset);
+						continue;
+					}
+				}*/
 			}
 		}
+
+		// не совпало количество, отменяем все подкавычки
+		/*if($level != 0 ){
+
+			// закрывающих меньше, чем надо
+			if($level>0)
+			{
+				$k = substr($this->_text, $okpos);
+				$k = str_replace(self::QUOTE_CRAWSE_OPEN, self::QUOTE_FIRS_OPEN, $k);
+				$k = str_replace(self::QUOTE_CRAWSE_CLOSE, $q1['close'], $k);
+				$this->_text = substr($this->_text, 0, $okpos). $k;
+			}
+		}*/
     }
 }

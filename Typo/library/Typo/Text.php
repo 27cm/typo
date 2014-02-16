@@ -19,6 +19,20 @@ class Text
     protected $text;
 
     /**
+     * Тип.
+     *
+     * @var string
+     */
+    public $type;
+
+    /**
+     * Кодировка текста.
+     *
+     * @var string
+     */
+    private $encoding;
+
+    /**
      * Временное хранилище.
      *
      * @var array
@@ -26,27 +40,67 @@ class Text
     protected $storage = array();
 
 
+    // --- Типы ---
+
+    /** HTML */
+    const TYPE_HTML = 'TYPE_TEXT';
+
+    /** Значение атрибута тега. */
+    const TYPE_HTML_ATTR_VALUE = 'TYPE_HTML_ATTR_VALUE';
+
+
     // --- Конструктор ---
 
     /**
-     * @param string $text  Текст.
+     * @param string $text      Текст.
+     * @param string $type      Тип.
+     * @param string $encoding  Кодировка текста. Если не указана, то будет определена автоматически.
      */
-    public function __construct($text)
+    public function __construct($text = '', $type = self::TYPE_HTML, $encoding = null)
     {
-        $this->text = (string) $text;
+        $this->setText($text, $encoding);
+        $this->setType($type);
     }
 
 
     // --- Открытые методы класса ---
 
     /**
-     * Преобразовывает объект в строку.
+     * Устанавливает значение текста.
+     *
+     * @param string $value     Текст.
+     * @param string $encoding  Кодировка текста. Если не указана, то будет определена автоматически.
+     *
+     * @uses \Typo\Utility::detectCharset()
+     */
+    public function setText($value, $encoding = null)
+    {
+        $this->text = (string) $value;
+
+        if(is_null($encoding))
+            $this->encoding = Utility::detectCharset($this->text);
+        else
+            $this->encoding = $encoding;
+    }
+
+    /**
+     * Устанавливает тип.
+     *
+     * @param string $value Тип.
+     */
+    public function setType($value)
+    {
+        $this->type = $value;
+    }
+
+    /**
+     * Вовзращает кодировку текста.
      *
      * @return string
      */
-    public function __toString()
+    public function getEncoding()
     {
-        return $this->text;
+        return $this->encoding;
     }
 
     /**
@@ -54,16 +108,17 @@ class Text
      *
      * @staticvar int $counters Счётчики замен.
      *
-     * @param string $data          Фрагмент текста.
-     * @param string $replacement   Строка для замены.
+     * @param string $data      Фрагмент текста.
+     * @param string $replacer  Имя строки для замены.
+     * @param string $type      Тип заменителя.
      *
      * @return string
      */
-    public function pushStorage($data, $name, $replacement)
+    public function pushStorage($data, $replacer, $type)
     {
         static $counters = array();
 
-        $key = sprintf($replacement, $name, 0);
+        $key = sprintf($type, $replacer, 0);
         if(!array_key_exists($key, $counters))
             $counters[$key] = 1;
 
@@ -72,7 +127,7 @@ class Text
         // Предусматриваем случай, если в исходном тексте уже был данный ключ
         do
         {
-            $k = sprintf($replacement, $name, $i);
+            $k = sprintf($type, $replacer, $i);
             $i++;
         }
         while($this->strpos($k) !== false);
@@ -85,51 +140,22 @@ class Text
     /**
      * Восстанавливает фрагмент текста из хранилища.
      *
-     * @param string $replacement
+     * @param string $replacer  Имя строки для замены.
+     * @param string $type      Тип заменителя.
+     * @param int $count        Если передан, то будет установлен в количество произведенных замен.
      *
      * @uses \Typo\Text::replace()
      *
      * @return string
      */
-    public function popStorage($name, $replacement, &$count = null)
+    public function popStorage($replacer, $type, &$count = null)
     {
-        $key = sprintf($replacement, $name, 0);
+        $key = sprintf($type, $replacer, 0);
 
         if(!isset($this->storage[$key]) || empty($this->storage[$key]))
             return;
 
         $this->replace(array_keys($this->storage[$key]), array_values($this->storage[$key]), $count);
-
-        if(!isset($count))
-            unset($this->storage[$key]);
-    }
-
-    public function removeIPs()
-    {
-        $IPs = array();
-        $replace = self::IP;
-
-        $callback = function($matches) use(&$IPs, $replace)
-        {
-            $IP = $matches[0];
-
-            $IPs[] = Text::NOBR_OPEN . $IP . Text::NOBR_CLOSE;
-
-            return $replace;
-        };
-
-        $this->preg_replace_callback('~(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)(?![\wа-яё])~iu', $callback);
-        $this->storage[$replace] = $IPs;
-    }
-
-    /**
-     * Определение кодировки текста.
-     *
-     * @return string Кодировка текста.
-     */
-    public function detectCharset()
-    {
-        return Utility::detectCharset($this->text);
     }
 
     /**
@@ -139,8 +165,6 @@ class Text
      * @param string $out_charset   Требуемая на выходе кодировка.
      *
      * @throw \Typo\Exception
-     *
-     * @return void
      */
     public function iconv($in_charset, $out_charset)
     {
@@ -157,8 +181,6 @@ class Text
      * @param string|string[] $search   Искомое значение.
      * @param string|string[] $replace  Значение замены.
      * @param int $count                Если передан, то будет установлен в количество произведенных замен.
-     *
-     * @return void
      */
     public function replace($search, $replace, &$count = null)
     {
@@ -182,8 +204,6 @@ class Text
      * @param string|string[] $search   Искомое значение.
      * @param callable        $callback Вызываемая callback-функция, которой будет передано найденное значение;
      *                                  callback-функция должна вернуть строку с заменой.
-     *
-     * @return void
      */
     public function replace_callback($search, $callback)
     {
@@ -208,7 +228,17 @@ class Text
         }
     }
 
-    public function substr ($start, $length = NULL)
+    /**
+     * Возвращает подстроку.
+     *
+     * @param int $start    Если start неотрицателен, возвращаемая подстрока начинается с позиции start от начала текста, считая от нуля.
+     *                      Если start отрицательный, возвращаемая подстрока начинается с позиции, отстоящей на start символов от конца текста.
+     * @param int $length   Если length положительный, возвращаемая строка будет не длиннее length символов, начиная с параметра start.
+     *                      Если length отрицательный, то будет отброшено указанное этим аргументом число символов с конца текста.
+     *
+     * @return type
+     */
+    public function substr($start, $length = NULL)
     {
         return mb_substr($this->text, $start, $length);
     }
@@ -221,8 +251,6 @@ class Text
      *                            Если start отрицателен, замена начинается с символа с порядковым номером start, считая от конца текста.
      * @param int $length         Если аргумент положителен, то он представляет собой длину заменяемой подстроки в тексте.
      *                            Если этот аргумент отрицательный, он определяет количество символов от конца текста, на которых заканчивается замена.
-     *
-     * @return void
      */
     public function substr_replace($replacement, $start, $length = null)
     {
@@ -232,14 +260,15 @@ class Text
     /**
      * Возвращает позицию первого вхождения подстроки.
      *
-     * @param mixed $needle Если не является строкой, то приводится к целому и трактуется как код символа.
-     * @param int $offset   Если этот параметр указан, то поиск будет начат с указанного количества символов с начала строки.
+     * @param mixed $needle Если не является строкой или массивом, то приводится к целому и трактуется как код символа.
+     *                      Если является массивом, то результатом будет ассоциативный массив с ключами:
+     *                      'pos' - позиция первой найденной подстроки из массива needle;
+     *                      'str' - значение первой наденной подстроки из массива needle;
+     * @param int $offset   Если этот параметр указан, то поиск будет начат с указанного количества символов с начала текста.
      *
-     * @return int|bool Возвращает позицию, в которой находится искомая строка, относительно начала текста (независимо от смещения offset).
-     *                  Также обратите внимание на то, что позиция строки отсчитывается от 0, а не от 1.
+     * @return mixed    Возвращает позицию, в которой находится искомая строка, относительно начала текста (независимо от смещения offset).
      *                  Возвращает FALSE, если искомая строка не найдена.
      */
-    // @todo: doc fix
     public function strpos($needle, $offset = 0)
     {
         if(is_array($needle))
@@ -278,8 +307,6 @@ class Text
      * @param int             $limit        Максимально возможное количество замен для каждого шаблона;
      *                                      по умолчанию равно -1 (без ограничений).
      * @param int             $count        Количество произведенных замен.
-     *
-     * @return void
      */
     public function preg_replace($pattern, $replacement, $limit = -1, &$count = null)
     {
@@ -295,8 +322,6 @@ class Text
      * @param int             $limit    Максимально возможное количество замен для каждого шаблона;
      *                                  по умолчанию равно -1 (без ограничений).
      * @param int             $count    Количество произведенных замен.
-     *
-     * @return void
      */
     public function preg_replace_callback($pattern, $callback, $limit = -1, &$count = null)
     {
@@ -323,48 +348,70 @@ class Text
     /**
      * Выполняет поиск и замену по регулярному выражению с помещением найденных фрагментов в хранилище.
      *
-     * @param string|string[] $pattern      Искомый шаблон.
-     * @param string          $replacement  Строка для замены.
-     * @param int             $limit        Максимально возможное количество замен для каждого шаблона;
-     *                                      по умолчанию равно -1 (без ограничений).
-     * @param int             $count        Количество произведенных замен.
+     * @param string|string[] $pattern  Искомый шаблон.
+     * @param string          $type     Строка для замены.
+     * @param int             $limit    Максимально возможное количество замен для каждого шаблона;
+     *                                  по умолчанию равно -1 (без ограничений).
+     * @param int             $count    Количество произведенных замен.
      *
      * @uses \Typo\Text::pushStorage()
      * @uses \Typo\Text::preg_replace_callback()
-     *
-     * @return void
      */
-    public function preg_replace_storage($pattern, $name, $replacement, $limit = -1, &$count = null)
+    public function preg_replace_storage($pattern, $replacer, $type, $limit = -1, &$count = null)
     {
         $_this = $this;
-        $callback = function($matches) use(&$_this, $name, $replacement) {
-            return $_this->pushStorage($matches[0], $name, $replacement);
+        $callback = function($matches) use(&$_this, $replacer, $type) {
+            return $_this->pushStorage($matches[0], $replacer, $type);
         };
         $this->preg_replace_callback($pattern, $callback, $limit, $count);
     }
 
     /**
+     * Преобразует все возможные символы в соответствующие HTML-сущности.
+     *
+     * @param int $flags            Битовая маска из нижеуказанных флагов, определяющих режим обработки кавычек,
+     *                              некорректных кодовых последовательностей и используемый тип документа.
+     *                              По умолчанию используется ENT_COMPAT | ENT_HTML401.
+     * @param bool $double_encode   При выключении параметра PHP не будет преобразовывать существующие html-сущности.
+     *                              По умолчанию преобразуется все без ограничений.
+     */
+    public function htmlentities($flags = null, $double_encode = true)
+    {
+        if(is_null($flags))
+            $flags = ENT_COMPAT | ENT_HTML401;
+
+        $this->text = htmlentities($this->text, $flags, $this->encoding, $double_encode);
+    }
+
+    /**
      *
      * @param type $flags
-     * @param type $encoding
-     * @param type $double_encode
-     *
-     * @return void
      */
-    public function htmlentities($flags = 'ENT_COMPAT | ENT_HTML401', $encoding = 'UTF-8', $double_encode = true)
+    public function html_entity_decode($flags = null)
     {
-        $this->text = htmlentities($this->text, $flags, $encoding, $double_encode);
+        if(is_null($flags))
+            $flags = ENT_COMPAT | ENT_HTML401;
+
+        $this->text = html_entity_decode($this->text, $flags, $this->encoding);
     }
 
     /**
      * Вставляет HTML-код разрыва строки перед каждым переводом строки.
      *
      * @param bool $is_xhtml    Использовать ли совместимые с XHTML переводы строк или нет.
-     *
-     * @return void
      */
     public function nl2br($is_xhtml = true)
     {
         $this->text = nl2br($this->text, $is_xhtml);
+    }
+
+    /**
+     * Преобразовывает объект в строку.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->text;
     }
 }

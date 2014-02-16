@@ -3,6 +3,7 @@
 namespace Typo\Module;
 
 use Typo;
+use Typo\Text;
 use Typo\Module;
 
 /**
@@ -26,6 +27,13 @@ class Html extends Module
          * @var string|string[]
          */
         'safe-blocks' => array('<!-- -->', 'code', 'comment', 'pre', 'script', 'style'),
+
+        /**
+         * Атрибуты тегов, подлежащие типографированию.
+         *
+         * var string|string[]
+         */
+        'typo-attrs' => array('title', 'alt'),
     );
 
     /**
@@ -45,14 +53,14 @@ class Html extends Module
     /**
      * Невидимые HTML блоки.
      *
-     * @var array
+     * @var string|string[]
      */
     static $invisible_blocks = array('<!-- -->', 'comment', 'head', 'script', 'style');
 
     /**
      * Видимые HTML теги.
      *
-     * @var array
+     * @var string|string[]
      */
     static $visible_tags = array('img', 'input');
 
@@ -76,15 +84,13 @@ class Html extends Module
      *
      * @param string $name      Название параметра.
      * @param mixed  $value     Значение параметра.
-     *
-     * @return void
      */
     public function validateOption($name, &$value)
     {
         switch($name)
         {
-            // Безопасные блоки
             case 'safe-blocks' :
+            case 'typo-attrs' :
                 if(is_string($value))
                     $value = explode(',', $value);
 
@@ -111,8 +117,6 @@ class Html extends Module
      * Стадия A.
      *
      * Заменяет безопасные блоки и теги на соответствующие заменители.
-     *
-     * @return void
      */
     protected function stageA()
     {
@@ -140,8 +144,6 @@ class Html extends Module
      * Стадия C.
      *
      * Восстанавливает теги и безопасные блоки.
-     *
-     * @return void
      */
     protected function stageC()
     {
@@ -166,11 +168,10 @@ class Html extends Module
      * Заменяет блоки в тексте.
      *
      * @param array  $blocks    HTML блоки.
-     * @param string $type   Строка для замены.
+     * @param string $replacer  Имя строки для замены.
+     * @param string $type      Тип заменителя.
      *
      * @uses \Typo\Text::preg_replace_storage()
-     *
-     * @return void
      */
     protected function removeBlocks(array $blocks, $replacer, $type)
     {
@@ -198,11 +199,10 @@ class Html extends Module
      * Заменяет теги в тексте.
      *
      * @param array  $tags      HTML теги.
-     * @param string $type   Строка для замены.
+     * @param string $replacer  Имя строки для замены.
+     * @param string $type      Тип заменителя.
      *
      * @uses \Typo\Text::preg_replace_storage()
-     *
-     * @return void
      */
     protected function removeTags(array $tags, $replacer, $type)
     {
@@ -219,15 +219,38 @@ class Html extends Module
     /**
      * Заменяет все теги в тексте.
      *
-     * @param string $type   Строка для замены.
+     * @param string $replacer  Имя строки для замены.
+     * @param string $type      Тип заменителя.
      *
      * @uses \Typo\Text::preg_replace_storage()
-     *
-     * @return void
      */
     public function removeAllTags($replacer, $type)
     {
-        // @todo: типографирование тексте в атрибутах title, alt и др. указанных пользователем
-        $this->text->preg_replace_storage("~<[^>]*>~s", $replacer, $type);
+        if(!empty($this->options['typo-attrs']))
+        {
+            $_this = $this;
+            $typo = new Typo(array(
+                'html-in-enabled'  => false,
+                'html-out-enabled' => false,
+            ));
+
+            $pattern = '~(?<=\s)(?<name>' . implode('|', array_map('preg_quote', $this->options['typo-attrs'])) . ')\=["\'](?<value>[^"\']*)["\']~iu';
+
+            $callback = function($matches) use($typo, $_this) {
+                $text = new Text($matches['value'], Text::TYPE_HTML_ATTR_VALUE, $_this->options['charset']);
+                return $matches['name'] . '="' . $typo->execute($text) . '"';
+            };
+
+            $callback2 = function($matches) use($_this, $pattern, $callback, $replacer, $type)
+            {
+                $data = preg_replace_callback($pattern, $callback, $matches[0]);
+
+                return $_this->text->pushStorage($data, $replacer, $type);
+            };
+
+            $this->text->preg_replace_callback('~<[^>]*>~s', $callback2);
+        }
+        else
+            $this->text->preg_replace_storage('~<[^>]*>~s', $replacer, $type);
     }
 }

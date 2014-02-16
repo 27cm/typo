@@ -26,6 +26,20 @@ if(isset($_REQUEST['text']))
     $text = $_REQUEST['text'];
 else
     $text =<<<TEXT
+    0. §
+    1. &sect
+    2. &sect;
+    3. &#X00A7;
+    4. &#x00a7;
+    5. &#xA7
+    6. &#xA7;
+    7. &#xa7;
+    8. &#167
+    9. &#167;
+    10. &#0167;
+    11. &#000167;
+    12. &#189256756767;
+    12. &#xA7 ;
 TEXT;
 
 try
@@ -45,7 +59,6 @@ catch(\Typo\Exception $e)
 }
 
 ?>
-
 <style>
     div
     {

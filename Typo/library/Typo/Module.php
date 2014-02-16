@@ -37,7 +37,15 @@ abstract class Module
      *
      * @var array
      */
+    // @todo: static
     protected $default_options = array();
+
+    /**
+     * Область работы модуля.
+     *
+     * @var string[]
+     */
+    static protected $area = null;
 
     /**
      * Используемые модули.
@@ -120,26 +128,13 @@ abstract class Module
                     $exception = null;
 
                     $this->modules = array();
-                    foreach($value as $module)
+                    foreach($value as &$module)
                     {
                         if(!is_string($module))
                             return self::throwException(Exception::E_OPTION_TYPE, "Значение параметра '$name' должно быть строкой или массивом строк");
 
-                        $classname = self::getModuleClassname($module);
-                        if(!class_exists($classname))
-                        {
-                            $message = "Неизвестный модуль '$module' (класс " . $classname . " не найден)";
-                            if(isset($exception))
-                                $exception = new Exception($message, Exception::E_OPTION_VALUE, $exception);
-                            else
-                                $exception = new Exception($message, Exception::E_OPTION_VALUE);
-                        }
-                        else
-                        {
-                            $typo = ($this instanceof Typo) ? $this : $this->typo;
-
-                            $this->modules[] = new $classname(array(), $typo);
-                        }
+                        $module = self::getModuleClassname($module);
+                        $this->addModule($module);
                     }
 
                     if(isset($exception)) throw $exception;
@@ -253,25 +248,53 @@ abstract class Module
     /**
      * Добавляет модуль.
      *
-     * @param string $module    Название модуля.
+     * @param string $name      Название класса, либо абсолютное или относительное (например ./module/name) название модуля.
      * @param array $options    Ассоциативный массив ('название параметра' => 'значение').
      *
      * @throw \Typo\Exception
      *
      * @return void
      */
-    public function addModule($module, array $options = array())
+    public function addModule($name, array $options = array())
     {
-        $classname = self::getModuleClassname($module);
+        $classname = self::getModuleClassname($name);
         if(!class_exists($classname))
         {
-            return self::throwException(self::E_OPTION_VALUE, "Неизвестный модуль '$module' (класс " . $classname . " не найден)");
+            return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный модуль '$name' (класс $classname не найден)");
         }
         elseif(!array_key_exists($classname, $this->modules))
         {
-            $typo = ($this instanceof Typo) ? $this : $this->typo;
+            // @todo: fix \\
+            if('\\' . $classname instanceof Typo\Module)
+            {
+                $typo = ($this instanceof Typo) ? $this : $this->typo;
+                $this->modules[$classname] = new $classname($options, $typo);
+            }
+            else
+                return self::throwException(Exception::E_OPTION_VALUE, "Класс $classname не является модулем");
+        }
+    }
 
-            $this->modules[$classname] = new $classname($options, $typo);
+    /**
+     * Удаляет модуль.
+     *
+     * @param string $name  Название модуля.
+     *
+     * @throw \Typo\Exception
+     *
+     * @return void
+     */
+    public function removeModule($name)
+    {
+        $classname = self::getModuleClassname($name);
+        if(!class_exists($classname))
+        {
+            return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный модуль '$name' (класс " . $classname . " не найден)");
+        }
+        elseif(array_key_exists($classname, $this->modules))
+        {
+            $this->options['modules'] = array_diff($this->options['modules'], array($classname));
+            unset($this->modules[$classname]);
         }
     }
 
@@ -315,7 +338,7 @@ abstract class Module
         {
             if($fl && $module->getOrder() >= $this->getOrder())
             {
-                if(method_exists($this, $method))
+                if(method_exists($this, $method) && $this->checkTextType())
                 {
                     $this->$method();
                     # echo get_called_class() . '::' . $method . '<br>';
@@ -325,15 +348,12 @@ abstract class Module
             $module->executeStage();
         }
 
-        if($fl && method_exists($this, $method))
+        if($fl && method_exists($this, $method) && $this->checkTextType())
         {
             $this->$method();
             # echo get_called_class() . '::' . $method . '<br>';
         }
     }
-
-
-    // --- Защищённые методы класса ---
 
     /**
      * Применяет правила к тексту.
@@ -341,15 +361,15 @@ abstract class Module
      * @param array $rules      Набор правил.
      * @param array $helpers    Вспомогательные элементы регулярных выражений.
      *
-     * @return void
+     * @return void|string
      */
-    protected function applyRules(array $rules, array $helpers = array())
+    public function applyRules(array $rules, array $helpers = array(), $text = null)
     {
         $patterns = array();
         $replaces = array();
         foreach($rules as $key => $value)
         {
-            if(is_array($value))
+            if(is_array($value) && array_key_exists($key, $this->options))
             {
                 if($this->options[$key])
                 {
@@ -369,10 +389,42 @@ abstract class Module
         for($i = 0, $count = sizeof($patterns); $i < $count; $i++)
         {
             if(is_callable($replaces[$i]))
-                $this->text->preg_replace_callback($patterns[$i], $replaces[$i]);
+            {
+                if(isset($text))
+                    $text = preg_replace_callback($patterns[$i], $replaces[$i], $text);
+                else
+                    $this->text->preg_replace_callback($patterns[$i], $replaces[$i]);
+            }
+            elseif(is_array($replaces[$i]))
+            {
+                $_this = $this;
+                $callback = function($matches) use($_this, $replaces, $i, $helpers) {
+                    return $_this->applyRules($replaces[$i], $helpers, $matches[0]);
+                };
+                $this->text->preg_replace_callback($patterns[$i], $callback);
+            }
             else
-                $this->text->preg_replace($patterns[$i], $replaces[$i]);
+            {
+                if(isset($text))
+                    $text = preg_replace($patterns[$i], $replaces[$i], $text);
+                elseif(mb_substr($patterns[$i], 0, 1) === '~')
+                    $this->text->preg_replace($patterns[$i], $replaces[$i]);
+                else
+                    $this->text->replace($patterns[$i], $replaces[$i]);
+            }
         }
+
+        if(isset($text))
+            return $text;
+    }
+
+
+    // --- Защищённые методы класса ---
+
+    protected function checkTextType()
+    {
+        $class = get_called_class();
+        return (is_null($class::$area) || in_array($this->text->type, $class::$area));
     }
 
     /**
@@ -424,7 +476,7 @@ abstract class Module
     {
         static $std_helpers = array(
             // Буквы
-            '{a}' => '[\wа-яА-ЯёЁ]',
+            '{a}' => '[a-zA-Zа-яА-ЯёЁ]',
 
             // Видимый элемент
             '{b}' => '(?:\[\[\[\w+\]\]\])',
@@ -466,20 +518,24 @@ abstract class Module
     /**
      * Возвращает название класса по имени модуля.
      *
-     * @param string $module
+     * @param string $name  Абсолютное или относительное (например ./module/name) название модуля.
      *
      * @return string
      */
-    static protected function getModuleClassname($module)
+    static protected function getModuleClassname($name)
     {
+        if(class_exists($name))
+            return $name;
+
         $classname = __CLASS__;
-        foreach(explode('/', $module) as $part)
+        foreach(explode('/', $name) as $part)
         {
             if($part === '.')
                 $classname = get_called_class();
             else
                 $classname .= '\\' . ucfirst($part);
         }
+
         return $classname;
     }
 

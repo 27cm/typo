@@ -7,12 +7,12 @@ use Typo\Utility;
 use Typo\Exception;
 
 /**
- * Разделитель пути. Для Windows - "\", для Linux и остальных — "/".
+ * Разделитель директорий. Для Windows - "\", для Linux и остальных — "/".
  */
 if (!defined('DS')) define('DS', DIRECTORY_SEPARATOR);
 
 /**
- * ??? Для Windows - ";", для Linux и остальных — ":".
+ * Разделитель пути к файлу. Для Windows - ";", для Linux и остальных — ":".
  */
 if (!defined('PS')) define('PS', PATH_SEPARATOR);
 
@@ -29,71 +29,38 @@ $loader->register();
 /**
  * Типограф.
  *
- * @copyright Copyright (c) Захаров А. Е., 2012 - 2014
- *
- * @version 0.2 2014-02-02
+ * @version 0.3 2014-02-13
  */
 class Typo extends Module
 {
     /**
-     * Используемые коды символов.
+     * Используемые символы.
      *
      * @var string[]
      */
     public $chr = array();
 
     /**
-     * Спецсимволы
+     * Симолы, подготовленные для использования в регулярных выражениях.
+     *
+     * @var string[]
+     */
+    public $preg_chr = array();
+
+    /**
+     * Коды символов.
      *
      * @link http://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references
      *
      * @var array
      */
     static public $chars = array(
-        'nbsp'   => array('name' => '&nbsp;',   'code' => 160),    // Неразрывный пробел
-        'thinsp' => array('name' => '&thinsp;', 'code' => 8201),   // Полупробел
-        'sect'   => array('name' => '&sect;',   'code' => 167),    // Знак параграфа
-        'copy'   => array('name' => '&copy;',   'code' => 169),    // Знак охраны авторского права
-        'reg'    => array('name' => '&reg;',    'code' => 174),    // Знак правовой охраны товарного знака
-        'trade'  => array('name' => '&trade;',  'code' => 8482),   // Товарный знак
-        'deg'    => array('name' => '&deg;',    'code' => 176),    // Знак градуса
-        'sup1'   => array('name' => '&sup1;',   'code' => 185),    // Верхний индекс "1"
-        'sup2'   => array('name' => '&sup2;',   'code' => 178),    // Верхний индекс "2"
-        'sup3'   => array('name' => '&sup3;',   'code' => 179),    // Верхний индекс "3"
-        'frac14' => array('name' => '&frac14;', 'code' => 188),    // Простая дробь "одна четвёртая"
-        'frac12' => array('name' => '&frac12;', 'code' => 189),    // Простая дробь "одна вторая"
-        'frac13' => array('name' => '1/3',      'code' => 8531),   // Простая дробь "одна треть"
-        'frac34' => array('name' => '&frac34;', 'code' => 190),    // Простая дробь "три четверти"
-        'times'  => array('name' => '&times;',  'code' => 215),    // Знак умножения
-        'bull'   => array('name' => '&bull;',   'code' => 8226),   // Маркер списка (буллит)
-        'hellip' => array('name' => '&hellip;', 'code' => 8230),   // Горизонтальное многоточие
-        'le'     => array('name' => '&le;',     'code' => 8804),   // Меньше или равно
-        'ge'     => array('name' => '&ge;',     'code' => 8805),   // Больше или равно
-        'cong'   => array('name' => '&cong;',   'code' => 8773),   // Приблизительно равно
-        'plusmn' => array('name' => '&plusmn;', 'code' => 177),    // Плюс-минус
-        'ndash'  => array('name' => '&ndash;',  'code' => 8211),   // Тире длины N
-        'mdash'  => array('name' => '&mdash;',  'code' => 8212),   // Тире длины M
-        'ne'     => array('name' => '&ne;',     'code' => 8800),   // Не равно
-        'minus'  => array('name' => '&minus;',  'code' => 8722),   // Знак минус
-        'laquo'  => array('name' => '&laquo;',  'code' => 171),    // Направленная влево двойная угловая кавычка
-        'raquo'  => array('name' => '&raquo;',  'code' => 187),    // Направленная вправо двойная угловая кавычка
-        'ldquo'  => array('name' => '&ldquo;',  'code' => 8220),   // Двойная левая кавычка
-        'rdquo'  => array('name' => '&rdquo;',  'code' => 8221),   // Двойная правая кавычка
-        'permil' => array('name' => '&permil;', 'code' => 8240),   // Промилле
-        'larr'   => array('name' => '&larr;',   'code' => 8592),   // Стрелка влево
-        'uarr'   => array('name' => '&uarr;',   'code' => 8593),   // Стрелка вверх
-        'rarr'   => array('name' => '&rarr;',   'code' => 8594),   // Стрелка вправо
-        'darr'   => array('name' => '&darr;',   'code' => 8595),   // Стрелка вниз
-        'harr'   => array('name' => '&harr;',   'code' => 8596),   // Стрелка влево-вправо
-        'lArr'   => array('name' => '&lArr;',   'code' => 8656),   // Двойная стрелка влево
-        'uArr'   => array('name' => '&uArr;',   'code' => 8657),   // Двойная стрелка вверх
-        'rArr'   => array('name' => '&rArr;',   'code' => 8658),   // Двойная стрелка вправо
-        'dArr'   => array('name' => '&dArr;',   'code' => 8659),   // Двойная стрелка вниз
-        'hArr'   => array('name' => '&hArr;',   'code' => 8660),   // Двойная стрелка влево-вправо
+        'chr' => array(),
+        'ord' => array(),
     );
 
     /**
-     * Настройки типографа по умолчанию
+     * Настройки типографа по умолчанию.
      *
      * @var array
      */
@@ -110,14 +77,14 @@ class Typo extends Module
          *
          * @var 'AUTO'|'MODE_NONE'|'MODE_NAMES'|'MODE_CODES'|'MODE_HEX_CODES'
          */
-        'encoding' => self::AUTO,
+        'encoding' => self::MODE_NAMES,
 
         /**
          * Используемые модули.
          *
          * @var string[]
          */
-        'modules' => array('html', 'punct', 'space', 'url', 'quote', 'math', 'filepath', 'smile/kolobok/standart'),
+        'modules' => array('html', 'punct', 'space', 'dash', 'nobr', 'url', 'quote', 'math', 'filepath', 'smile/kolobok/standart'),
 
         /**
          * Включение HTML в тексте на входе.
@@ -150,32 +117,11 @@ class Typo extends Module
         'html-doctype' => self::DOCTYPE_HTML5,
 
         /**
-         * Спецсимволы.
-         *
-         * @var bool
-         */
-        'spec' => true,
-
-        /**
-         * Неразрывные пробелы.
-         *
-         * @var bool
-         */
-        'nbsp' => true,
-
-        /**
          * Вставлять <br> перед каждым переводом строки.
          *
          * @var bool
          */
         'nl2br' => true,
-
-        /**
-         * Использование <nobr>.
-         *
-         * @var bool
-         */
-        'nobr' => true,
 
         /**
          * Замена всех букв 'ё' на 'е'.
@@ -204,14 +150,7 @@ class Typo extends Module
      *
      * @var string
      */
-    static private $version = '0.1';
-
-    /**
-     * Контекст.
-     *
-     * @var string[]
-     */
-    private $context = null;
+    static private $version = '0.3';
 
 
     // --- Типы документов HTML ---
@@ -278,18 +217,30 @@ class Typo extends Module
     // --- Открытые методы класса ---
 
     /**
+     * Установливает значения параметров настроек по умолчанию,
+     * затем установливает заданные значения параметров настроек.
+     *
+     * @param array $options    Ассоциативный массив ('название параметра' => 'значение').
+     *
+     * @uses \Typo\Module::__construct()
+     */
+    public function __construct(array $options = array())
+    {
+        $this->text = new Text();
+
+        parent::__construct($options);
+    }
+
+    /**
      * Проверка значения параметра (с возможной корректировкой).
      *
      * @param string $name      Название параметра.
      * @param mixed  $value     Значение параметра.
-     *
-     * @return void
      */
     public function validateOption($name, &$value)
     {
         switch($name)
         {
-            // Кодировка текста
             case 'charset' :
                 if($value != self::AUTO)
                 {
@@ -300,7 +251,6 @@ class Typo extends Module
                 }
             break;
 
-            // Режим кодирования спецсимволов
             case 'encoding' :
                 if($value != self::AUTO)
                 {
@@ -309,7 +259,6 @@ class Typo extends Module
                 }
             break;
 
-            // Тип документа HTML
             case 'html-doctype' :
                 if(!Utility::validateConst(get_called_class(), $value, 'DOCTYPE'))
                     return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный тип документа '$value'");
@@ -333,13 +282,19 @@ class Typo extends Module
      */
     public function execute($text)
     {
-        $this->text = ($text instanceof Text) ? $text : new Text($text);
+        if($text instanceof Text)
+            $this->text = $text;
+        elseif($this->options['charset'] == self::AUTO)
+        {
+            $this->text->setText($text);
+            $this->setOption('charset', $this->text->getEncoding());
+        }
+        else
+        {
+            $this->text->setText($text, $this->options['charset']);
+        }
 
         // @todo: исправить ошибки повторного вызова
-        // $this->saveOptions() и $this->restoreOptions()
-        if($this->options['charset'] == self::AUTO)
-            $this->setOption('charset', $this->text->detectCharset());
-
         if($this->options['encoding'] == self::AUTO)
         {
             switch($this->options['charset'])
@@ -356,7 +311,6 @@ class Typo extends Module
         $charset = $this->options['charset'];
         $int_encoding = mb_internal_encoding();
         $default_charset = 'UTF-8';
-
 
         // Меняем кодировку текста
         mb_internal_encoding($default_charset);
@@ -375,15 +329,73 @@ class Typo extends Module
         return $this->text;
     }
 
+    /**
+     * Клонирование объекта.
+     */
+    public function __clone()
+    {
+        return unserialize(serialize($this));
+    }
+
 
     // --- Защищённые методы класса ---
+
+    /**
+     * Стадия A.
+     */
+    protected function stageA()
+    {
+
+    }
 
     /**
      * Стадия B.
      */
     protected function stageB()
     {
-        $chars = array(
+        $p =& $this->preg_chr;
+
+        $rules = array(
+            #B1 Убираем лишние пробелы в кодах символов
+            '~(&(#\d+|[\da-z]+|#x[\da-f]+))\h+(?=\;)~i' => '$1',
+
+            #B2 Добавляем недостающие точки с запятой в кодах символов
+            '~(&#\d+)(?![\;\d])~' => '$1;',
+            '~(&[\da-z]+)(?![\;\da-z])~i' => '$1;',
+            '~(&#x[\da-f]+)(?![\;\da-f])~i' => '$1;',
+
+            #B3 Замена всех букв 'ё' на 'е'
+            'e-convert' => array(
+                'ё' => 'е',
+                'Ё' => 'Е',
+            ),
+        );
+        $this->applyRules($rules);
+
+        $this->text->html_entity_decode(ENT_QUOTES | ENT_HTML401);
+        if($this->options['encoding'] !== self::MODE_NONE)
+        {
+            $this->text->replace(array_values(self::$chars['chr']), array_values($this->chr));
+        }
+
+        switch($this->options['encoding'])
+        {
+            case self::MODE_NONE :
+                $chr = Utility::chr(65533);
+            break;
+            case self::MODE_CODES :
+                $chr = '&#65533;';
+            break;
+            default :
+                $chr = '&#xFFFD;';
+        }
+        $rules = array(
+            #B4 Заменяем все неизвестные символы
+            '~' . $p['amp'] . '(#\d+|[\da-z]+|#x[\da-f]+)\;~i' => $chr,
+        );
+        $this->applyRules($rules);
+
+        /*$chars = array(
             '"' => array(
                 '&#34;', '&#132;', '&#147;', '&#171;', '&#187;', '&#8220;', '&#8221;', '&#8222;',
                 '&quot;', '&laquo;', '&raquo;', '&lsquo;', '&rsquo;', '&ldquo;', '&rdquo;', '&bdquo;',
@@ -401,13 +413,11 @@ class Typo extends Module
         );
 
         foreach($chars as $replace => $group)
-             $this->text->replace($group, $replace);
+             $this->text->replace($group, $replace);*/
     }
 
     /**
      * Стадия C.
-     *
-     * @return void
      */
     protected function stageC()
     {
@@ -415,8 +425,9 @@ class Typo extends Module
         $this->text->popStorage(self::REPLACER, self::VISIBLE);
 
         // Вставлять <br> перед каждым переводом строки
-        if($this->options['nl2br'])
-           $this->text->nl2br();
+        $this->text->preg_replace('~\n|\&NewLine\;~', '<br />');
+        ////if($this->options['nl2br'])
+        //   $this->text->nl2br();
     }
 
     /**
@@ -424,8 +435,6 @@ class Typo extends Module
      *
      * @param string $name      Название параметра.
      * @param mixed  $value     Значение параметра.
-     *
-     * @return void
      */
     protected function onChangeOption($name, &$value)
     {
@@ -438,22 +447,23 @@ class Typo extends Module
                     switch($value)
                     {
                         case self::MODE_NONE :
-                            foreach(self::$chars as $key => $c)
-                                $this->chr[$key] = Utility::chr($c['code']);
+                            $this->chr =& self::$chars['chr'];
                         break;
                         case self::MODE_CODES :
-                            foreach(self::$chars as $key => $c)
-                                $this->chr[$key] = sprintf('&#%u;', $c['code']);
+                            foreach(self::$chars['ord'] as $ent => $ord)
+                                $this->chr[$ent] = sprintf('&#%u;', $ord);
                         break;
                         case self::MODE_HEX_CODES :
-                            foreach(self::$chars as $key => $c)
-                                $this->chr[$key] = sprintf('&#x%x;', $c['code']);
+                            foreach(self::$chars['ord'] as $ent => $ord)
+                                $this->chr[$ent] = sprintf('&#x%x;', $ord);
                         break;
                         case self::MODE_NAMES :
-                            foreach(self::$chars as $key => $c)
-                                $this->chr[$key] = $c['name'];
+                            foreach(array_keys(self::$chars['chr']) as $ent)
+                                $this->chr[$ent] = sprintf('&%s;', $ent);;
                         break;
                     }
+
+                    $this->preg_chr = array_map('preg_quote', $this->chr);
                 }
             break;
         }
@@ -490,4 +500,12 @@ class Typo extends Module
 
         return $typo->execute($text);
     }
+}
+
+$chars = get_html_translation_table(HTML_ENTITIES, ENT_HTML401, 'UTF-8');
+foreach($chars as $chr => $entitie)
+{
+    $name = substr($entitie, 1, strlen($entitie) - 2);
+    Typo::$chars['ord'][$name] = Utility::ord($chr);
+    Typo::$chars['chr'][$name] = $chr;
 }
