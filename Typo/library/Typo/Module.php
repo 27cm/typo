@@ -114,7 +114,7 @@ abstract class Module
     public function validateOption($name, &$value)
     {
         if(!$this->checkOptionExists($name))
-            return self::throwException(self::E_OPTION_NAME, "Несуществующий параметр '$name'");
+            return self::throwException(Exception::E_OPTION_NAME, "Несуществующий параметр '$name'");
 
         switch($name)
         {
@@ -140,7 +140,7 @@ abstract class Module
                     if(isset($exception)) throw $exception;
                 }
                 else
-                    return self::throwException(self::E_OPTION_TYPE, "Значение параметра '$name' должно быть строкой или массивом строк");
+                    return self::throwException(Exception::E_OPTION_TYPE, "Значение параметра '$name' должно быть строкой или массивом строк");
             break;
 
             // Логические значения
@@ -163,7 +163,7 @@ abstract class Module
         $name = strtolower($name);
 
         if(!array_key_exists($name, $this->default_options))
-            return self::throwException(self::E_OPTION_NAME, "Несуществующий параметр '$name'");
+            return self::throwException(Exception::E_OPTION_NAME, "Несуществующий параметр '$name'");
 
         $this->validateOption($name, $value);
 
@@ -229,7 +229,7 @@ abstract class Module
     public function getOption($name)
     {
         if(!$this->checkOptionExists($name))
-            return self::throwException(self::E_OPTION_NAME, "Несуществующий параметр '$name'");
+            return self::throwException(Exception::E_OPTION_NAME, "Несуществующий параметр '$name'");
 
         return $this->options[$name];
     }
