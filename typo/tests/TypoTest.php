@@ -36,13 +36,8 @@ class TypoTest extends PHPUnit_Framework_TestCase {
 
     // Установка неизвестного параметра
     public function testSetUnknownParam() {
-        try {
-            $this->typo->setOption('unknown', 'value');
-        }
-        catch (Typo\Exception $e) {
-            $this->assertStringStartsWith("Несуществующий параметр",$e->getMessage());
-        }
-
+        $this->setExpectedException('Typo\Exception','Несуществующий параметр');
+        $this->typo->setOption('unknown', 'value');
     }
     // Установка неправильной кодировки
     public function testSetUnknownCharset() {
@@ -64,12 +59,8 @@ class TypoTest extends PHPUnit_Framework_TestCase {
 
     // Установка неправильного параметра кодировки
     public function testSetUnknownEncoding() {
-        try {
-            $this->typo->setOption('encoding', 'MODE_UNKNOWN');
-        }
-        catch (Typo\Exception $e) {
-            $this->assertStringStartsWith("Неизвестный режим кодирования спецсимволов",$e->getMessage());
-        }
+        $this->setExpectedException('Typo\Exception','Неизвестный режим кодирования спецсимволов');
+        $this->typo->setOption('encoding', 'MODE_UNKNOWN');
     }
 
     // Установка существующего параметра кодировки
