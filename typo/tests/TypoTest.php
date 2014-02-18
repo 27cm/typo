@@ -20,7 +20,7 @@ class TypoTest extends PHPUnit_Framework_TestCase {
     // Проверяем значения свойств по умолчанию
     public function testDefaultOptions()
     {
-        $this->assertEquals($this->typo->getOption('charset'), 'utf-8',  '', 0, 10, false, $ignoreCase = true);
+        $this->assertEquals($this->typo->getOption('charset'), 'utf-8',  '', 0, 10, false, true);
         $this->assertEquals($this->typo->getOption('encoding'), Typo::MODE_NAMES);
 
         $modules = array('Html', 'Punct', 'Space', 'Dash', 'Nobr', 'Url', 'Quote', 'Math', 'Filepath', 'Smile\Kolobok\Standart');
@@ -53,7 +53,7 @@ class TypoTest extends PHPUnit_Framework_TestCase {
     public function testSetExistingCharset() {
         foreach($this->charsets as $charset) {
             $this->typo->setOption('charset', $charset);
-            $this->assertEquals($this->typo->getOption('charset'), $charset,$message = '', $delta = 0, $maxDepth = 10, $canonicalize = false, $ignoreCase = true);
+            $this->assertEquals($this->typo->getOption('charset'), $charset,$message = '', $delta = 0, $maxDepth = 10, $canonicalize = false, true);
         }
     }
 
@@ -67,7 +67,7 @@ class TypoTest extends PHPUnit_Framework_TestCase {
     public function testSetExistingEncodings() {
         foreach($this->encodings as $encoding) {
             $this->typo->setOption('encoding', $encoding);
-            $this->assertEquals($this->typo->getOption('encoding'), $encoding,'', 0, 10, false, $ignoreCase = true);
+            $this->assertEquals($this->typo->getOption('encoding'), $encoding,'', 0, 10, false, true);
         }
     }
 }
