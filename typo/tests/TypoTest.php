@@ -72,7 +72,7 @@ class TypoTest extends PHPUnit_Framework_TestCase {
             $this->assertStringStartsWith("Неизвестный режим кодирования спецсимволов",$e->getMessage());
         }
     }
-    
+
     // Установка существующего параметра кодировки
     public function testSetExistingEncodings() {
         foreach($this->encodings as $encoding) {
