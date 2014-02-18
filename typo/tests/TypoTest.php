@@ -4,7 +4,6 @@ $include = "{$root}/../../include";
 set_include_path(get_include_path() . PATH_SEPARATOR . $include);
 
 require_once "{$root}/../library/Typo.php";
-require_once "{$root}/../library/Typo/Exception.php";
 
 class TypoTest extends PHPUnit_Framework_TestCase {
     protected $typo;
@@ -77,7 +76,7 @@ class TypoTest extends PHPUnit_Framework_TestCase {
     public function testSetExistingEncodings() {
         foreach($this->encodings as $encoding) {
             $this->typo->setOption('encoding', $encoding);
-            $this->assertEquals($this->typo->getOption('encoding'), $encoding,$message = '', $delta = 0, $maxDepth = 10, $canonicalize = false, $ignoreCase = true);
+            $this->assertEquals($this->typo->getOption('encoding'), $encoding,'', 0, 10, false, $ignoreCase = true);
         }
     }
 }
