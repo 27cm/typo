@@ -3,14 +3,30 @@ $root    = realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR;
 $include = "{$root}/../../include";
 set_include_path(get_include_path() . PATH_SEPARATOR . $include);
 
-require_once "{$root}/../library/Typo.php";
+require_once "{$root}/../../Typo.php";
+use Typo\Exception;
 
 class TypoTest extends PHPUnit_Framework_TestCase {
     protected $typo;
 
-    protected $charsets = array('UTF-8','CP1251','KOI8-R','IBM866','ISO-8859-5','MAC');
-    protected $encodings = array('MODE_NONE','MODE_NAMES','MODE_CODES','MODE_HEX_CODES');
-
+    public function charsets() {
+        return array(
+            array('UTF-8'),
+            array('CP1251'),
+            array('KOI8-R'),
+            array('IBM866'),
+            array('ISO-8859-5'),
+            array('MAC')
+        );
+    }
+    public function encodings() {
+        return array(
+            array('MODE_NONE'),
+            array('MODE_NAMES'),
+            array('MODE_CODES'),
+            array('MODE_HEX_CODES')
+        );
+    }
 
     protected function setUp()
     {
@@ -36,38 +52,36 @@ class TypoTest extends PHPUnit_Framework_TestCase {
 
     // Установка неизвестного параметра
     public function testSetUnknownParam() {
-        $this->setExpectedException('Typo\Exception','Несуществующий параметр');
+        $this->setExpectedException('Exception','Несуществующий параметр');
         $this->typo->setOption('unknown', 'value');
     }
     // Установка неправильной кодировки
     public function testSetUnknownCharset() {
-        try {
-            $this->typo->setOption('charset', 'UNKNOWN');
-        }
-        catch (Typo\Exception $e) {
-            $this->assertStringStartsWith("Неизвестная кодировка",$e->getMessage());
-        }
+        $this->setExpectedException('Exception',"Неизвестная кодировка",Exception::E_OPTION_VALUE);
+        $this->typo->setOption('charset', 'UNKNOWN');
     }
 
     // Установка существуеющей кодировки
-    public function testSetExistingCharset() {
-        foreach($this->charsets as $charset) {
-            $this->typo->setOption('charset', $charset);
-            $this->assertEquals($this->typo->getOption('charset'), $charset,$message = '', $delta = 0, $maxDepth = 10, $canonicalize = false, true);
-        }
+    /**
+     * @dataProvider charsets
+     */
+    public function testSetExistingCharset($charset) {
+        $this->typo->setOption('charset', $charset);
+        $this->assertEquals($this->typo->getOption('charset'), $charset,'', 0, 10, false, true);
     }
 
     // Установка неправильного параметра кодировки
     public function testSetUnknownEncoding() {
-        $this->setExpectedException('Typo\Exception','Неизвестный режим кодирования спецсимволов');
+        $this->setExpectedException('Exception','Неизвестный режим кодирования спецсимволов',Exception::E_OPTION_VALUE);
         $this->typo->setOption('encoding', 'MODE_UNKNOWN');
     }
 
     // Установка существующего параметра кодировки
-    public function testSetExistingEncodings() {
-        foreach($this->encodings as $encoding) {
-            $this->typo->setOption('encoding', $encoding);
-            $this->assertEquals($this->typo->getOption('encoding'), $encoding,'', 0, 10, false, true);
-        }
+    /**
+     * @dataProvider encodings
+     */
+    public function testSetExistingEncodings($encoding) {
+        $this->typo->setOption('encoding', $encoding);
+        $this->assertEquals($this->typo->getOption('encoding'), $encoding,'', 0, 10, false, true);
     }
 }
