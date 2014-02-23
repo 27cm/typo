@@ -550,7 +550,7 @@ abstract class Module
      *
      * @return void
      */
-    static protected function throwException($code = Exception::E_UNKNOWN, $message = null, Exception $previous = null)
+    static public function throwException($code = Exception::E_UNKNOWN, $message = null, Exception $previous = null)
     {
         if(isset($message))
             throw new Exception($message, $code, $previous);

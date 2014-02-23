@@ -8,6 +8,7 @@ require_once "{$root}/Typo/library/Typo.php";
 
 use Typo\Exception;
 
+
 class TypoTest extends PHPUnit_Framework_TestCase 
 {
     /**
@@ -39,7 +40,7 @@ class TypoTest extends PHPUnit_Framework_TestCase
     /**
      * Установка неизвестного параметра.
      */
-    public function testSetUnknownOption() 
+    public function testSetUnknownOption()
     {
         $this->setExpectedException('Typo\Exception', 'Несуществующий параметр');
         $this->typo->setOption('unknown', 'value');
