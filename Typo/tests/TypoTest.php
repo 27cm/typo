@@ -1,11 +1,5 @@
 <?php
 
-$root    = realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..';
-$include = "{$root}/include";
-set_include_path(get_include_path() . PATH_SEPARATOR . $include);
-
-require_once "{$root}/Typo/library/Typo.php";
-
 use Typo\Exception;
 
 
@@ -29,7 +23,7 @@ class TypoTest extends PHPUnit_Framework_TestCase
     public function testDefaultOptions()
     {
         $this->assertEquals($this->typo->getOption('charset'), 'utf-8',  '', 0, 10, false, true);
-        $this->assertEquals($this->typo->getOption('encoding'), Typo::MODE_NAMES);
+        $this->assertEquals($this->typo->getOption('encoding'), Typo::MODE_NONE);
         $this->assertEquals($this->typo->getOption('html-in-enabled'), true);
         $this->assertEquals($this->typo->getOption('html-out-enabled'), true);
         $this->assertEquals($this->typo->getOption('html-doctype'), Typo::DOCTYPE_HTML5);

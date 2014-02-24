@@ -1,6 +1,6 @@
 <phpunit bootstrap="./Bootstrap.php">
     <testsuite name="Typo Test Suite">
-        <directory>./</directory>
+        <directory>.</directory>
     </testsuite>
 </phpunit>
 

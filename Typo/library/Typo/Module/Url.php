@@ -201,7 +201,7 @@ class Url extends Module
             // Схема
             if(isset($scheme))
             {
-                $scheme = strtolower($scheme);
+                $scheme = mb_strtolower($scheme);
                 $href = $scheme . '://';
 
                 // Протоколы http, https и mailto опускаем
@@ -242,7 +242,7 @@ class Url extends Module
                 $href .= 'www.';
 
             // Хост
-            $host = strtolower($host);
+            $host = mb_strtolower($host);
 
             // Подсвечиваем localhost только, если задан протокол
             if($localhost && !(isset($scheme) || isset($slashes)))
