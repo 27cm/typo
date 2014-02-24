@@ -1,41 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tests>
-    <test>
-        <input>Ссылка в конце предложения http://example.com/page.html. Точка не является частью ссылки.</input>
-        <expected>Ссылка в конце предложения <a href="http://example.com/page.html" target="_blank">example.com/page.html</a>. Точка не является частью ссылки.</expected>
-    </test>
-    <test>
-        <input>Cсылка example.com/page.html в середине предложения без протокола.</input>
-        <expected>Cсылка <a href="http://example.com/page.html" target="_blank">example.com/page.html</a> в середине предложения без протокола.</expected>
-    </test>    
-    <test>
-        <input>Ссылка в скобках (http://example.com/page.html).</input>
-        <expected>Ссылка в скобках (<a href="http://example.com/page.html" target="_blank">example.com/page.html</a>).</expected>
-    </test>
-    <test>
-        <desc>Здесь косяк</desc>
-        <ignore>true</ignore>
-        <input>Русскоязычные ссылки шкафы-и-окна.рф, домен.ua.com.</input>
-        <expected>Русскоязычная ссылки <a href="http://xn-----6kcc2bjeyh0d0b1b.xn--p1ai" target="_blank">шкафы-и-окна.рф</a>, <a href="http://xn--d1acufc.ua.com" target="_blank">домен.ua.com</a>.</expected>
-    </test>
-    <test>
-        <input>//site.com</input>
-        <expected><a href="//site.com" target="_blank">site.com</a></expected>
-    </test>    
-    <test>
-        <input>//site.com</input>
-        <expected><a href="//site.com" target="_blank">site.com</a></expected>
-    </test>
-    <test>
-        <input>Ссылка в верхнем регистре HTTP://EXAMPLE.COM/PATH?QUERY#HASH</input>
-        <expected>Ссылка в верхнем регистре <a href="http://example.com/PATH?QUERY#HASH" target="_blank">example.com/PATH?QUERY#HASH</a></expected>
-    </test>       
-    <test>
-        <input>Ссылка на localhost http://localhost</input>
-        <expected>Ссылка на localhost <a href="http://localhost" target="_blank">localhost</a></expected>
-    </test>  
-    <test>
-        <input>IP-адрес 127.0.0.1 ftp://127.0.0.1</input>
-        <expected>IP-адрес 127.0.0.1 <a href="ftp://127.0.0.1" target="_blank">ftp://127.0.0.1</a></expected>
-    </test>
+    <group desc="Точка в конце предложения не является частью ссылки">
+        <test>
+            <input>Пример предложения http://example.com/page.html. Следующее предложение.</input>
+            <expected><![CDATA[Пример предложения <a href="http://example.com/page.html" target="_blank">example.com/page.html</a>. Следующее предложение.]]></expected>
+        </test>
+    </group>
+    <group desc="Протокол http добавляется автоматически, если был опущен">
+        <test>
+            <input>Cсылка example.com/page.html в середине предложения без протокола.</input>
+            <expected><![CDATA[Cсылка <a href="http://example.com/page.html" target="_blank">example.com/page.html</a> в середине предложения без протокола.]]></expected>
+        </test>
+        <test>
+            <input>//site.com</input>
+            <expected><![CDATA[<a href="//site.com" target="_blank">site.com</a>]]></expected>
+        </test>
+    </group>
+    <group desc="Ссылка в скобках">
+        <test>
+            <input>Ссылка (http://example.com/page.html) в скобках</input>
+            <expected><![CDATA[Ссылка (<a href="http://example.com/page.html" target="_blank">example.com/page.html</a>) в скобках]]></expected>
+        </test>
+    </group>
+    <group desc="Русскоязычные ссылки">
+        <test>
+            <input>Русскоязычные ссылки шкафы-и-окна.рф, домен.ua.com</input>
+            <expected><![CDATA[Русскоязычные ссылки <a href="http://xn-----6kcc2bjeyh0d0b1b.xn--p1ai" target="_blank">шкафы-и-окна.рф</a>, <a href="http://xn--d1acufc.ua.com" target="_blank">домен.ua.com</a>]]></expected>
+        </test>
+    </group>
+    <group desc="Приведение ссылки в нижний регистр">
+        <test>
+            <input>Ссылка в верхнем регистре HTTP://EXAMPLE.COM/PATH?QUERY#HASH</input>
+            <expected><![CDATA[Ссылка в верхнем регистре <a href="http://example.com/PATH?QUERY#HASH" target="_blank">example.com/PATH?QUERY#HASH</a>]]></expected>
+        </test>
+    </group>
+    <group desc="Ссылка на localhost">
+        <test>
+            <input>Ссылка на localhost http://localhost</input>
+            <expected><![CDATA[Ссылка на localhost <a href="http://localhost" target="_blank">localhost</a>]]></expected>
+        </test>
+    </group>
+    <group desc="Ссылка с IP-адресом">
+        <test>
+            <input>IP-адрес 127.0.0.1 ftp://127.0.0.1</input>
+            <expected><![CDATA[IP-адрес 127.0.0.1 <a href="ftp://127.0.0.1" target="_blank">ftp://127.0.0.1</a>]]></expected>
+        </test>
+    </group>
 </tests>
