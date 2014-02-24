@@ -144,8 +144,8 @@ class Typo extends Module
     static public $order = array(
         'A' => 0,
         'B' => 5,
-        'C' => 35,
-        'D' => 0,
+        'C' => 0,
+        'D' => 35,
         'E' => 0,
         'F' => 0,
     );
@@ -346,14 +346,6 @@ class Typo extends Module
     // --- Защищённые методы класса ---
 
     /**
-     * Стадия A.
-     */
-    protected function stageA()
-    {
-
-    }
-
-    /**
      * Стадия B.
      */
     protected function stageB()
@@ -422,9 +414,9 @@ class Typo extends Module
     }
 
     /**
-     * Стадия C.
+     * Стадия D.
      */
-    protected function stageC()
+    protected function stageD()
     {
         $this->text->popStorage(self::REPLACER, self::INVISIBLE);
         $this->text->popStorage(self::REPLACER, self::VISIBLE);

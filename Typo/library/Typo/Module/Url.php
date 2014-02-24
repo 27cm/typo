@@ -56,10 +56,10 @@ class Url extends Module
      * @var array
      */
     static public $order = array(
-        'A' => 15,
+        'A' => 20,
         'B' => 0,
-        'C' => 20,
-        'D' => 0,
+        'C' => 0,
+        'D' => 20,
         'E' => 0,
         'F' => 0,
     );
@@ -305,11 +305,11 @@ class Url extends Module
     }
 
     /**
-     * Стадия C.
+     * Стадия D.
      *
      * Восстанавливает ссылки.
      */
-    protected function stageC()
+    protected function stageD()
     {
         $class = get_called_class();
 

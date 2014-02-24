@@ -63,10 +63,10 @@ class Code extends Module
      * @var array
      */
     static public $order = array(
-        'A' => 4,
+        'A' => 5,
         'B' => 0,
-        'C' => 30,
-        'D' => 0,
+        'C' => 0,
+        'D' => 40,
         'E' => 0,
         'F' => 0,
     );
@@ -201,7 +201,7 @@ class Code extends Module
      *
      * Восстанавливает блоки &lt;code&gt;...&lt;/code&gt;.
      */
-    protected function stageC()
+    protected function stageD()
     {
         $this->text->popStorage(self::REPLACER, Typo::VISIBLE);
     }
