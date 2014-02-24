@@ -103,6 +103,11 @@ class Text
         return $this->encoding;
     }
 
+    public function getText()
+    {
+        return $this->text;
+    }
+
     /**
      * Помещает фрагмент текста в хранилище.
      *

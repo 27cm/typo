@@ -29,7 +29,7 @@ $loader->register();
 /**
  * Типограф.
  *
- * @version 0.3 2014-02-13
+ * @version 0.3 2014-02-16
  */
 class Typo extends Module
 {
@@ -39,13 +39,6 @@ class Typo extends Module
      * @var string[]
      */
     public $chr = array();
-
-    /**
-     * Симолы, подготовленные для использования в регулярных выражениях.
-     *
-     * @var string[]
-     */
-    public $preg_chr = array();
 
     /**
      * Коды символов.
@@ -77,14 +70,26 @@ class Typo extends Module
          *
          * @var 'AUTO'|'MODE_NONE'|'MODE_NAMES'|'MODE_CODES'|'MODE_HEX_CODES'
          */
-        'encoding' => self::MODE_NAMES,
+        'encoding' => self::MODE_NONE,
 
         /**
          * Используемые модули.
          *
          * @var string[]
          */
-        'modules' => array('html', 'punct', 'space', 'dash', 'nobr', 'url', 'quote', 'math', 'filepath', 'smile/kolobok/standart'),
+        'modules' => array(
+            'code',
+            'dash',
+            'filepath',
+            'html',
+            'math',
+            'nobr',
+            'punct',
+            'quote',
+            'smile',
+            'space',
+            'url',
+        ),
 
         /**
          * Включение HTML в тексте на входе.
@@ -244,7 +249,7 @@ class Typo extends Module
             case 'charset' :
                 if($value != self::AUTO)
                 {
-                    $value = strtolower($value);
+                    $value = mb_strtoupper($value);
                     $result = iconv($value, 'UTF-8', '');
                     if($result === false)
                         return self::throwException(Exception::E_OPTION_VALUE, "Неизвестная кодировка '$value'");
@@ -326,7 +331,7 @@ class Typo extends Module
             $this->text->iconv($default_charset, $charset);
         mb_internal_encoding($int_encoding);
 
-        return $this->text;
+        return $this->text->getText();
     }
 
     /**
@@ -462,8 +467,6 @@ class Typo extends Module
                                 $this->chr[$ent] = sprintf('&%s;', $ent);;
                         break;
                     }
-
-                    $this->preg_chr = array_map('preg_quote', $this->chr);
                 }
             break;
         }

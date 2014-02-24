@@ -2,15 +2,25 @@
 
 namespace Typo\Module;
 
-use Typo\Text;
-
+use Typo;
+use Typo\Module;
+use Typo\Utility;
 
 /**
- * HTML.
+ * Программный код.
  *
- * Заменяет все теги и указанные блоки на безопасные конструкции, а затем восстанавливает их.
+ * Использует тег &lt;code&gt; для отображения одной или нескольких строк текста, который представляет собой программный код.
+ * Сюда относятся имена переменных, ключевые слова, тексты функции и т.д.
  *
- * @link http://wikipedia.org/wiki/HTML
+ * @example Пример обработки многострочного кода:
+ * &lt;code&gt;function fib($n) {
+ *     return ($n < 3) ? 1 : fibonacci($n-1) + fibonacci($n-2);
+ * }&lt;/code&gt;
+ *
+ * После обработки типографом:
+ * &lt;pre&gt;&lt;code&gt;function fib($n) {&lt;/code&gt;
+ * &lt;code&gt;    return ($n < 3) ? 1 : fibonacci($n-1) + fibonacci($n-2);&lt;/code&gt;
+ * &lt;code&gt;}&lt;/code&gt;&lt;/pre&gt;
  */
 class Code extends Module
 {
@@ -21,11 +31,30 @@ class Code extends Module
      */
     protected $default_options = array(
         /**
-         * Безопасные блоки, содержимое которых не обрабатывается типографом.
+         * Перевод строки.
          *
-         * @var string|string[]
+         * @var 'LF'|'CR'|'CRLF'
          */
-        'safe-blocks' => array('<!-- -->', 'code', 'comment', 'pre', 'script', 'style'),
+        'end-of-line' => 'CRLF',
+
+        /**
+         * Стиль отступов.
+         *
+         * @var 'INDENT_SPACE'|'INDENT_TAB'
+         */
+        'indent-style' => self::INDENT_SPACE,
+
+        /**
+         * Размер отступов.
+         *
+         * @var int|'tab'
+         */
+        'indent-size' => 4,
+
+        /**
+         * Удаление концевых пробелов.
+         */
+        'trim-trailing-whitespace' => true,
     );
 
     /**
@@ -34,7 +63,7 @@ class Code extends Module
      * @var array
      */
     static public $order = array(
-        'A' => 5,
+        'A' => 4,
         'B' => 0,
         'C' => 30,
         'D' => 0,
@@ -42,19 +71,63 @@ class Code extends Module
         'F' => 0,
     );
 
-    /**
-     * Невидимые HTML блоки.
-     *
-     * @var array
-     */
-    static $invisible_blocks = array('<!-- -->', 'comment', 'head', 'script', 'style');
+
+    // --- Стили отступов ---
+
+    /** Пробелы. */
+    const INDENT_SPACE = 'INDENT_SPACE';
+
+    /** Табуляция. */
+    const INDENT_TAB = 'INDENT_TAB';
+
+
+    // --- Заменитель ---
+
+    const REPLACER = 'CODE';
+
+
+    // --- Открытые методы класса ---
 
     /**
-     * Видимые HTML теги.
+     * Проверка значения параметра (с возможной корректировкой).
      *
-     * @var array
+     * @param string $name      Название параметра.
+     * @param mixed  $value     Значение параметра.
      */
-    static $visible_tags = array('img', 'input');
+    public function validateOption($name, &$value)
+    {
+        switch($name)
+        {
+            case 'end-of-line' :
+                $value = mb_strtoupper($value);
+                if(!in_array($value, array('LF', 'CR', 'CRLF')))
+                    return self::throwException(Exception::E_OPTION_VALUE, "Недопустимое значение параметра '$name'");
+            break;
+
+            case 'indent-style' :
+                if(!Utility::validateConst(get_called_class(), $value, 'INDENT'))
+                    return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный стиль отступов '$value'");
+            break;
+
+            case 'indent-size' :
+                if(is_string($value))
+                {
+                    $value = mb_strtolower($value);
+                    if($value !== 'tab')
+                        return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть положительным целым числом или строкой 'tab'");
+                }
+                else
+                {
+                    $value = (int) $value;
+                    if($value < 1)
+                        return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть положительным целым числом или строкой 'tab'");
+                }
+
+            break;
+
+            default : Module::validateOption($name, $value);
+        }
+    }
 
 
     // --- Защищенные методы класса ---
@@ -62,35 +135,74 @@ class Code extends Module
     /**
      * Стадия A.
      *
-     * Заменяет безопасные блоки и теги на соответствующие заменители.
-     *
-     * @return void
+     * Заменяет все блоки &lt;code&gt;...&lt;/code&gt; на соответствующие заменители.
      */
     protected function stageA()
     {
-        if(!$this->typo->options['html-in-enabled'] || !$this->typo->options['html-out-enabled'])
+        // @todo: выполнять до всех преобразований
+        if(!$this->typo->options['html-in-enabled'])
             return;
 
-        $callback = function($matches)
-        {
-            // Оборачиваем в <pre>...</pre>
-            if($matches[1] === '');
-                $matches[0] = "<pre>{$matches[0]}</pre>";
+        $_this = $this;
 
-            $replace = array(
-                // Оборачиванием каждую строку в <code>...</code>
-                '~\r?\n~s' => "</code>\n<code{$matches[2]}>",
+        $rules = array(
+            '~<\h*code((?:\h[^>]*)?)>(.*(?:[\n\r]|<br\h*/?>).*)</code>~iusU' => function($m) use ($_this) {
+                $eol = str_replace(array('LF', 'CR'), array('\n', '\r'), $_this->getOption('end-of-line'));
 
-                // Убираем висячие пробелы
-                '~\h+(?=</code>)~' => '',
+                $rules = array(
+                    // Оборачиванием каждую строку в <code>...</code>
+                    '~\r\n|\n\r|[\n\r]|<br\h*/?>~' => '</code>' . $eol .'<code>',
 
-                // Заменяем табуляцию на 4 пробела
-                '~\t~' => '    ',
-            );
+                    // Удаление концевых пробелов
+                    '~\h+(?=</code>)~' => '',
+                );
 
-            return preg_replace(array_keys($replace), array_values($replace), $matches[0]);
-        };
+                if($_this->getOption('indent-style') === Code::INDENT_SPACE && is_int($_this->getOption('indent-size')))
+                {
+                    $rules += array(
+                        // Заменяем табуляцию пробелами
+                        '~(?<=<code>)([\t\h]+)~' => function($m) use($_this) {
+                            $size = $_this->getOption('indent-size');
 
-        $text->preg_replace_callback('~(<pre[^>]*>\s*)?<code([^>]*)>.*\n.*<\/code>~isU', $callback);
+                            $replaces = array(
+                                '~\t~' => str_repeat(' ', $size),
+                                '~\h~' => ' ',
+                            );
+                            $spaces = preg_replace(array_keys($replaces), array_values($replaces), $m[1]);
+
+                            $count = floor(mb_strlen($spaces) / $size) * $size;
+
+                            return str_repeat(' ', $count);
+                        },
+                    );
+                }
+                else
+                {
+                    $rules += array(
+                        // Заменяем пробелы табуляцией
+                        '~(?<=<code>)([\t\h]*)\h{4}~' => '$1\t',
+                        '~(?<=<code>)(\t*)\h+~' => '$1',
+                    );
+                }
+
+                $data = $_this->applyRules($rules, array(), "<pre{$m[1]}><code>{$m[2]}</code></pre>");
+
+                return $_this->text->pushStorage($data, Code::REPLACER, Typo::VISIBLE);
+            },
+        );
+
+        $this->applyRules($rules);
+
+        $this->text->preg_replace_storage('~<\h*code(\h[^>]*)?>.*<\/code>~isU', self::REPLACER, Typo::VISIBLE);
+    }
+
+    /**
+     * Стадия C.
+     *
+     * Восстанавливает блоки &lt;code&gt;...&lt;/code&gt;.
+     */
+    protected function stageC()
+    {
+        $this->text->popStorage(self::REPLACER, Typo::VISIBLE);
     }
 }

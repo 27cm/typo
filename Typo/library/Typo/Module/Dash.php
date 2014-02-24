@@ -2,6 +2,7 @@
 
 namespace Typo\Module;
 
+use Typo;
 use Typo\Module;
 
 /**
@@ -62,26 +63,20 @@ class Dash extends Module
      */
     protected function stageB()
     {
-        $s =& $this->typo->chr;
-        $p =& $this->typo->preg_chr;
-
-        $helpers = array(
-            // Пробелы
-            '{h}' => '(?:\h|' . $p['nbsp'] . '|' . $p['thinsp'] . ')',
-        );
+        $s =& Typo::$chars['chr'];
 
         $rules = array(
             #B1 Замена дефиса, окруженного пробелами, на тире
-            '~({a}{t}*{h})\-{1,3}(?={h})~u' => '$1' . $s['ndash'],
+            '~({a}{t}*\h)\-{1,3}(?=\h)~u' => '$1' . $s['ndash'],
 
             #B2 Тире после кавычек, скобок и пунктуации
-            '~([:)",]{t}*{h}?)\-{1,3}(?={h})~u' => '$1' . $s['ndash'],
+            '~([:)",]{t}*\h?)\-{1,3}(?=\h)~u' => '$1' . $s['ndash'],
 
             #B3 Тире после переноса строки
-			'~((?:[\n\r]|^)(?:{t}|{h})*)\-{1,3}(?={h})~' => '$1' . $s['mdash'],
+			'~((?:[\n\r]|^)(?:{t}|\h)*)\-{1,3}(?=\h)~u' => '$1' . $s['mdash'],
 
             #B4 Тире после точки, троеточия, восклицательного и вопросительного знаков
-			'~((?:[?!.]|' . $p['hellip'] . '){h})-{1,3}(?={h})~' => '$1' . $s['ndash'],
+			'~((?:[?!.]|' . $s['hellip'] . ')\h)-{1,3}(?=\h)~u' => '$1' . $s['ndash'],
 
             // Автоматическая расстановка дефисов.
             'auto' => array(
@@ -96,7 +91,7 @@ class Dash extends Module
             ),
         );
 
-        $this->applyRules($rules, $helpers);
+        $this->applyRules($rules);
     }
 
     /**
@@ -108,7 +103,7 @@ class Dash extends Module
      */
     protected function stageC()
     {
-        $s =& $this->typo->chr;
+        $s =& Typo::$chars['chr'];
 
         $helpers = array(
             // Гласные

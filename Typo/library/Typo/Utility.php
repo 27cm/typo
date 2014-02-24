@@ -73,12 +73,12 @@ class Utility
         $uppercase = 1;
         $last_simb = 0;
         $charsets = array(
-            'UTF-8'       => 0,
-            'CP1251'      => 0,
-            'KOI8-R'      => 0,
-            'IBM866'      => 0,
-            'ISO-8859-5'  => 0,
-            'MAC'         => 0,
+            'UTF-8'      => 0,
+            'CP1251'     => 0,
+            'KOI8-R'     => 0,
+            'IBM866'     => 0,
+            'ISO-8859-5' => 0,
+            'MAC'        => 0,
         );
         for ($i = 0; $i < strlen($text); $i++)
         {

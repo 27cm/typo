@@ -2,50 +2,21 @@
 
 namespace Typo\Module;
 
-use Typo;
 use Typo\Module;
 
 /**
- * Кавычки.
+ * Спецсимволы.
  *
- * Расставляет кавычки в тексте.
+ * Расставляет спецсимволы в тексте.
  */
-class Quote extends Module
+class Symbol extends Module
 {
     /**
      * Настройки по умолчанию.
      *
      * @var array
      */
-    protected $default_options = array(
-        /**
-         * Открывающая кавычка.
-         *
-         * @var string
-         */
-        'quote-open' => 'laquo',
-
-        /**
-         * Закрывающая кавычка.
-         *
-         * @var string
-         */
-        'quote-close' => 'raquo',
-
-        /**
-         * Внутренняя открывающая кавычка.
-         *
-         * @var string
-         */
-        'subquote-open' => 'ldquo',
-
-        /**
-         * Внутренняя закрывающая кавычка.
-         *
-         * @var string
-         */
-        'subquote-close' => 'rdquo',
-    );
+    protected $default_options = array();
 
     /**
      * Приоритет выполнения стадий.
@@ -62,79 +33,57 @@ class Quote extends Module
     );
 
 
-    // --- Открытые методы класса ---
-
-    /**
-     * Проверка значения параметра (с возможной корректировкой).
-     *
-     * @param string $name      Название параметра.
-     * @param mixed  $value     Значение параметра.
-     *
-     * @return void
-     */
-    public function validateOption($name, &$value)
-    {
-        switch($name)
-        {
-            // Кавычки
-            case 'quote-open' :
-            case 'quote-close' :
-            case 'subquote-open' :
-            case 'subquote-close' :
-                if(!array_key_exists($value, Typo::$chars))
-                    return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный символ '&{$value};' (параметр '$name')");
-            break;
-
-            default : Module::validateOption($name, $value);
-        }
-    }
-
-
     // --- Защищенные методы класса ---
 
     /**
      * Стадия B.
      *
      * Применяет правила для расстановки кавычек в тексте.
-     *
-     * @return void
      */
     protected function stageB()
     {
         $s =& $this->typo->chr;
 
-        $q1 = array(
-            'open'  => $s[$this->options['quote-open']],
-            'close' => $s[$this->options['quote-close']],
-        );
-        $q2 = array(
-            'open'  => $s[$this->options['subquote-open']],
-            'close' => $s[$this->options['subquote-close']],
-        );
-
         $rules = array(
-            // Кавычки вне тэга <a>
-            '~(\<%%\_\_[^\>]+\>)\"(.+?)\"(\<\/%%\_\_[^\>]+\>)~s' => '"$1$2$3"',
+            // Замена (tm) на символ торговой марки
+            // Товарный знак (™)
+            '~\s?\(tm|тм\)~iu' => '<sup>' . $s['trade'] . '</sup>',
 
-            // Открывающая кавычка
-            '~(^|\(|\s|\>)(\"|\\\")(\S+)~iu' => '$1' . $q1['open'] . '$3',
+            // Знак охраны авторского права (©)
+            // @todo: пробелы должен убирать другой модуль
+            '~\([cс]\)\s?~iu' => $s['copy'],
 
-            // Закрывающая кавычка
-			'~([a-zа-яё0-9]|\.|\&hellip\;|\!|\?|\>|\)|\:)((\"|\\\")+)(\.|\&hellip\;|\;|\:|\?|\!|\,|\s|\)|\<\/|$)~ui' => function($m) use($q1) {
-                return $m[1] . str_repeat($q1['close'], mb_substr_count($m[2],"\"") ) . $m[4];
-            },
+            // Знак правовой охраны товарного знака (®)
+            '~\s?\(r\)~i' => "<sup><small>{$s['reg']}</small></sup>",
 
-            // Закрывающая кавычка особые случаи
-            '~([a-zа-яё0-9]|\.|\&hellip\;|\!|\?|\>|\)|\:)((\"|\\\"|\&laquo\;)+)(\<[^\>]+\>)(\.|\&hellip\;|\;|\:|\?|\!|\,|\)|\<\/|$| )~iu' => function($m) use($q1) {
-                return $m[1] . str_repeat($q1['close'], mb_substr_count($m[2],"\"") + mb_substr_count($m[2],"&laquo;")) . $m[4]. $m[5];
-            },
-            '~([a-zа-яё0-9]|\.|\&hellip\;|\!|\?|\>|\)|\:)(\s+)((\"|\\\")+)(\s+)(\.|\&hellip\;|\;|\:|\?|\!|\,|\)|\<\/|$| )~iu' => function($m) use($q1) {
-                return $m[1] .$m[2]. str_repeat($q1['close'], mb_substr_count($m[3],"\"") + mb_substr_count($m[3],"&laquo;")) . $m[5]. $m[6];
-            },
-            '~\>(\&laquo\;)\.($|\s|\<)~iu' => '>&raquo;.$2',
+            // Расстановка правильного апострофа в текстах
+			'/(\s|^|\>|\&rsquo\;)([a-zа-яё]{1,})\'([a-zа-яё]+)/ui' => '\1\2&rsquo;\3',
 
-            // Открывающая кавычка особые случаи
-            '~(^|\(|\s|\>)(\"|\\\")(\s)(\S+)~iu' => '$1' . $q1['open'] . '$4',
+            'description'	=> 'Градусы по Фаренгейту',
+            'pattern' 		=> '/([0-9]+)F($|\s|\.|\,|\;|\:|\&nbsp\;|\?|\!)/eu',
+            'replacement' 	=> '"".$this->tag($m[1]." &deg;F","span", array("class"=>"nowrap")) .$m[2]',
+
+            'description'	=> 'Символ евро',
+            'simple_replace' => true,
+            'pattern' 		=> '€',
+            'replacement' 	=> '&euro;',
+
+            'description'	=> 'Замена стрелок вправо-влево на html коды',
+            'pattern' 		=> array('/(\s|\>|\&nbsp\;|^)\-\>($|\s|\&nbsp\;|\<)/', '/(\s|\>|\&nbsp\;|^|;)\<\-(\s|\&nbsp\;|$)/', '/→/u', '/←/u'),
+            'replacement' 	=> array('\1&rarr;\2', '\1&larr;\2', '&rarr;', '&larr;' ),
+
+            // Стрелки   -> => → [&rarr;], <- => ← [&larr;]
+            '~ ->~' => '&nbsp;$1',
+            '~<- ~' => '$1&nbsp;',
+
+            // Промилле o/oo => ‰ [&permil;]
+            '~\b(%|[oо0]\/[oо0])[oо0]\b~iu' => '‰',
+
+            // Градусы 5 C = 5 °C
+            '~(?<=\d\s)[CF]\b~' => '°$1',
+
+            // Дюймы &Prime;
+
         );
 
         $this->applyRules($rules);

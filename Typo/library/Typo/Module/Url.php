@@ -110,8 +110,6 @@ class Url extends Module
      *
      * @param string $name      Название параметра.
      * @param mixed  $value     Значение параметра.
-     *
-     * @return void
      */
     public function validateOption($name, &$value)
     {
@@ -139,8 +137,6 @@ class Url extends Module
      *
      * @param type $parts
      * @param array $attrs
-     *
-     * @return void
      */
     public function setAttrs($parts, array &$attrs)
     {
@@ -172,8 +168,6 @@ class Url extends Module
      * Стадия A.
      *
      * Заменяет все ссылки на заменитель.
-     *
-     * @return void
      */
     protected function stageA()
     {
@@ -314,8 +308,6 @@ class Url extends Module
      * Стадия C.
      *
      * Восстанавливает ссылки.
-     *
-     * @return void
      */
     protected function stageC()
     {

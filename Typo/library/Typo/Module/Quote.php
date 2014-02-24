@@ -102,7 +102,7 @@ class Quote extends Module
      */
     protected function stageB()
     {
-        $s =& $this->typo->chr;
+        $s =& Typo::$chars['chr'];
 
         $q1 = array(
             'open'  => $s[$this->options['quote-open']],
@@ -113,39 +113,25 @@ class Quote extends Module
             'close' => $s[$this->options['subquote-close']],
         );
 
-        $p = array(
-            'nbsp'   => $s['nbsp'],
-            'thinsp' => $s['thinsp'],
-            'hellip' => $s['hellip'],
-            'quote-open' => $q1['open'],
-            'quote-close' => $q1['close'],
-        );
-        $p = array_map('preg_quote', $p);
-
-        $helpers = array(
-            // Пробелы
-            '{h}' => '(?:\s|' . $p['nbsp'] . '|' . $p['thinsp'] . ')',
-        );
-
         $rules = array(
             // Открывающая кавычка
-            '~((?:^|\(|{h}){t}*)\"(?={h}?{t}*\S)~iu' => '$1' . $q1['open'],
+            '~((?:^|\(|\h){t}*)\"(?=\h?{t}*\S)~iu' => '$1' . $q1['open'],
 
             // Закрывающая кавычка
-			'~({a}|{b}|[?!:.)]|' . $p['hellip'] . ')(\"+)(?={t}*(?:{h}|[?!:;,.)]|' . $p['hellip'] . '|$))~u' => function ($m) use($q1) {
+			'~({a}|{b}|[?!:.)]|' . $s['hellip'] . ')(\"+)(?={t}*(?:\h|[?!:;,.)]|' . $s['hellip'] . '|$))~u' => function ($m) use($q1) {
                 return $m[1] . str_repeat($q1['close'], mb_strlen($m[2]));
             },
 
             // Закрывающая кавычка особые случаи
-            '~([a-zа-яё0-9]|\.|\&hellip\;|\!|\?|\>|\)|\:)((\"|\\\"|\&laquo\;)+)(\<[^\>]+\>)(\.|\&hellip\;|\;|\:|\?|\!|\,|\)|\<\/|$| )~iu' => function($m) use($q1) {
+            '~([a-zа-яё0-9]|\.|' . $s['hellip'] . '|\!|\?|\>|\)|\:)((\"|\\\"|\&laquo\;)+)(\<[^\>]+\>)(\.|\&hellip\;|\;|\:|\?|\!|\,|\)|\<\/|$| )~iu' => function($m) use($q1) {
                 return $m[1] . str_repeat($q1['close'], mb_substr_count($m[2],"\"") + mb_substr_count($m[2],"&laquo;")) . $m[4]. $m[5];
             },
-            '~([a-zа-яё0-9]|\.|\&hellip\;|\!|\?|\>|\)|\:)(\s+)((\"|\\\")+)(\s+)(\.|\&hellip\;|\;|\:|\?|\!|\,|\)|\<\/|$| )~iu' => function($m) use($q1) {
+            '~([a-zа-яё0-9]|\.|' . $s['hellip'] . '|\!|\?|\>|\)|\:)(\s+)((\"|\\\")+)(\s+)(\.|\&hellip\;|\;|\:|\?|\!|\,|\)|\<\/|$| )~iu' => function($m) use($q1) {
                 return $m[1] .$m[2]. str_repeat($q1['close'], mb_substr_count($m[3],"\"") + mb_substr_count($m[3],"&laquo;")) . $m[5]. $m[6];
             },
         );
 
-        $this->applyRules($rules, $helpers);
+        $this->applyRules($rules);
 
         $level = 0;
 		$offset = 0;

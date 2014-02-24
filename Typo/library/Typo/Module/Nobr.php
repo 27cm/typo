@@ -112,13 +112,6 @@ class Nobr extends Module
      */
     protected function stageA()
     {
-        $p =& $this->typo->preg_chr;
-
-        $helpers = array(
-            // Пробелы
-            '{h}' => '(?:\h|' . $p['nbsp'] . '|' . $p['thinsp'] . ')',
-        );
-
         $_this = $this;
 
         #A1 Объединение в неразрывные конструкции номеров телефонов
@@ -132,9 +125,7 @@ class Nobr extends Module
                 return $matches[0];
         };
 
-        $pattern = '~(?<=\b)(?:\+?[1-9]\d{,3}(?:{h}|\-)?)(?:(\d{3}|\(\d{3}\))({h}|\-)?\d{3}({h}|\-)?\d{2}({h}|\-)?\d{2}({h}?(?:доб\.?|x|ext\.?|добавочный|extension){h}?\d+)?)(?=\b)~iu';
-        self::pregHelpers($pattern, $helpers);
-
+        $pattern = '~(?<=\b)(?:\+?[1-9]\d{,3}(?:\h|\-)?)(?:(\d{3}|\(\d{3}\))(\h|\-)?\d{3}(\h|\-)?\d{2}(\h|\-)?\d{2}(\h?(?:доб\.?|x|ext\.?|добавочный|extension)\h?\d+)?)(?=\b)~iu';
         $this->text->preg_replace_callback($pattern, $callback);
     }
 
@@ -149,32 +140,26 @@ class Nobr extends Module
      */
     protected function stageB()
     {
-        $s =& $this->typo->chr;
-        $p =& $this->typo->preg_chr;
-
-        $helpers = array(
-            // Пробелы
-            '{h}' => '(?:\h|' . $p['nbsp'] . '|' . $p['thinsp'] . ')',
-        );
+        $s =& Typo::$chars['chr'];
 
         $rules = array(
             #B1 Объединение в неразрывные конструкции коротких слов разделенных дефисом
             '~(?<=\b){a}{2,4}\-{a}{2,4}(?=\b)~iu' => $this->nowrap('$0'),
 
             #B2 Объединение в неразрывные конструкции процентов
-            '~(?<=\b)\d+{h}%~' => $this->nowrap('$0'),
+            '~(?<=\b)\d+\h%~' => $this->nowrap('$0'),
 
             #B3 Объединение в неразрывные конструкции номеров и параграфов
-            '~(?:№|' . $p['sect'] . '){h}\d+(?=\b)~' => $this->nowrap('$0'),
+            '~(?:№|' . $s['sect'] . ')\h\d+(?=\b)~' => $this->nowrap('$0'),
 
             #B4 Объединение в неразрывные конструкции чисел
-            '~(?<=\b)\d{1,3}({h}\d{3})+(?=\b)~' => $this->nowrap('$0'),
+            '~(?<=\b)\d{1,3}(\h\d{3})+(?=\b)~' => $this->nowrap('$0'),
 
             #B5 Полупробел между числом и единицами измерения
-            '~(?<=\b)(\d+){h}({m}|гр?|кг|ц|т|[кмгтпэзи]?(б(ит)?|флопс))(?=\b)~iu' => $this->nowrap('$0'),
+            '~(?<=\b)(\d+)\h({m}|гр?|кг|ц|т|[кмгтпэзи]?(б(ит)?|флопс))(?=\b)~iu' => $this->nowrap('$0'),
         );
 
-        $this->applyRules($rules, $helpers);
+        $this->applyRules($rules);
     }
 
     protected function stageC()

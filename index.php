@@ -7,7 +7,7 @@
  * Typo/
  *     library/         - библиотека
  *         Typo/        - вспомогательные классы
- *             Modules/ - модули
+ *             Module/  - модули
  *         Typo.php     - основной класса
  *     config/          - файлы настроек
  *     tests/           - unit-тесты
@@ -16,11 +16,45 @@
 header('Content-type: text/html; charset=utf-8');
 error_reporting(E_ALL | E_STRICT);
 
-$root    = realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR;
-$include = "{$root}/include";
+$root    = realpath(dirname(__FILE__));
+$include = $root . DIRECTORY_SEPARATOR . 'include';
 set_include_path(get_include_path() . PATH_SEPARATOR . $include);
 
 require_once "{$root}/Typo/library/Typo.php";
+
+/**
+ * \s   Пробел &#32; &#x20;     Неразрывный пробел &#160; &#xa0; &nbsp;     &#8194; &#x2002; &ensp;     &#8195; &#x2003; &emsp;
+ * \h   Пробел &#32; &#x20;     Неразрывный пробел &#160; &#xa0; &nbsp;     &#8194; &#x2002; &ensp;     &#8195; &#x2003; &emsp;
+ * \v   Вертикальная таб. &#11; &#xb;
+ */
+//for($c = 1; $c < 10000; $c++)
+//{
+//    if(preg_match('~\s~u', Typo\Utility::chr($c)))
+//        echo $c . ' ';
+//}
+//echo '<br>';
+//for($c = 1; $c < 10000; $c++)
+//{
+//    if(preg_match('~\h~u', Typo\Utility::chr($c)))
+//        echo $c . ' ';
+//}
+//echo '<br>';
+//for($c = 1; $c < 10000; $c++)
+//{
+//    if(preg_match('~\v~u', Typo\Utility::chr($c)))
+//        echo $c . ' ';
+//}
+//echo '<br>';
+//for($c = 1; $c < 10000; $c++)
+//{
+//    if(preg_match('~\t~u', Typo\Utility::chr($c)))
+//        echo $c . ' ';
+//}
+//die();
+//
+//var_dump(preg_match('~\s~u', Typo\Utility::chr(11)));
+//var_dump(preg_match('~\h~u', Typo\Utility::chr(11)));
+//var_dump(preg_match('~\v~u', Typo\Utility::chr(11)));
 
 if(isset($_REQUEST['text']))
     $text = $_REQUEST['text'];

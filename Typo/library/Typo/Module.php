@@ -108,8 +108,6 @@ abstract class Module
      *
      * @param string $name      Название параметра.
      * @param mixed  $value     Значение параметра.
-     *
-     * @return void
      */
     public function validateOption($name, &$value)
     {
@@ -118,7 +116,6 @@ abstract class Module
 
         switch($name)
         {
-            // Модули
             case 'modules' :
                 if(is_string($value))
                     $value = explode(',', $value);
@@ -143,7 +140,6 @@ abstract class Module
                     return self::throwException(self::E_OPTION_TYPE, "Значение параметра '$name' должно быть строкой или массивом строк");
             break;
 
-            // Логические значения
             default : $value = (bool) $value;
         }
     }
@@ -155,8 +151,6 @@ abstract class Module
      * @param mixed  $value     Значение параметра.
      *
      * @throws \Typo\Exception
-     *
-     * @return void
      */
     public function setOption($name, $value)
     {
