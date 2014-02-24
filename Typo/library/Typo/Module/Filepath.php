@@ -27,10 +27,10 @@ class Filepath extends Module
      * @var array
      */
     static public $order = array(
-        'A' => 25,
+        'A' => 30,
         'B' => 0,
-        'C' => 10,
-        'D' => 0,
+        'C' => 0,
+        'D' => 10,
         'E' => 0,
         'F' => 0,
     );
@@ -87,13 +87,13 @@ class Filepath extends Module
     }
 
     /**
-     * Стадия C.
+     * Стадия D.
      *
      * Восстанавливает файлы и пути.
      *
      * @return void
      */
-    protected function stageC()
+    protected function stageD()
     {
         $this->text->popStorage(self::REPLACER, Typo::VISIBLE);
     }

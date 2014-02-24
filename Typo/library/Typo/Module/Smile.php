@@ -27,10 +27,10 @@ class Smile extends Module
      * @var array
      */
     static public $order = array(
-        'A' => 30,
+        'A' => 35,
         'B' => 0,
-        'C' => 5,
-        'D' => 0,
+        'C' => 0,
+        'D' => 5,
         'E' => 0,
         'F' => 0,
     );
@@ -104,13 +104,13 @@ class Smile extends Module
     }
 
     /**
-     * Стадия C.
+     * Стадия D.
      *
      * Восстанавливает смайлики.
      *
      * @return void
      */
-    protected function stageC()
+    protected function stageD()
     {
         if($this->typo->options['html-out-enabled'])
         {

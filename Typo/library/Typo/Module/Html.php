@@ -42,10 +42,10 @@ class Html extends Module
      * @var array
      */
     static public $order = array(
-        'A' => 5,
+        'A' => 10,
         'B' => 0,
-        'C' => 30,
-        'D' => 0,
+        'C' => 0,
+        'D' => 30,
         'E' => 0,
         'F' => 0,
     );
@@ -141,11 +141,11 @@ class Html extends Module
     }
 
     /**
-     * Стадия C.
+     * Стадия D.
      *
      * Восстанавливает теги и безопасные блоки.
      */
-    protected function stageC()
+    protected function stageD()
     {
         if($this->typo->options['html-in-enabled'])
         {

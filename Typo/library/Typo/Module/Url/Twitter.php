@@ -43,10 +43,10 @@ class Twitter extends Url
      * @var array
      */
     static public $order = array(
-        'A' => 20,
+        'A' => 25,
         'B' => 0,
-        'C' => 15,
-        'D' => 0,
+        'C' => 0,
+        'D' => 15,
         'E' => 0,
         'F' => 0,
     );
