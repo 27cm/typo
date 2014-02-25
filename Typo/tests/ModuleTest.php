@@ -40,8 +40,6 @@ abstract class ModuleTest extends PHPUnit_Framework_TestCase
         foreach($this->loadXMLFile() as $test) {
             list($input,$expected,$desc) = $test;
             $executed_text = (string)$this->typo->execute($input);
-            $executed_text = str_replace("&nbsp;",' ',$executed_text);
-
             $this->assertEquals($expected,$executed_text,$desc);
         }
     }
