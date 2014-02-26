@@ -1,5 +1,5 @@
 <?php
-
+require_once 'XMLTestIterator.php';
 use Typo\Exception;
 
 /**
@@ -16,32 +16,17 @@ abstract class ModuleTest extends PHPUnit_Framework_TestCase
         $this->typo->setOption('modules','url');
     }
 
-    /**
-     * Загрузка XML-файлов из папки resources.
-     */
-    public function loadXMLFile() {
-        $moduleName = preg_replace("~Test$~","",get_class($this));
-        $xmlFile = dirname(__FILE__) . "/resources/{$moduleName}.xml";
-        $tests = array();
-        if (!file_exists($xmlFile)) {
-            return $tests;
-        }
-        $xmlTests = simplexml_load_file($xmlFile);
-        foreach($xmlTests->group as $testGroup) {
-            $desc = (string)$testGroup->attributes()['desc'];
-            foreach($testGroup->test as $test)
-                $tests[] = array((string)$test->input,(string)$test->expected,$desc);
-        }
-
-        return $tests;
+    public function XMLProvider() {
+        $moduleName = preg_replace("~Test$~","",get_class($this)) . '.xml';
+        return new XMLTestIterator("resources/{$moduleName}");
     }
-
-    public function testXMLFiles() {
-        foreach($this->loadXMLFile() as $test) {
-            list($input,$expected,$desc) = $test;
-            $executed_text = (string)$this->typo->execute($input);
-            $this->assertEquals($expected,$executed_text,$desc);
-        }
+    /**
+     * @dataProvider XMLProvider
+     */
+    public function testXMLFiles($input,$expected,$desc,$config,$section) {
+        //$this->typo->setOptionsFromFile($config,$section);
+        $executed_text = (string)$this->typo->execute($input);
+        $this->assertEquals($expected,$executed_text,$desc);
     }
 
 }
