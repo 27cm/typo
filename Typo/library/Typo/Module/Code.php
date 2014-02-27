@@ -11,16 +11,6 @@ use Typo\Utility;
  *
  * Использует тег &lt;code&gt; для отображения одной или нескольких строк текста, который представляет собой программный код.
  * Сюда относятся имена переменных, ключевые слова, тексты функции и т.д.
- *
- * @example Пример обработки многострочного кода:
- * &lt;code&gt;function fib($n) {
- *     return ($n < 3) ? 1 : fibonacci($n-1) + fibonacci($n-2);
- * }&lt;/code&gt;
- *
- * После обработки типографом:
- * &lt;pre&gt;&lt;code&gt;function fib($n) {&lt;/code&gt;
- * &lt;code&gt;    return ($n < 3) ? 1 : fibonacci($n-1) + fibonacci($n-2);&lt;/code&gt;
- * &lt;code&gt;}&lt;/code&gt;&lt;/pre&gt;
  */
 class Code extends Module
 {
@@ -139,7 +129,6 @@ class Code extends Module
      */
     protected function stageA()
     {
-        // @todo: выполнять до всех преобразований
         if(!$this->typo->options['html-in-enabled'])
             return;
 
@@ -150,17 +139,19 @@ class Code extends Module
                 $eol = str_replace(array('LF', 'CR'), array('\n', '\r'), $_this->getOption('end-of-line'));
 
                 $rules = array(
-                    // Оборачиванием каждую строку в <code>...</code>
+                    #A1 Оборачиваем каждую строку в тег code
                     '~\r\n|\n\r|[\n\r]|<br\h*/?>~' => '</code>' . $eol .'<code>',
 
-                    // Удаление концевых пробелов
-                    '~\h+(?=</code>)~' => '',
+                    #A2 Удаление концевых пробелов
+                    'trim-trailing-whitespace' => array(
+                        '~[\t\h]+(?=</code>)~' => '',
+                    ),
                 );
 
                 if($_this->getOption('indent-style') === Code::INDENT_SPACE && is_int($_this->getOption('indent-size')))
                 {
                     $rules += array(
-                        // Заменяем табуляцию пробелами
+                        #A3 Заменяем табуляцию пробелами
                         '~(?<=<code>)([\t\h]+)~' => function($m) use($_this) {
                             $size = $_this->getOption('indent-size');
 
@@ -179,7 +170,7 @@ class Code extends Module
                 else
                 {
                     $rules += array(
-                        // Заменяем пробелы табуляцией
+                        #A4 Заменяем пробелы табуляцией
                         '~(?<=<code>)([\t\h]*)\h{4}~' => '$1\t',
                         '~(?<=<code>)(\t*)\h+~' => '$1',
                     );

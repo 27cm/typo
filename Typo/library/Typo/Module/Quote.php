@@ -10,6 +10,8 @@ use Typo\Exception;
  * Кавычки.
  *
  * Расставляет кавычки в тексте.
+ *
+ * @link http://en.wikipedia.org/wiki/Quotation_mark
  */
 class Quote extends Module
 {

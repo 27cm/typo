@@ -1,5 +1,15 @@
 <?php
 
+if(version_compare(PHP_VERSION, '5.3.0', '<'))
+    trigger_error('Для работы типограф требуется версия php 5.3.0 или выше', E_USER_ERROR);
+
+if(!extension_loaded('mbstring'))
+{
+	$ext = ((substr(PHP_OS, 0, 3) == 'WIN') ? 'dll' : 'so');
+	if(!ini_get('enable_dl') || !dl('mbstring' . $ext))
+        trigger_error('Для работы типографа требуется расширение mbstring', E_USER_ERROR);
+}
+
 use Typo\Loader;
 use Typo\Module;
 use Typo\Text;
@@ -9,21 +19,21 @@ use Typo\Exception;
 /**
  * Разделитель директорий. Для Windows - "\", для Linux и остальных — "/".
  */
-if (!defined('DS')) define('DS', DIRECTORY_SEPARATOR);
+const DS = DIRECTORY_SEPARATOR;
 
 /**
  * Разделитель пути к файлу. Для Windows - ";", для Linux и остальных — ":".
  */
-if (!defined('PS')) define('PS', PATH_SEPARATOR);
+const PS = PATH_SEPARATOR;
 
 /**
  * Каталог с библиотекой Typo.
  */
-define('TYPO_DIR', realpath(dirname(__FILE__)));
+$typo_dir = realpath(dirname(__FILE__));
 
-require_once TYPO_DIR . DS . 'Typo' . DS . 'functions.php';
-require_once TYPO_DIR . DS . 'Typo' . DS . 'Loader.php';
-$loader = new Loader('Typo', TYPO_DIR);
+require_once $typo_dir . DS . 'Typo' . DS . 'functions.php';
+require_once $typo_dir . DS . 'Typo' . DS . 'Loader.php';
+$loader = new Loader('Typo', $typo_dir);
 $loader->register();
 
 /**
@@ -122,14 +132,14 @@ class Typo extends Module
         'html-doctype' => self::DOCTYPE_HTML5,
 
         /**
-         * Вставлять <br> перед каждым переводом строки.
+         * Вставлять &lt;br&gt; перед каждым переводом строки.
          *
          * @var bool
          */
         'nl2br' => true,
 
         /**
-         * Замена всех букв 'ё' на 'е'.
+         * Замена буквы 'ё' на 'е'.
          *
          * @var bool
          */
@@ -281,13 +291,14 @@ class Typo extends Module
      * echo $typo->execute('Какой-то текст...');
      * </code>
      *
-     * @param string $text  Исходный текст.
+     * @param \Typo\Text|string $text  Исходный текст.
      *
      * @return string Оттипографированный текст.
      */
     public function execute($text)
     {
         if($text instanceof Text)
+            // @error нельзя переопределять
             $this->text = $text;
         elseif($this->options['charset'] == self::AUTO)
         {
@@ -300,6 +311,7 @@ class Typo extends Module
         }
 
         // @todo: исправить ошибки повторного вызова
+        // text->getCharset();
         if($this->options['encoding'] == self::AUTO)
         {
             switch($this->options['charset'])
@@ -346,22 +358,20 @@ class Typo extends Module
     // --- Защищённые методы класса ---
 
     /**
-     * Стадия B.
+     * Стадия A.
      */
-    protected function stageB()
+    protected function stageA()
     {
-        $p =& $this->preg_chr;
-
         $rules = array(
-            #B1 Убираем лишние пробелы в кодах символов
+            #A1 Убираем лишние пробелы в кодах символов
             '~(&(#\d+|[\da-z]+|#x[\da-f]+))\h+(?=\;)~i' => '$1',
 
-            #B2 Добавляем недостающие точки с запятой в кодах символов
+            #A2 Добавляем недостающие точки с запятой в кодах символов
             '~(&#\d+)(?![\;\d])~' => '$1;',
             '~(&[\da-z]+)(?![\;\da-z])~i' => '$1;',
             '~(&#x[\da-f]+)(?![\;\da-f])~i' => '$1;',
 
-            #B3 Замена всех букв 'ё' на 'е'
+            #A3 Замена буквы 'ё' на 'е'
             'e-convert' => array(
                 'ё' => 'е',
                 'Ё' => 'Е',
@@ -370,27 +380,11 @@ class Typo extends Module
         $this->applyRules($rules);
 
         $this->text->html_entity_decode(ENT_QUOTES | ENT_HTML401);
-        if($this->options['encoding'] !== self::MODE_NONE)
-        {
-            $this->text->replace(array_values(self::$chars['chr']), array_values($this->chr));
-        }
 
-        switch($this->options['encoding'])
+        if(!$this->options['html-in-enabled'])
         {
-            case self::MODE_NONE :
-                $chr = Utility::chr(65533);
-            break;
-            case self::MODE_CODES :
-                $chr = '&#65533;';
-            break;
-            default :
-                $chr = '&#xFFFD;';
+            $this->text->htmlspecialchars();
         }
-        $rules = array(
-            #B4 Заменяем все неизвестные символы
-            '~' . $p['amp'] . '(#\d+|[\da-z]+|#x[\da-f]+)\;~i' => $chr,
-        );
-        $this->applyRules($rules);
 
         /*$chars = array(
             '"' => array(
@@ -411,6 +405,25 @@ class Typo extends Module
 
         foreach($chars as $replace => $group)
              $this->text->replace($group, $replace);*/
+    }
+
+    /**
+     * Стадия B.
+     */
+    protected function stageB()
+    {
+        $s =& $this->chr;
+
+        if($this->options['encoding'] !== self::MODE_NONE)
+        {
+            $this->text->replace(array_values(self::$chars['chr']), array_values($this->chr));
+        }
+
+        $rules = array(
+            #B1 Заменяем все неизвестные символы
+            '~' . preg_quote($s['amp'], '~') . '(#\d+|[\da-z]+|#x[\da-f]+)\;~i' => $this->chr(65533),
+        );
+        $this->applyRules($rules);
     }
 
     /**
@@ -461,6 +474,28 @@ class Typo extends Module
                     }
                 }
             break;
+        }
+    }
+
+    /**
+     * Возвращает символ по его коду.
+     *
+     * @param int $c Код символа.
+     *
+     * @return string|bool
+     */
+    protected function chr($c)
+    {
+        switch($this->options['encoding'])
+        {
+            case self::MODE_NONE :
+                return Utility::chr($c);
+            break;
+            case self::MODE_CODES :
+                return sprintf('&#%u;', $c);
+            break;
+            default :
+                return sprintf('&#x%x;', $c);
         }
     }
 
