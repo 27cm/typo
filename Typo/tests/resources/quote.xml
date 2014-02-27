@@ -1,49 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tests>
-    <group desc="Точка в конце предложения не является частью ссылки">
+    <group desc="Вложенные кавычки">
         <test>
-            <input>Пример предложения http://example.com/page.html. Следующее предложение.</input>
-            <expected><![CDATA[Пример предложения <a href="http://example.com/page.html" target="_blank">example.com/page.html</a>. Следующее предложение.]]></expected>
-        </test>
-    </group>
-    <group desc="Протокол http добавляется автоматически, если был опущен">
-        <test>
-            <input>Cсылка example.com/page.html в середине предложения без протокола.</input>
-            <expected><![CDATA[Cсылка <a href="http://example.com/page.html" target="_blank">example.com/page.html</a> в середине предложения без протокола.]]></expected>
+            <input>Работа В. И. Ленина "О карикатуре на марксизм и об "империалистическом экономизме"", ЗАО "Издательский дом "Комсомольская правда"", ООО "Компания "Металлинвест"".</input>
+            <expected>Работа В. И. Ленина &laquo;О карикатуре на марксизм и об &ldquo;империалистическом экономизме&rdquo;&raquo;, ЗАО &laquo;Издательский дом &ldquo;Комсомольская правда&rdquo;&raquo;, ООО &laquo;Компания &ldquo;Металлинвест&rdquo;&raquo;.</expected>
         </test>
         <test>
-            <input>//site.com</input>
-            <expected><![CDATA[<a href="//site.com" target="_blank">site.com</a>]]></expected>
+            <input>Закрывающиеся кавычки, идующие подряд, склеиваются в одну. Например: ОАО "Агрохолдинг "Рога и Копыта"</input>
+            <expected>Закрывающиеся кавычки, идующие подряд, склеиваются в одну. Например: ОАО &laquo;Агрохолдинг &laquo;Рога и Копыта&raquo;</expected>
         </test>
-    </group>
-    <group desc="Ссылка в скобках">
         <test>
-            <input>Ссылка (http://example.com/page.html) в скобках</input>
-            <expected><![CDATA[Ссылка (<a href="http://example.com/page.html" target="_blank">example.com/page.html</a>) в скобках]]></expected>
+            <input>Cледующая остановка - "станция метро "Стадион "Спартак"""</input>
+            <expected>Cледующая остановка - &laquo;станция метро &ldquo;Стадион &laquo;Спартак&raquo;&rdquo;&raquo;</expected>
         </test>
-    </group>
-    <group desc="Русскоязычные ссылки">
         <test>
-            <input>Русскоязычные ссылки шкафы-и-окна.рф, домен.ua.com</input>
-            <expected><![CDATA[Русскоязычные ссылки <a href="http://xn-----6kcc2bjeyh0d0b1b.xn--p1ai" target="_blank">шкафы-и-окна.рф</a>, <a href="http://xn--d1acufc.ua.com" target="_blank">домен.ua.com</a>]]></expected>
+            <input>Семинар на тему "Опыт работы конторы "Рога и копыта" на отечественном рынке" состоится завтра.</input>
+            <expected>Семинар на тему &laquo;Опыт работы конторы &ldquo;Рога и копыта&rdquo; на отечественном рынке&raquo; состоится завтра.</expected>
         </test>
-    </group>
-    <group desc="Приведение ссылки в нижний регистр">
         <test>
-            <input>Ссылка в верхнем регистре HTTP://EXAMPLE.COM/PATH?QUERY#HASH</input>
-            <expected><![CDATA[Ссылка в верхнем регистре <a href="http://example.com/PATH?QUERY#HASH" target="_blank">example.com/PATH?QUERY#HASH</a>]]></expected>
+            <input>Фотовыставка "День "Зенита": Новейшая история "Зенита""!</input>
+            <expected>Фотовыставка &laquo;День &ldquo;Зенита&rdquo;: Новейшая история &ldquo;Зенита&rdquo;&raquo;!</expected>
         </test>
-    </group>
-    <group desc="Ссылка на localhost">
         <test>
-            <input>Ссылка на localhost http://localhost</input>
-            <expected><![CDATA[Ссылка на localhost <a href="http://localhost" target="_blank">localhost</a>]]></expected>
+            <input>""Цыганы" мои не продаются вовсе", - сетовал Пушкин.</input>
+            <expected>&laquo;&ldquo;Цыганы&rdquo; мои не продаются вовсе&raquo;, - сетовал Пушкин.</expected>
         </test>
-    </group>
-    <group desc="Ссылка с IP-адресом">
         <test>
-            <input>IP-адрес 127.0.0.1 ftp://127.0.0.1</input>
-            <expected><![CDATA[IP-адрес 127.0.0.1 <a href="ftp://127.0.0.1" target="_blank">ftp://127.0.0.1</a>]]></expected>
+            <input><![CDATA[<span style="color:#000">Семинар на тему "Опыт работы конторы <b>"<u>Рога и копыта</u>"</b> на отечественном рынке"</span> состоится завтра.]]></input>
+            <expected><![CDATA[<span style="color:#000">Семинар на тему &laquo;Опыт работы конторы <b>&ldquo;<u>Рога и копыта</u>&rdquo;</b> на отечественном рынке&raquo;</span> состоится завтра.]]></expected>
         </test>
     </group>
 </tests>
