@@ -24,12 +24,20 @@ class Quote extends Module
         /**
          * Открывающая кавычка.
          *
+         * @example 'ldquo' (американский английский)
+         * @example 'lsquo' (британский английский)
+         * @example 'laquo' (русский)
+         *
          * @var string
          */
         'quote-open' => 'laquo',
 
         /**
          * Закрывающая кавычка.
+         *
+         * @example 'rdquo' (американский английский)
+         * @example 'rsquo' (британский английский)
+         * @example 'raquo' (русский)
          *
          * @var string
          */
@@ -38,16 +46,24 @@ class Quote extends Module
         /**
          * Внутренняя открывающая кавычка.
          *
+         * @example 'lsquo' (американский английский)
+         * @example 'ldquo' (британский английский)
+         * @example 'bdquo' (русский)
+         *
          * @var string
          */
-        'subquote-open' => 'ldquo',
+        'subquote-open' => 'bdquo',
 
         /**
          * Внутренняя закрывающая кавычка.
          *
+         * @example 'rsquo' (американский английский)
+         * @example 'rdquo' (британский английский)
+         * @example 'ldquo' (русский)
+         *
          * @var string
          */
-        'subquote-close' => 'rdquo',
+        'subquote-close' => 'ldquo',
     );
 
     /**
@@ -68,18 +84,12 @@ class Quote extends Module
     // --- Открытые методы класса ---
 
     /**
-     * Проверка значения параметра (с возможной корректировкой).
-     *
-     * @param string $name      Название параметра.
-     * @param mixed  $value     Значение параметра.
-     *
-     * @return void
+     * @see \Typo\Module::validateOption()
      */
     public function validateOption($name, &$value)
     {
         switch($name)
         {
-            // Кавычки
             case 'quote-open' :
             case 'quote-close' :
             case 'subquote-open' :
