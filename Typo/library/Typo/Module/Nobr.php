@@ -4,6 +4,7 @@ namespace Typo\Module;
 
 use Typo;
 use Typo\Module;
+use Typo\Exception;
 
 /**
  * Неразрывные конструкции.
@@ -69,12 +70,7 @@ class Nobr extends Module
     // --- Открытые методы класса ---
 
     /**
-     * Проверка значения параметра (с возможной корректировкой).
-     *
-     * @param string $name      Название параметра.
-     * @param mixed  $value     Значение параметра.
-     *
-     * @return void
+     * @see \Typo\Module::validateOption()
      */
     public function validateOption($name, &$value)
     {

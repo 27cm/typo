@@ -4,6 +4,7 @@ namespace Typo;
 
 use Typo;
 use Typo\Module;
+use Typo\Config;
 use Typo\Exception;
 
 /**
@@ -75,6 +76,13 @@ abstract class Module
         'F' => 0,
     );
 
+    /**
+     * Конфигурационный INI файл.
+     *
+     * @var \Typo\Config
+     */
+    protected $config;
+
 
     // --- Конструктор ---
 
@@ -82,13 +90,12 @@ abstract class Module
      * Установливает значения параметров настроек по умолчанию,
      * затем установливает заданные значения параметров настроек.
      *
-     * @param array $options    Ассоциативный массив ('название параметра' => 'значение').
-     * @param \Typo $typo       Типограф, использующий данный модуль.
+     * @param string|array $options Массив настроек или название секции в файле настроек.
+     * @param \Typo $typo           Типограф, использующий данный модуль.
      *
-     * @uses \Typo\Module::setDefaultOptions()
-     * @uses \Typo\Module::setOption()
+     * @uses \Typo\Module::setOptions()
      */
-    public function __construct(array $options = array(), Typo $typo = null)
+    public function __construct($options = 'default', Typo $typo = null)
     {
         if(isset($typo))
         {
@@ -96,8 +103,18 @@ abstract class Module
             $this->text =& $typo->text;
         }
 
-        $this->setDefaultOptions();
+        $filename = strtolower(get_called_class()) . '.ini';
+        $filename = str_replace(strtolower(__CLASS__ . DS), '', $filename);
+        $filename = TYPO_CONFIG_DIR . DS . $filename;
+
+        $this->config = new Config($filename);
+
         $this->setOptions($options);
+        foreach($this->default_options as $name => $value)
+        {
+            if(!array_key_exists($name, $this->options))
+                $this->setOption($name, $value);
+        }
     }
 
 
@@ -120,24 +137,24 @@ abstract class Module
                 if(is_string($value))
                     $value = explode(',', $value);
 
-                if(is_array($value))
-                {
-                    $exception = null;
-
-                    $this->modules = array();
-                    foreach($value as &$module)
-                    {
-                        if(!is_string($module))
-                            return self::throwException(Exception::E_OPTION_TYPE, "Значение параметра '$name' должно быть строкой или массивом строк");
-
-                        $module = self::getModuleClassname($module);
-                        $this->addModule($module);
-                    }
-
-                    if(isset($exception)) throw $exception;
-                }
-                else
+                if(!is_array($value))
                     return self::throwException(Exception::E_OPTION_TYPE, "Значение параметра '$name' должно быть строкой или массивом строк");
+
+                $value = array_map('trim', $value);
+
+                foreach($value as &$module)
+                {
+                    if(!is_string($module))
+                        return self::throwException(Exception::E_OPTION_TYPE, "Значение параметра '$name' должно быть строкой или массивом строк");
+                }
+
+                $this->modules = array();
+                $typo = ($this instanceof Typo) ? $this : $this->typo;
+                foreach($value as &$module)
+                {
+                    $module = self::getModuleClassname($module);
+                    $this->addModule($module, $typo->config_section);
+                }
             break;
 
             default : $value = (bool) $value;
@@ -169,7 +186,7 @@ abstract class Module
     /**
      * Установливает значения параметров настроек.
      *
-     * @param array $options    Ассоциативный массив ('название параметра' => 'значение').
+     * @param string|array $options Массив настроек или название секции в файле настроек.
      *
      * @uses \Typo\Module::setOption()
      *
@@ -177,26 +194,40 @@ abstract class Module
      *
      * @return void
      */
-    public function setOptions(array $options)
+    public function setOptions($options)
     {
-        $exception = null;
-
-        foreach($options as $name => $value)
+        if(is_string($options))
         {
-            try
-            {
-                $this->setOption($name, $value);
-            }
-            catch(Exception $e)
-            {
-                if(isset($exception))
-                    $exception = new Exception($e->getMessage(), $e->getCode(), $exception);
-                else
-                    $exception = new Exception($e->getMessage(), $e->getCode());
-            }
+            $section = $options;
+
+            if($this->config->sectionExists($section))
+                $options = $this->config->getSection($section);
+            else
+                return;
         }
 
-        if(isset($exception)) throw $exception;
+        if(is_array($options))
+        {
+            $exception = null;
+
+            foreach($options as $name => $value)
+            {
+                try
+                {
+                    $this->setOption($name, $value);
+                }
+                catch(Exception $e)
+                {
+                    if(isset($exception))
+                        $exception = new Exception($e->getMessage(), $e->getCode(), $exception);
+                    else
+                        $exception = new Exception($e->getMessage(), $e->getCode());
+                }
+            }
+
+            if(isset($exception))
+                throw $exception;
+        }
     }
 
     /**
@@ -209,6 +240,11 @@ abstract class Module
     public function setDefaultOptions()
     {
         $this->setOptions($this->default_options);
+    }
+
+    public function setConfigFile($filename)
+    {
+
     }
 
     /**
@@ -242,14 +278,14 @@ abstract class Module
     /**
      * Добавляет модуль.
      *
-     * @param string $name      Название класса, либо абсолютное или относительное (например ./module/name) название модуля.
-     * @param array $options    Ассоциативный массив ('название параметра' => 'значение').
+     * @param string $name          Название класса, либо абсолютное или относительное (например ./module/name) название модуля.
+     * @param string|array $options
      *
      * @throw \Typo\Exception
      *
      * @return void
      */
-    public function addModule($name, array $options = array())
+    public function addModule($name, $options = 'default')
     {
         $classname = self::getModuleClassname($name);
         if(!class_exists($classname))
@@ -323,7 +359,7 @@ abstract class Module
      *
      * @return void
      */
-    public function executeStage()
+    public function processStage()
     {
         $method = $this->getStageMethod();
 
@@ -339,7 +375,7 @@ abstract class Module
                 }
                 $fl = false;
             }
-            $module->executeStage();
+            $module->processStage();
         }
 
         if($fl && method_exists($this, $method) && $this->checkTextType())

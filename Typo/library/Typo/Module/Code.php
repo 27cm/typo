@@ -5,6 +5,7 @@ namespace Typo\Module;
 use Typo;
 use Typo\Module;
 use Typo\Utility;
+use Typo\Exception;
 
 /**
  * Программный код.
@@ -79,10 +80,7 @@ class Code extends Module
     // --- Открытые методы класса ---
 
     /**
-     * Проверка значения параметра (с возможной корректировкой).
-     *
-     * @param string $name      Название параметра.
-     * @param mixed  $value     Значение параметра.
+     * @see \Typo\Module::validateOption()
      */
     public function validateOption($name, &$value)
     {
@@ -104,15 +102,14 @@ class Code extends Module
                 {
                     $value = mb_strtolower($value);
                     if($value !== 'tab')
-                        return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть положительным целым числом или строкой 'tab'");
-                }
-                else
-                {
-                    $value = (int) $value;
-                    if($value < 1)
-                        return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть положительным целым числом или строкой 'tab'");
+                        $value = (int) $value;
                 }
 
+                if(is_int($value))
+                {
+                    if($value < 1)
+                        return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть положительным целым числом или строкой 'tab'" . var_dump($value));
+                }
             break;
 
             default : Module::validateOption($name, $value);

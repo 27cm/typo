@@ -23,7 +23,7 @@ class Dash extends Module
          *
          * @var bool
          */
-        'auto' => false,
+        'auto' => true,
 
         /**
          * Расстановка мягких переносов (мест возможного переноса) в словах.

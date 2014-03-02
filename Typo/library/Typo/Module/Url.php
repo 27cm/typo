@@ -28,7 +28,7 @@ class Url extends Module
          * @var array
          */
         'attrs' => array(
-            array(
+            'target' => array(
                 'name' => 'target',
                 'value' => '_blank',
                 'cond' => '\Typo\Module\Url::condTarget',
@@ -47,7 +47,8 @@ class Url extends Module
          *
          * @var string[]
          */
-        'modules' => array('./ssh'),
+        // @todo: remove ./ssh support
+        'modules' => array('url/ssh'),
     );
 
     /**
@@ -106,10 +107,7 @@ class Url extends Module
     // --- Открытые методы класса ---
 
     /**
-     * Проверка значения параметра (с возможной корректировкой).
-     *
-     * @param string $name      Название параметра.
-     * @param mixed  $value     Значение параметра.
+     * @see \Typo\Module::validateOption()
      */
     public function validateOption($name, &$value)
     {

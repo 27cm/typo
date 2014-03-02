@@ -29,11 +29,16 @@ const PS = PATH_SEPARATOR;
 /**
  * Каталог с библиотекой Typo.
  */
-$typo_dir = realpath(dirname(__FILE__));
+define('TYPO_DIR', dirname(__FILE__));
 
-require_once $typo_dir . DS . 'Typo' . DS . 'functions.php';
-require_once $typo_dir . DS . 'Typo' . DS . 'Loader.php';
-$loader = new Loader('Typo', $typo_dir);
+/**
+ * Каталог с файлами конфигурации.
+ */
+define('TYPO_CONFIG_DIR', realpath(TYPO_DIR . DS . '..' . DS . 'config'));
+
+require_once TYPO_DIR . DS . 'Typo' . DS . 'functions.php';
+require_once TYPO_DIR . DS . 'Typo' . DS . 'Loader.php';
+$loader = new Loader('Typo', TYPO_DIR);
 $loader->register();
 
 /**
@@ -83,25 +88,6 @@ class Typo extends Module
         'encoding' => self::MODE_NONE,
 
         /**
-         * Используемые модули.
-         *
-         * @var string[]
-         */
-        'modules' => array(
-            'code',
-            'dash',
-            'filepath',
-            'html',
-            'math',
-            'nobr',
-            'punct',
-            'quote',
-            'smile',
-            'space',
-            'url',
-        ),
-
-        /**
          * Включение HTML в тексте на входе.
          *
          * Пример:
@@ -124,19 +110,21 @@ class Typo extends Module
         'html-out-enabled' => true,
 
         /**
-         * Тип HTML документа.
+         * Используемые модули.
          *
-         * @var 'DOCTYPE_HTML4_STRICT'|'DOCTYPE_HTML4_TRANSITIONAL'|'DOCTYPE_HTML4_FRAMESET'|'DOCTYPE_XHTML1_STRICT'|
-         *      'DOCTYPE_XHTML1_TRANSITIONAL'|'DOCTYPE_XHTML1_FRAMESET'|'DOCTYPE_XHTML11'|'DOCTYPE_XHTML5'
+         * @var string[]
          */
-        'html-doctype' => self::DOCTYPE_HTML5,
-
-        /**
-         * Вставлять &lt;br&gt; перед каждым переводом строки.
-         *
-         * @var bool
-         */
-        'nl2br' => true,
+        'modules' => array(
+            'code',
+            'dash',
+            'html',
+            'nobr',
+            'punct',
+            'quote',
+            'space',
+            'symbol',
+            'url',
+        ),
 
         /**
          * Замена буквы 'ё' на 'е'.
@@ -144,6 +132,21 @@ class Typo extends Module
          * @var bool
          */
         'e-convert' => false,
+
+        /**
+         * Тип HTML документа.
+         *
+         * @var 'DOCTYPE_HTML4_STRICT'|'DOCTYPE_HTML4_TRANSITIONAL'|'DOCTYPE_HTML4_FRAMESET'|'DOCTYPE_XHTML1_STRICT'|
+         *      'DOCTYPE_XHTML1_TRANSITIONAL'|'DOCTYPE_XHTML1_FRAMESET'|'DOCTYPE_XHTML11'|'DOCTYPE_XHTML5'
+         */
+        // 'html-doctype' => self::DOCTYPE_HTML5,
+
+        /**
+         * Вставлять &lt;br&gt; перед каждым переводом строки.
+         *
+         * @var bool
+         */
+        // 'nl2br' => true,
     );
 
     /**
@@ -153,7 +156,7 @@ class Typo extends Module
      */
     static public $order = array(
         'A' => 0,
-        'B' => 5,
+        'B' => 40, // 5
         'C' => 0,
         'D' => 35,
         'E' => 0,
@@ -166,6 +169,9 @@ class Typo extends Module
      * @var string
      */
     static private $version = '0.3';
+
+
+    public $config_section;
 
 
     // --- Типы документов HTML ---
@@ -235,13 +241,15 @@ class Typo extends Module
      * Установливает значения параметров настроек по умолчанию,
      * затем установливает заданные значения параметров настроек.
      *
-     * @param array $options    Ассоциативный массив ('название параметра' => 'значение').
+     * @param string|array $options Массив настроек или название секции в файле настроек.
+     *                              По умолчанию используются настройки [default].
      *
      * @uses \Typo\Module::__construct()
      */
-    public function __construct(array $options = array())
+    public function __construct($options = 'default')
     {
         $this->text = new Text();
+        $this->config_section = (is_string($options) ? $options : 'default');
 
         parent::__construct($options);
     }
@@ -288,14 +296,14 @@ class Typo extends Module
      *
      * <code>
      * $typo = new Typo;
-     * echo $typo->execute('Какой-то текст...');
+     * echo $typo->process('Какой-то текст...');
      * </code>
      *
      * @param \Typo\Text|string $text  Исходный текст.
      *
      * @return string Оттипографированный текст.
      */
-    public function execute($text)
+    public function process($text)
     {
         if($text instanceof Text)
             // @error нельзя переопределять
@@ -335,8 +343,9 @@ class Typo extends Module
             $this->text->iconv($charset, $default_charset);
 
         // Выполнение всех стадий
+        // @todo Избавиться от getStages() ввести nextStage(),
         foreach(self::getStages() as $stage)
-            $this->setStage($stage)->executeStage();
+            $this->setStage($stage)->processStage();
 
         // Восстанавливаем кодировку текста
         if($charset != $default_charset)
@@ -520,15 +529,15 @@ class Typo extends Module
      * @param string $text      Исходный текст.
      * @param array  $options   Ассоциативный массив ('название параметра' => 'значение').
      *
-     * @uses \Typo::execute()
+     * @uses \Typo::process()
      *
      * @return string Оттипографированный текст.
      */
-    static public function staticExecute($text, array $options = array())
+    static public function staticProcess($text, array $options = array())
     {
         $typo = new self($options);
 
-        return $typo->execute($text);
+        return $typo->process($text);
     }
 }
 

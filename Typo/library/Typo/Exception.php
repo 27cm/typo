@@ -29,6 +29,9 @@ class Exception extends \Exception
     /** Недопустимое значение параметра */
     const E_OPTION_VALUE = 3;
 
+    /** Ошибка выполнения. */
+    const E_RUNTIME = 4;
+
 
     // --- Конструктор ---
 
@@ -132,6 +135,7 @@ class Exception extends \Exception
             self::E_OPTION_NAME  => 'Несуществующий параметр',
             self::E_OPTION_TYPE  => 'Недопустимый тип значения параметра',
             self::E_OPTION_VALUE => 'Недопустимое значение параметра',
+            self::E_RUNTIME      => '',
         );
 
         if(array_key_exists($messages, $code))
