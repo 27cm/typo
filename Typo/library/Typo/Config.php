@@ -5,7 +5,9 @@ namespace Typo;
 use Typo\Exception;
 
 /**
- * 
+ * Конфигурационный INI файл.
+ *
+ * Считывает данные из конфигурационного INI файла.
  */
 class Config
 {
@@ -24,31 +26,57 @@ class Config
     protected $directory;
 
     /**
-     * Читает конфигурационный ini-файл.
+     * Загруженные секции.
      *
-     * @param string $filename  Путь к файлу.
+     * @var array
+     */
+    protected $sections = array();
+
+    protected $filename;
+
+    public function __construct($filename)
+    {
+        if(!is_file($filename) || !is_readable($filename))
+            Module::throwException(Exception::E_RUNTIME, "Файл '$filename' не найден или закрыт для чтения");
+
+        $this->filename = $filename;
+        $this->directory = realpath(dirname($filename));
+
+        $this->sections = $this->process();
+    }
+
+    public function sectionExists($section)
+    {
+        return array_key_exists($section, $this->sections);
+    }
+
+    public function getSection($section)
+    {
+        if($this->sectionExists($section))
+            return $this->sections[$section];
+        else
+            Module::throwException(Exception::E_RUNTIME, "Раздел настроек '$section' не найден в конфигурационном файле '{$this->filename}'");
+    }
+
+    /**
+     * Читает конфигурационный INI файл.
      *
      * @return array
      *
      * @throws \Typo\Exception
      */
-    public function fromFile($filename)
+    protected function process()
     {
-        if (!is_file($filename) || !is_readable($filename))
-        {
-            Module::throwException(Exception::E_RUNTIME, "Файл '$filename' не найден или закрыт для чтения");
-        }
+        $_this = $this;
 
-        $this->directory = dirname($filename);
-
-        $err_handler = function ($error, $message = '', $file = '', $line = 0) use ($filename) {
-            Module::throwException(Exception::E_RUNTIME, "Ошибка чтения INI файла '$filename': $message");
+        $err_handler = function ($error, $message = '', $file = '', $line = 0) use ($_this) {
+            Module::throwException(Exception::E_RUNTIME, "Ошибка чтения INI файла '{$_this->filename}': $message");
         };
         set_error_handler($err_handler, E_WARNING);
-        $ini = parse_ini_file($filename, true);
+        $data = parse_ini_file($this->filename, true);
         restore_error_handler();
 
-        return $this->process($ini);
+        return $this->processData($data);
     }
 
     /**
@@ -58,7 +86,7 @@ class Config
      *
      * @return array
      */
-    protected function process(array $data)
+    protected function processData(array $data)
     {
         $config = array();
 
@@ -92,7 +120,7 @@ class Config
      * @param mixed $value
      * @return array
      */
-    private function buildNestedSection($sections, $value)
+    protected function buildNestedSection($sections, $value)
     {
         if(count($sections) == 0)
         {
@@ -169,7 +197,7 @@ class Config
                 Module::throwException(Exception::E_RUNTIME, "Не удалось обработать выражение @include");
 
             $reader = clone $this;
-            $include = $reader->fromFile($this->directory . '/' . $value);
+            $include = $reader->process($this->directory . '/' . $value);
             $config  = array_replace_recursive($config, $include);
         }
         else
