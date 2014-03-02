@@ -104,31 +104,33 @@ class Quote extends Module
      */
     protected function stageB()
     {
-        $s =& Typo::$chars['chr'];
+        $c =& Typo::$chars['chr'];
 
         $q1 = array(
-            'open'  => $s[$this->options['quote-open']],
-            'close' => $s[$this->options['quote-close']],
+            'open'  => $c[$this->options['quote-open']],
+            'close' => $c[$this->options['quote-close']],
         );
         $q2 = array(
-            'open'  => $s[$this->options['subquote-open']],
-            'close' => $s[$this->options['subquote-close']],
+            'open'  => $c[$this->options['subquote-open']],
+            'close' => $c[$this->options['subquote-close']],
         );
 
         $rules = array(
             // Открывающая кавычка
-            '~((?:^|\(|\h){t}*)\"(?=\h?{t}*\S)~iu' => '$1' . $q1['open'],
+            '~((?:^|\(|\h){t}*)(\"+)(?={t}*\S)~iu' => function ($m) use($q1) {
+                return $m[1] . str_repeat($q1['open'], mb_strlen($m[2]));
+            },
 
             // Закрывающая кавычка
-			'~({a}|{b}|[?!:.)]|' . $s['hellip'] . ')(\"+)(?={t}*(?:\h|[?!:;,.)]|' . $s['hellip'] . '|$))~u' => function ($m) use($q1) {
+			'~((?:{a}|{b}|[?!:.)]|' . $c['hellip'] . '){t}*)(\"+)(?={t}*(?:\h|[?!:;,.)]|' . $c['hellip'] . '|$))~u' => function ($m) use($q1) {
                 return $m[1] . str_repeat($q1['close'], mb_strlen($m[2]));
             },
 
             // Закрывающая кавычка особые случаи
-            '~([a-zа-яё0-9]|\.|' . $s['hellip'] . '|\!|\?|\>|\)|\:)((\"|\\\"|\&laquo\;)+)(\<[^\>]+\>)(\.|\&hellip\;|\;|\:|\?|\!|\,|\)|\<\/|$| )~iu' => function($m) use($q1) {
+            '~([a-zа-яё0-9]|\.|' . $c['hellip'] . '|\!|\?|\>|\)|\:)((\"|\\\"|\&laquo\;)+)(\<[^\>]+\>)(\.|\&hellip\;|\;|\:|\?|\!|\,|\)|\<\/|$| )~iu' => function($m) use($q1) {
                 return $m[1] . str_repeat($q1['close'], mb_substr_count($m[2],"\"") + mb_substr_count($m[2],"&laquo;")) . $m[4]. $m[5];
             },
-            '~([a-zа-яё0-9]|\.|' . $s['hellip'] . '|\!|\?|\>|\)|\:)(\s+)((\"|\\\")+)(\s+)(\.|\&hellip\;|\;|\:|\?|\!|\,|\)|\<\/|$| )~iu' => function($m) use($q1) {
+            '~([a-zа-яё0-9]|\.|' . $c['hellip'] . '|\!|\?|\>|\)|\:)(\s+)((\"|\\\")+)(\s+)(\.|\&hellip\;|\;|\:|\?|\!|\,|\)|\<\/|$| )~iu' => function($m) use($q1) {
                 return $m[1] .$m[2]. str_repeat($q1['close'], mb_substr_count($m[3],"\"") + mb_substr_count($m[3],"&laquo;")) . $m[5]. $m[6];
             },
         );
@@ -151,14 +153,14 @@ class Quote extends Module
 
 			if($str == $q1['open'])
 			{
-				if($level != 0)
+				if($level % 2)
                     $stack[] = array($q2['open'], $pos, mb_strlen($str));
 				$level++;
 			}
 			else
 			{
 				$level--;
-				if($level != 0)
+				if($level % 2)
                     $stack[] = array($q2['close'], $pos, mb_strlen($str));
 			}
 
