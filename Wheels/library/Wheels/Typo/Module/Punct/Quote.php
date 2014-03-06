@@ -1,6 +1,6 @@
 <?php
 
-namespace Wheels\Typo\Module;
+namespace Wheels\Typo\Module\Punct;
 
 use Wheels\Typo;
 use Wheels\Typo\Module;
@@ -16,9 +16,7 @@ use Wheels\Typo\Exception;
 class Quote extends Module
 {
     /**
-     * Настройки по умолчанию.
-     *
-     * @var array
+     * @see \Wheels\Typo\Module::$default_options
      */
     protected $default_options = array(
         /**
@@ -67,9 +65,7 @@ class Quote extends Module
     );
 
     /**
-     * Приоритет выполнения стадий.
-     *
-     * @var array
+     * @see \Wheels\Typo\Module::$order
      */
     static public $order = array(
         'A' => 0,

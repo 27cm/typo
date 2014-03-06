@@ -106,11 +106,9 @@ class Typo extends Module
          */
         'modules' => array(
             'code',
-            'dash',
             'html',
             'nobr',
             'punct',
-            'quote',
             'space',
             'symbol',
             'url',

@@ -1,6 +1,6 @@
 <?php
 
-namespace Wheels\Typo\Module;
+namespace Wheels\Typo\Module\Punct;
 
 use Wheels\Typo;
 use Wheels\Typo\Module;
@@ -13,9 +13,7 @@ use Wheels\Typo\Module;
 class Dash extends Module
 {
     /**
-     * Настройки по умолчанию.
-     *
-     * @var array
+     * @see \Wheels\Typo\Module::$default_options
      */
     protected $default_options = array(
         /**
@@ -36,9 +34,7 @@ class Dash extends Module
     );
 
     /**
-     * Приоритет выполнения стадий.
-     *
-     * @var array
+     * @see \Wheels\Typo\Module::$order
      */
     static public $order = array(
         'A' => 0,
