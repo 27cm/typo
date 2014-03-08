@@ -135,15 +135,16 @@ abstract class Module
                     $value = explode(',', $value);
 
                 if(!is_array($value))
-                    return self::throwException(Exception::E_OPTION_TYPE, "Значение параметра '$name' должно быть строкой или массивом строк");
+                    return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть строкой или массивом строк");
 
-                $value = array_map('trim', $value);
 
                 foreach($value as &$module)
                 {
                     if(!is_string($module))
-                        return self::throwException(Exception::E_OPTION_TYPE, "Значение параметра '$name' должно быть строкой или массивом строк");
+                        return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть строкой или массивом строк");
                 }
+
+                $value = array_map('trim', $value);
 
                 $this->modules = array();
 
