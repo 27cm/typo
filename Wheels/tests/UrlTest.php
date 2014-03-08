@@ -1,3 +1,3 @@
 <?php
-class UrlTest  extends ModuleTest {
+class UrlTest  extends ConcreteModuleTest {
 }

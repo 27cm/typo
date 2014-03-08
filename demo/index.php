@@ -43,7 +43,7 @@ try
     ));
     $output = $typo->process($input);
 }
-catch(\Typo\Exception $e)
+catch(Wheels\Typo\Exception $e)
 {
     echo $e->getMessage() . '<br>';
 

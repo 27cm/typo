@@ -1,13 +1,13 @@
 <?php
 require_once 'XMLTestIterator.php';
-use Wheels\Typo\Exception;
+use Wheels\Typo;
 
 /**
  * Абстрактный класс для теста модулей.
  *
  * Конкретные классы тестов каходятся в директории Module, во всех них тестируются загруженные XML-файлы из папки resources через метод testXMLFiles
  */
-abstract class ModuleTest extends PHPUnit_Framework_TestCase
+abstract class ConcreteModuleTest extends PHPUnit_Framework_TestCase
 {
     protected $typo;
 
@@ -25,7 +25,7 @@ abstract class ModuleTest extends PHPUnit_Framework_TestCase
      */
     public function testXMLFiles($input,$expected,$desc,$config,$section) {
         //$this->typo->setOptionsFromFile($config,$section);
-        $executed_text = (string)$this->typo->execute($input);
+        $executed_text = (string)$this->typo->process($input);
         $this->assertEquals($expected,$executed_text,$desc);
     }
 

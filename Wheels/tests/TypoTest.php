@@ -1,6 +1,7 @@
 <?php
 
 use Wheels\Typo\Exception;
+use Wheels\Typo;
 
 
 class TypoTest extends PHPUnit_Framework_TestCase 
@@ -26,8 +27,10 @@ class TypoTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($this->typo->getOption('encoding'), Typo::MODE_NONE);
         $this->assertEquals($this->typo->getOption('html-in-enabled'), true);
         $this->assertEquals($this->typo->getOption('html-out-enabled'), true);
-        $this->assertEquals($this->typo->getOption('html-doctype'), Typo::DOCTYPE_HTML5);
-        $this->assertEquals($this->typo->getOption('nl2br'), true);
+
+        // todo раскомментить, когда будут эти опции
+        //$this->assertEquals($this->typo->getOption('html-doctype'), Typo::DOCTYPE_HTML5);
+        //$this->assertEquals($this->typo->getOption('nl2br'), true);
         $this->assertEquals($this->typo->getOption('e-convert'), false);
     }
 
@@ -36,7 +39,7 @@ class TypoTest extends PHPUnit_Framework_TestCase
      */
     public function testSetUnknownOption()
     {
-        $this->setExpectedException('Typo\Exception', 'Несуществующий параметр');
+        $this->setExpectedException('Exception', 'Несуществующий параметр');
         $this->typo->setOption('unknown', 'value');
     }
     
@@ -45,7 +48,7 @@ class TypoTest extends PHPUnit_Framework_TestCase
      */
     public function testGetUnknownOption() 
     {
-        $this->setExpectedException('Typo\Exception', 'Несуществующий параметр');
+        $this->setExpectedException('Exception', 'Несуществующий параметр');
         $this->typo->getOption('unknown');
     }
     
@@ -55,12 +58,8 @@ class TypoTest extends PHPUnit_Framework_TestCase
      */
     public function testSetUnknownCharset() 
     {
-        $charset = $this->typo->getOption('charset');
-        
-        $this->setExpectedException('Typo\Exception', 'Неизвестная кодировка', Exception::E_OPTION_VALUE);
+        $this->setExpectedException('Exception', 'Неизвестная кодировка', Exception::E_OPTION_VALUE);
         $this->typo->setOption('charset', 'unknown');
-        
-        $this->assertEquals($this->typo->getOption('charset'), $charset);
     }
 
     /**
@@ -79,13 +78,63 @@ class TypoTest extends PHPUnit_Framework_TestCase
      */
     public function testSetUnknownEncoding() 
     {
-        $encoding = $this->typo->getOption('encoding');
-        
-        $this->setExpectedException('Typo\Exception', 'Неизвестный режим кодирования спецсимволов', Exception::E_OPTION_VALUE);
+        $this->setExpectedException('Exception', 'Неизвестный режим кодирования спецсимволов', Exception::E_OPTION_VALUE);
         $this->typo->setOption('encoding', 'MODE_UNKNOWN');
-        
-        $this->assertEquals($this->typo->getOption('encoding'), $encoding);
     }
+
+    /**
+     * Установка неправильного значения параметра modules.
+     * Пытаемся установить нестроковое значение.
+     */
+    public function testSetNotStringModules()
+    {
+        $this->setExpectedException('Exception', "Значение параметра 'modules' должно быть строкой или массивом строк", Exception::E_OPTION_VALUE);
+        $this->typo->setOption('modules',  true);
+    }
+    /**
+     * Установка неправильного значения параметра modules.
+     * Пытаемся установить массив нестроковых значений.
+     */
+    public function testSetNotArrayModules()
+    {
+        $this->setExpectedException('Exception', "Значение параметра 'modules' должно быть строкой или массивом строк", Exception::E_OPTION_VALUE);
+        $this->typo->setOption('modules', array('url', array()));;
+    }
+
+    /**
+     * Установка  параметра modules.
+     */
+    public function testSetModules()
+    {
+        $this->typo->setOption('modules',  'html');
+        $this->typo->setOption('modules', array('html', 'url'));
+        $this->typo->setOption('modules', array('html','url','punct/quote'));
+    }
+
+    /**
+     * Проверка восстановления опций по умолчанию.
+     */
+    public function testSetDefaultOptions()
+    {
+        $this->typo->setOption('modules', array('punct/quote'));
+        $before = $this->typo->getOption('modules');
+
+        $this->typo->setDefaultOptions();
+
+        $after = $this->typo->getOption('modules');
+
+        $this->assertNotEquals($before,$after);
+    }
+    /**
+     * Добавление/удаление модуля
+     */
+    public function testAddRemoveModule()
+    {
+        // todo спросить добавляется ли модуль в массив опций после addModule (то есть как потом получить модуль)
+//        $this->typo->addModule('punct/quote');
+//        $module = $this->typo->getOption('modules')['punct/quote'];
+    }
+
 
     /**
      * Установка существующего параметра кодировки.
