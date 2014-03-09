@@ -5,7 +5,7 @@ use Wheels\Typo;
 /**
  * Абстрактный класс для теста модулей.
  *
- * Конкретные классы тестов каходятся в директории Module, во всех них тестируются загруженные XML-файлы из папки resources через метод testXMLFiles
+ * Конкретные классы тестов находятся в директории Module, во всех них тестируются загруженные XML-файлы из папки resources через метод testXMLFiles
  */
 abstract class ConcreteModuleTest extends PHPUnit_Framework_TestCase
 {
