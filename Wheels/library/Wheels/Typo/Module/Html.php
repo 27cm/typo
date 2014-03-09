@@ -259,9 +259,9 @@ class Html extends Module
                 return $_this->text->pushStorage($data, $replacer, $type);
             };
 
-            $this->text->preg_replace_callback('~<[^>]*>~s', $callback2);
+            $this->text->preg_replace_callback('~<[^>]*\w+[^>]*>~s', $callback2);
         }
         else
-            $this->text->preg_replace_storage('~<[^>]*>~s', $replacer, $type);
+            $this->text->preg_replace_storage('~<[^>]*\w+[^>]*>~s', $replacer, $type);
     }
 }

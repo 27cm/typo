@@ -52,7 +52,9 @@ class Math extends Module
      */
     protected function stageB()
     {
-        $c =& $this->typo->chr;
+        $c =& Typo::$chars['chr'];
+
+        $_this = $this;
 
         $rules = array(
             #B1 Минус перед числом
@@ -63,9 +65,9 @@ class Math extends Module
 
             #B3 Дроби
             'frac' => array(
-                '~(?<=\h)1/2(?=\b)~' => $c['frac12'],
-                '~(?<=\h)1/4(?=\b)~' => $c['frac14'],
-                '~(?<=\h)3/4(?=\b)~' => $c['frac34'],
+                '~(?<=\b)1/2(?=\b)~' => $c['frac12'],
+                '~(?<=\b)1/4(?=\b)~' => $c['frac14'],
+                '~(?<=\b)3/4(?=\b)~' => $c['frac34'],
             ),
 
             #B4 Математические знаки
@@ -74,50 +76,87 @@ class Math extends Module
             '~>=~' => $c['ge'],
             '~\~=~' => $c['cong'],
             '~(\+-|-\+)~' => $c['plusmn'],
+
+            #B7 Меры измерения в квадрате, в кубе
+            '~\s(кв|куб)\.\h?({m})\b~u' => function($m) use($_this, $c) {
+                $d = ($m[1] == 'кв') ? '2' : '3';
+
+                if($_this->typo->options['html-out-enabled'])
+                    return $c['nbsp'] . '$1' . $_this->sup($d);
+                else
+                    return $c['sup' . $d];
+            },
         );
 
         if($this->typo->options['html-out-enabled'])
         {
-            $sup = array(
-                'o' => $this->text->pushStorage('<sup><small>', Typo::REPLACER, Typo::INVISIBLE),
-                'c' => $this->text->pushStorage('</small></sup>', Typo::REPLACER, Typo::INVISIBLE),
-            );
-            $sub = array(
-                'o' => $this->text->pushStorage('<sub><small>', Typo::REPLACER, Typo::INVISIBLE),
-                'c' => $this->text->pushStorage('</small></sub>', Typo::REPLACER, Typo::INVISIBLE),
-            );
-
             $rules += array(
-                #B5 Верхний индекс
-                '~(?<={a})(\^|\*\*)(\d{1,3})\b~iu' => "{$sup['o']}$2{$sup['c']}",
+                $c['sup1'] => $this->sup('1'),
+                $c['sup2'] => $this->sup('2'),
+                $c['sup3'] => $this->sup('3'),
 
-                #B6 Нижний индекс
-                '~(?<={a})_(\d{1,3})\b~iu' => "{$sub['o']}$1{$sub['c']}",
+                #B5 Надстрочный текст после символа ^
+                '~\^(({a}|\d)+|\[({a}|\d)+\])(?=\b)~iu' => $this->sup('$2'),
 
-                #B7 Меры измерения в квадрате
-                '~\sкв\.\h?({m})\b~u' => "{$c['nbsp']}$1{$sup['o']}2{$sup['c']}",
-
-                #B8 Меры измерения в кубе
-                '~\sкуб\.\h?({m})\b~u' => "{$c['nbsp']}$1{$sup['o']}3{$sup['c']}",
+                # Возведение в степень
+                '~(({a}|{b}|\d){t}*)\*\*(\d+)(?=\b)~iu' => '$1' . $this->sup('$2'),
             );
         }
         else
         {
             $rules += array(
                 #B9 Верхний индекс "1", "2", "3"
-                '~(?<={a})(\^|\*\*)([1-3])\b~u' => function($m) use ($c) {
-                    $key = 'sup' . $m[2];
+                '~(?:\^|\*\*)([1-3])\b~u' => function($m) use ($c) {
+                    $key = 'sup' . $m[1];
                     return $c[$key];
                 },
-
-                #B10 Меры измерения в квадрате
-                '~\sкв\.\h?({m})\b~u' => "{$c['nbsp']}$1{$c['sup2']}",
-
-                #B11 Меры измерения в кубе
-                '~\sкуб\.\h?({m})\b~u' => "{$c['nbsp']}$1{$c['sup3']}",
             );
         }
 
         $this->applyRules($rules);
+    }
+
+    /**
+     * Оборачивает текст в теги &lt;sup&gt;&lt;small&gt;...&lt;small&gt;&lt;sup&gt;.
+     *
+     * @param string $text  Текст.
+     *
+     * @return string
+     */
+    public function sup($text)
+    {
+        static $tag = null;
+
+        if(is_null($tag))
+        {
+            $tag = array(
+                'open'  => $this->text->pushStorage('<sup><small>', Typo::REPLACER, Typo::INVISIBLE),
+                'close' => $this->text->pushStorage('</small></sup>', Typo::REPLACER, Typo::INVISIBLE),
+            );
+        }
+
+        return $tag['open'] . $text . $tag['close'];
+    }
+
+    /**
+     * Оборачивает текст в теги &lt;sub&gt;&lt;small&gt;...&lt;small&gt;&lt;sub&gt;.
+     *
+     * @param string $text  Текст.
+     *
+     * @return string
+     */
+    public function sub($text)
+    {
+        static $tag = null;
+
+        if(is_null($tag))
+        {
+            $tag = array(
+                'open'  => $this->text->pushStorage('<sub><small>', Typo::REPLACER, Typo::INVISIBLE),
+                'close' => $this->text->pushStorage('</small></sub>', Typo::REPLACER, Typo::INVISIBLE),
+            );
+        }
+
+        return $tag['open'] . $text . $tag['close'];
     }
 }

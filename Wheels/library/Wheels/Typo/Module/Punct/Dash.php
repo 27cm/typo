@@ -4,11 +4,15 @@ namespace Wheels\Typo\Module\Punct;
 
 use Wheels\Typo;
 use Wheels\Typo\Module;
+use Wheels\Typo\Utility;
 
 /**
  * Дефисы и тире.
  *
  * Расставляет дефисы, тире и мягкие переносы в тексте.
+ *
+ * @link http://en.wikipedia.org/wiki/Dash
+ * @link http://en.wikipedia.org/wiki/Hyphen
  */
 class Dash extends Module
 {
@@ -16,6 +20,13 @@ class Dash extends Module
      * @see \Wheels\Typo\Module::$default_options
      */
     protected $default_options = array(
+        /**
+         * Принудительная замена.
+         *
+         * @var bool
+         */
+        'nessesary' => true,
+
         /**
          * Автоматическая расстановка дефисов.
          *
@@ -55,20 +66,41 @@ class Dash extends Module
      */
     protected function stageB()
     {
-        $s =& Typo::$chars['chr'];
+        $c =& Typo::$chars['chr'];
 
         $rules = array(
+            # Принудительная замена.
+            'nessesary' => array(
+                // Длинное тире
+                $c['mdash'] => '-',
+
+                // Среднее тире
+                $c['ndash'] => '-',
+
+                // Минус
+                $c['minus'] => '-',
+
+                // Дефис-минус
+                Utility::chr(45) => '-',
+
+                // Неразрывный дефис
+                Utility::chr(8209) => '-',
+
+                // Цифровое тире
+                Utility::chr(8210) => '-',
+            ),
+
             #B1 Замена дефиса, окруженного пробелами, на тире
-            '~({a}{t}*\h)\-{1,3}(?=\h)~u' => '$1' . $s['ndash'],
+            '~({a}{t}*\h)\-{1,3}(?=\h)~u' => '$1' . $c['ndash'],
 
             #B2 Тире после кавычек, скобок и пунктуации
-            '~([:)",]{t}*\h?)\-{1,3}(?=\h)~u' => '$1' . $s['ndash'],
+            '~([:)",]{t}*\h?)\-{1,3}(?=\h)~u' => '$1' . $c['ndash'],
 
             #B3 Тире после переноса строки
-			'~((?:[\n\r]|^)(?:{t}|\h)*)\-{1,3}(?=\h)~u' => '$1' . $s['mdash'],
+			'~((?:[\n\r]|^)(?:{t}|\h)*)\-{1,3}(?=\h)~u' => '$1' . $c['mdash'],
 
             #B4 Тире после точки, троеточия, восклицательного и вопросительного знаков
-			'~((?:[?!.]|' . $s['hellip'] . ')\h)-{1,3}(?=\h)~u' => '$1' . $s['ndash'],
+			'~((?:[?!.]|' . $c['hellip'] . ')\h)-{1,3}(?=\h)~u' => '$1' . $c['ndash'],
 
             // Автоматическая расстановка дефисов.
             'auto' => array(
@@ -91,6 +123,8 @@ class Dash extends Module
      *
      * Применяет правила для расстановки мягких переносов (мест возможного переноса) в тексте.
      * Автор успользуемого алгоритма - Дмитрий Котеров <ur001ur001@gmail.com>, http://dklab.ru
+     *
+     * @link http://ru.wikipedia.org/wiki/%D0%9F%D0%B5%D1%80%D0%B5%D0%BD%D0%BE%D1%81_(%D1%82%D0%B8%D0%BF%D0%BE%D0%B3%D1%80%D0%B0%D1%84%D0%B8%D0%BA%D0%B0)
      */
     protected function stageC()
     {
@@ -108,6 +142,7 @@ class Dash extends Module
         );
 
         $rules = array(
+            // http://www.licey.net/russian/phonetics/1_6
             #C1 Расстановка мягких переносов (мест возможного переноса) в словах.
             'hyphenation' => array(
                 '~(?<!\{\{\{|\[\[\[)(?<=\b){a}+(?=\b)(?!\}\}\}|\]\]\])~iu' => array(

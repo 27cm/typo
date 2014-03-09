@@ -243,10 +243,7 @@ class Typo extends Module
     }
 
     /**
-     * Проверка значения параметра (с возможной корректировкой).
-     *
-     * @param string $name      Название параметра.
-     * @param mixed  $value     Значение параметра.
+     * @see \Wheels\Typo\Module::validateOption()
      */
     public function validateOption($name, &$value)
     {
@@ -385,26 +382,6 @@ class Typo extends Module
         {
             $this->text->htmlspecialchars();
         }
-
-        /*$chars = array(
-            '"' => array(
-                '&#34;', '&#132;', '&#147;', '&#171;', '&#187;', '&#8220;', '&#8221;', '&#8222;',
-                '&quot;', '&laquo;', '&raquo;', '&lsquo;', '&rsquo;', '&ldquo;', '&rdquo;', '&bdquo;',
-                '"', '"', '„', '“', '”',
-            ),
-            ' ' => array(
-                '&nbsp;', '&ensp;', '&emsp;', '&thinsp;',
-                '&#160;', '&#8194;', '&#8195;', '&#8194;',
-            ),
-            '-' => array(
-                '&#8211;', '&#8212;', '&#8209;', '&#151;',
-                '&ndash;', '&mdash;', '&minus;',
-                '–', '−', '—', '—', '—',
-            ),
-        );
-
-        foreach($chars as $replace => $group)
-             $this->text->replace($group, $replace);*/
     }
 
     /**
@@ -441,16 +418,12 @@ class Typo extends Module
     }
 
     /**
-     * Обработчик события изменения значения параметра.
-     *
-     * @param string $name      Название параметра.
-     * @param mixed  $value     Значение параметра.
+     * @see \Wheels\Typo\Module::onChangeOption()
      */
     protected function onChangeOption($name, &$value)
     {
         switch($name)
         {
-            // Режим кодирования спецсимволов
             case 'encoding' :
                 if($value != self::AUTO)
                 {
@@ -474,6 +447,8 @@ class Typo extends Module
                     }
                 }
             break;
+
+            default : Module::onChangeOption($name, $value);
         }
     }
 

@@ -4,6 +4,7 @@ namespace Wheels\Typo\Module\Punct;
 
 use Wheels\Typo;
 use Wheels\Typo\Module;
+use Wheels\Typo\Utility;
 use Wheels\Typo\Exception;
 
 /**
@@ -19,6 +20,13 @@ class Quote extends Module
      * @see \Wheels\Typo\Module::$default_options
      */
     protected $default_options = array(
+        /**
+         * Принудительная замена.
+         *
+         * @var bool
+         */
+        'nessesary' => true,
+
         /**
          * Открывающая кавычка.
          *
@@ -122,6 +130,24 @@ class Quote extends Module
         );
 
         $rules = array(
+            'nessesary' => array(
+                $c['laquo'] => '"',
+                $c['raquo'] => '"',
+                $c['ldquo'] => '"',
+                $c['rdquo'] => '"',
+                $c['lsquo'] => '"',
+                $c['rsquo'] => '"',
+                $c['bdquo'] => '"',
+                $c['sbquo'] => '"',
+                $c['lsaquo'] => '"',
+                $c['rsaquo'] => '"',
+                Utility::chr(8223) => '"',
+                Utility::chr(8219) => '"',
+            ),
+
+            // лакуны в тексте
+            '~<(\.{3}|' . $c['hellip'] . ')>~u' => $c['lsaquo'] . '$1' . $c['rsaquo'],
+
             // Открывающая кавычка
             '~((?:^|\(|\h){t}*)(\"+)(?={t}*\S)~iu' => function ($m) use($q1) {
                 return $m[1] . str_repeat($q1['open'], mb_strlen($m[2]));
