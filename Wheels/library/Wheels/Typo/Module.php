@@ -105,6 +105,12 @@ abstract class Module
 
         $this->setConfigDir(TYPO_CONFIG_DIR);
         $this->setOptions($options);
+        
+        foreach($this->default_options as $name => $value)
+        {
+            if(!array_key_exists($name, $this->options))
+                $this->setOption($name, $value);
+        }
     }
 
 
@@ -212,12 +218,6 @@ abstract class Module
 
             if(isset($exception))
                 throw $exception;
-        }
-
-        foreach($this->default_options as $name => $value)
-        {
-            if(!array_key_exists($name, $this->options))
-                $this->setOption($name, $value);
         }
     }
 
