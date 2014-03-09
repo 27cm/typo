@@ -13,7 +13,7 @@ abstract class ConcreteModuleTest extends PHPUnit_Framework_TestCase
 
     protected function setUp() {
         $this->typo = new Typo();
-        $this->typo->setOption('modules',preg_replace("~Test$~","",get_class($this)));
+        $this->setConfigDir(TEST_DIR . DS . 'config' . DS /** ??? */);
     }
 
     public function XMLProvider() {
@@ -23,10 +23,10 @@ abstract class ConcreteModuleTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider XMLProvider
      */
-    public function testXMLFiles($input,$expected,$desc,$config,$section) {
-        //$this->typo->setOptionsFromFile($config,$section);
+    public function testXMLFiles($input,$expected,$desc,$section) {
         $executed_text = (string)$this->typo->process($input);
         $this->assertEquals($expected,$executed_text,$desc);
+        $this->typo->setOptions($section);
     }
 
 }

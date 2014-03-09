@@ -1,31 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <tests>
     <group desc="Вложенные кавычки">
         <test>
             <input>Работа В. И. Ленина "О карикатуре на марксизм и об "империалистическом экономизме"", ЗАО "Издательский дом "Комсомольская правда"", ООО "Компания "Металлинвест"".</input>
-            <expected>Работа В. И. Ленина &laquo;О карикатуре на марксизм и об &ldquo;империалистическом экономизме&rdquo;&raquo;, ЗАО &laquo;Издательский дом &ldquo;Комсомольская правда&rdquo;&raquo;, ООО &laquo;Компания &ldquo;Металлинвест&rdquo;&raquo;.</expected>
+            <expected><![CDATA[Работа В. И. Ленина &laquo;О карикатуре на марксизм и об &ldquo;империалистическом экономизме&rdquo;&raquo;, ЗАО &laquo;Издательский дом &ldquo;Комсомольская правда&rdquo;&raquo;, ООО &laquo;Компания &ldquo;Металлинвест&rdquo;&raquo;.]]></expected>
         </test>
         <test>
             <input>Закрывающиеся кавычки, идущие подряд, склеиваются в одну. Например: ОАО "Агрохолдинг "Рога и Копыта"</input>
-            <expected>Закрывающиеся кавычки, идущие подряд, склеиваются в одну. Например: ОАО &laquo;Агрохолдинг &laquo;Рога и Копыта&raquo;</expected>
+            <expected><![CDATA[Закрывающиеся кавычки, идущие подряд, склеиваются в одну. Например: ОАО &laquo;Агрохолдинг &laquo;Рога и Копыта&raquo;]]></expected>
         </test>
         <test>
             <input>Следующая остановка - "станция метро "Стадион "Спартак"""</input>
-            <expected>Следующая остановка - &laquo;станция метро &ldquo;Стадион &laquo;Спартак&raquo;&rdquo;&raquo;</expected>
+            <expected><![CDATA[Следующая остановка - &laquo;станция метро &ldquo;Стадион &laquo;Спартак&raquo;&rdquo;&raquo;]]></expected>
         </test>
         <test>
             <input>Семинар на тему "Опыт работы конторы "Рога и копыта" на отечественном рынке" состоится завтра.</input>
-            <expected>Семинар на тему &laquo;Опыт работы конторы &ldquo;Рога и копыта&rdquo; на отечественном рынке&raquo; состоится завтра.</expected>
+            <expected><![CDATA[Семинар на тему &laquo;Опыт работы конторы &ldquo;Рога и копыта&rdquo; на отечественном рынке&raquo; состоится завтра.]]></expected>
         </test>
         <test>
             <input>Фотовыставка "День "Зенита": Новейшая история "Зенита""!</input>
-            <expected>Фотовыставка &laquo;День &ldquo;Зенита&rdquo;: Новейшая история &ldquo;Зенита&rdquo;&raquo;!</expected>
+            <expected><![CDATA[Фотовыставка &laquo;День &ldquo;Зенита&rdquo;: Новейшая история &ldquo;Зенита&rdquo;&raquo;!]]></expected>
         </test>
         <test>
             <input>""Цыганы" мои не продаются вовсе", - сетовал Пушкин.</input>
-            <expected>&laquo;&ldquo;Цыганы&rdquo; мои не продаются вовсе&raquo;, - сетовал Пушкин.</expected>
+            <expected><![CDATA[&laquo;&ldquo;Цыганы&rdquo; мои не продаются вовсе&raquo;, - сетовал Пушкин.]]></expected>
         </test>
+    </group>
+    <group desc="Кавычки и HTML" section="html">
         <test>
             <input><![CDATA[<span style="color:#000">Семинар на тему "Опыт работы конторы <b>"<u>Рога и копыта</u>"</b> на отечественном рынке"</span> состоится завтра.]]></input>
             <expected><![CDATA[<span style="color:#000">Семинар на тему &laquo;Опыт работы конторы <b>&ldquo;<u>Рога и копыта</u>&rdquo;</b> на отечественном рынке&raquo;</span> состоится завтра.]]></expected>

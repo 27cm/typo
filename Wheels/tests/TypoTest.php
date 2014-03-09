@@ -1,15 +1,15 @@
 <?php
 
-use Wheels\Typo\Exception;
 use Wheels\Typo;
+use Wheels\Typo\Exception;
 use Wheels\Typo\Module\Filepath;
 
 
-class TypoTest extends PHPUnit_Framework_TestCase 
+class TypoTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Типограф.
-     * 
+     *
      * @var \Typo
      */
     protected $typo;
@@ -43,21 +43,21 @@ class TypoTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('Wheels\Typo\Exception', 'Несуществующий параметр');
         $this->typo->setOption('unknown', 'value');
     }
-    
+
     /**
      * Получение неизвестного параметра.
      */
-    public function testGetUnknownOption() 
+    public function testGetUnknownOption()
     {
         $this->setExpectedException('Wheels\Typo\Exception', 'Несуществующий параметр');
         $this->typo->getOption('unknown');
     }
-    
-    
+
+
     /**
      * Установка неправильной кодировки.
      */
-    public function testSetUnknownCharset() 
+    public function testSetUnknownCharset()
     {
         $this->setExpectedException('Wheels\Typo\Exception', 'Неизвестная кодировка', Exception::E_OPTION_VALUE);
         $this->typo->setOption('charset', 'unknown');
@@ -65,10 +65,10 @@ class TypoTest extends PHPUnit_Framework_TestCase
 
     /**
      * Установка существуеющей кодировки.
-     * 
+     *
      * @dataProvider charsets
      */
-    public function testSetExistingCharset($charset) 
+    public function testSetExistingCharset($charset)
     {
         $this->typo->setOption('charset', $charset);
         $this->assertEquals($this->typo->getOption('charset'), $charset, '', 0, 10, false, true);
@@ -77,7 +77,7 @@ class TypoTest extends PHPUnit_Framework_TestCase
     /**
      * Установка неправильного параметра кодировки.
      */
-    public function testSetUnknownEncoding() 
+    public function testSetUnknownEncoding()
     {
         $this->setExpectedException('Wheels\Typo\Exception', 'Неизвестный режим кодирования спецсимволов', Exception::E_OPTION_VALUE);
         $this->typo->setOption('encoding', 'MODE_UNKNOWN');
@@ -150,19 +150,19 @@ class TypoTest extends PHPUnit_Framework_TestCase
 
     /**
      * Установка существующего параметра кодировки.
-     * 
+     *
      * @dataProvider encodings
      */
-    public function testSetExistingEncodings($encoding) 
+    public function testSetExistingEncodings($encoding)
     {
         $this->typo->setOption('encoding', $encoding);
         $this->assertEquals($this->typo->getOption('encoding'), $encoding, '', 0, 10, false, true);
     }
-    
+
     /**
      * Кодировки.
      */
-    public function charsets() 
+    public function charsets()
     {
         return array(
             array('UTF-8'),
@@ -173,11 +173,11 @@ class TypoTest extends PHPUnit_Framework_TestCase
             array('MAC')
         );
     }
-    
+
     /**
      * Режими кодирования спецсимволов.
      */
-    public function encodings() 
+    public function encodings()
     {
         return array(
             array(Typo::MODE_NONE),
