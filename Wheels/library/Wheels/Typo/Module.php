@@ -103,15 +103,8 @@ abstract class Module
             $this->text =& $typo->text;
         }
 
-        // @todo: может перенести
         $this->setConfigDir(TYPO_CONFIG_DIR);
-
         $this->setOptions($options);
-        foreach($this->default_options as $name => $value)
-        {
-            if(!array_key_exists($name, $this->options))
-                $this->setOption($name, $value);
-        }
     }
 
 
@@ -131,12 +124,14 @@ abstract class Module
         switch($name)
         {
             case 'modules' :
+                if((bool) $value == false)
+                    $value = array();
+
                 if(is_string($value))
                     $value = explode(',', $value);
 
                 if(!is_array($value))
                     return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть строкой или массивом строк");
-
 
                 foreach($value as &$module)
                 {
@@ -194,8 +189,6 @@ abstract class Module
 
             if($this->config->sectionExists($section))
                 $options = $this->config->getSection($section);
-            else
-                return;
         }
 
         if(is_array($options))
@@ -219,6 +212,12 @@ abstract class Module
 
             if(isset($exception))
                 throw $exception;
+        }
+
+        foreach($this->default_options as $name => $value)
+        {
+            if(!array_key_exists($name, $this->options))
+                $this->setOption($name, $value);
         }
     }
 

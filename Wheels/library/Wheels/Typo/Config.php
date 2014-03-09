@@ -99,6 +99,20 @@ class Config
                     $sections = explode($this->sep, $section);
                     $config = array_merge_recursive($config, $this->buildNestedSection($sections, $value));
                 }
+                elseif(strpos($section, ':') !== false)
+                {
+                    $sections = explode(':', $section, 2);
+                    $sections = array_map('trim', $sections);
+
+                    $section = $sections[0];
+
+                    $config[$section] = array();
+                    for($i = count($sections) - 1; $i > 0; $i--)
+                    {
+                        $config[$section] = array_merge($config[$section], $config[$sections[$i]]);
+                    }
+                    $config[$section] = array_merge($config[$section], $this->processSection($value));
+                }
                 else
                 {
                     $config[$section] = $this->processSection($value);
