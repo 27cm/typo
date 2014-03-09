@@ -2,6 +2,7 @@
 
 use Wheels\Typo\Exception;
 use Wheels\Typo;
+use Wheels\Typo\Module\Filepath;
 
 
 class TypoTest extends PHPUnit_Framework_TestCase 
@@ -39,7 +40,7 @@ class TypoTest extends PHPUnit_Framework_TestCase
      */
     public function testSetUnknownOption()
     {
-        $this->setExpectedException('Exception', 'Несуществующий параметр');
+        $this->setExpectedException('Wheels\Typo\Exception', 'Несуществующий параметр');
         $this->typo->setOption('unknown', 'value');
     }
     
@@ -48,7 +49,7 @@ class TypoTest extends PHPUnit_Framework_TestCase
      */
     public function testGetUnknownOption() 
     {
-        $this->setExpectedException('Exception', 'Несуществующий параметр');
+        $this->setExpectedException('Wheels\Typo\Exception', 'Несуществующий параметр');
         $this->typo->getOption('unknown');
     }
     
@@ -58,7 +59,7 @@ class TypoTest extends PHPUnit_Framework_TestCase
      */
     public function testSetUnknownCharset() 
     {
-        $this->setExpectedException('Exception', 'Неизвестная кодировка', Exception::E_OPTION_VALUE);
+        $this->setExpectedException('Wheels\Typo\Exception', 'Неизвестная кодировка', Exception::E_OPTION_VALUE);
         $this->typo->setOption('charset', 'unknown');
     }
 
@@ -78,7 +79,7 @@ class TypoTest extends PHPUnit_Framework_TestCase
      */
     public function testSetUnknownEncoding() 
     {
-        $this->setExpectedException('Exception', 'Неизвестный режим кодирования спецсимволов', Exception::E_OPTION_VALUE);
+        $this->setExpectedException('Wheels\Typo\Exception', 'Неизвестный режим кодирования спецсимволов', Exception::E_OPTION_VALUE);
         $this->typo->setOption('encoding', 'MODE_UNKNOWN');
     }
 
@@ -88,7 +89,7 @@ class TypoTest extends PHPUnit_Framework_TestCase
      */
     public function testSetNotStringModules()
     {
-        $this->setExpectedException('Exception', "Значение параметра 'modules' должно быть строкой или массивом строк", Exception::E_OPTION_VALUE);
+        $this->setExpectedException('Wheels\Typo\Exception', "Значение параметра 'modules' должно быть строкой или массивом строк", Exception::E_OPTION_VALUE);
         $this->typo->setOption('modules',  true);
     }
     /**
@@ -97,7 +98,7 @@ class TypoTest extends PHPUnit_Framework_TestCase
      */
     public function testSetNotArrayModules()
     {
-        $this->setExpectedException('Exception', "Значение параметра 'modules' должно быть строкой или массивом строк", Exception::E_OPTION_VALUE);
+        $this->setExpectedException('Wheels\Typo\Exception', "Значение параметра 'modules' должно быть строкой или массивом строк", Exception::E_OPTION_VALUE);
         $this->typo->setOption('modules', array('url', array()));;
     }
 
@@ -126,13 +127,24 @@ class TypoTest extends PHPUnit_Framework_TestCase
         $this->assertNotEquals($before,$after);
     }
     /**
-     * Добавление/удаление модуля
+     * Добавление модуля
      */
-    public function testAddRemoveModule()
+    public function testAddModule()
     {
-        // todo спросить добавляется ли модуль в массив опций после addModule (то есть как потом получить модуль)
-//        $this->typo->addModule('punct/quote');
-//        $module = $this->typo->getOption('modules')['punct/quote'];
+        $this->typo->addModule('filepath');
+        $modules = PHPUnit_Framework_Assert::readAttribute($this->typo, 'modules');
+        $this->assertArrayHasKey('Wheels\Typo\Module\Filepath', $modules);
+        $this->assertInstanceOf('Wheels\Typo\Module\Filepath', $modules['Wheels\Typo\Module\Filepath']);
+    }
+    /**
+     * Удаление модуля
+     */
+    public function testRemoveModule()
+    {
+        $this->typo->addModule('filepath');
+        $this->typo->removeModule('filepath');
+        $modules = PHPUnit_Framework_Assert::readAttribute($this->typo, 'modules');
+        $this->assertArrayNotHasKey('Wheels\Typo\Module\Filepath', $modules);
     }
 
 

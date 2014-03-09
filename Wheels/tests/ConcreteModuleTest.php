@@ -13,7 +13,7 @@ abstract class ConcreteModuleTest extends PHPUnit_Framework_TestCase
 
     protected function setUp() {
         $this->typo = new Typo();
-        $this->typo->setOption('modules','url');
+        $this->typo->setOption('modules',preg_replace("~Test$~","",get_class($this)));
     }
 
     public function XMLProvider() {
