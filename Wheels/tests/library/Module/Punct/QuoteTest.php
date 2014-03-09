@@ -1,3 +1,6 @@
 <?php
-class QuoteTest extends ConcreteModuleTest {
+namespace Module\Punct;
+use ModuleTest;
+
+class QuoteTest extends ModuleTest {
 }

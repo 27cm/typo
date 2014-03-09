@@ -8,5 +8,5 @@ set_include_path(get_include_path() . PATH_SEPARATOR . $include);
 
 require_once "{$root}/Wheels/library/Wheels.php";
 require_once "{$root}/wheels/library/Wheels/Typo.php";
-require_once "{$root}/wheels/tests/ConcreteModuleTest.php";
+require_once TEST_DIR . '/library/ModuleTest.php';
 

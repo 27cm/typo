@@ -1,3 +1,6 @@
 <?php
-class UrlTest  extends ConcreteModuleTest {
+namespace Module;
+use ModuleTest;
+
+class UrlTest  extends ModuleTest {
 }

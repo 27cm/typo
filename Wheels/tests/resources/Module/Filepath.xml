@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<tests>
+    <group desc="Обработка тега code">
+        <test>
+            <input>C:\zzz.txt</input>
+            <expected>C:\zzz.txt</expected>
+        </test>
+    </group>
+</tests>

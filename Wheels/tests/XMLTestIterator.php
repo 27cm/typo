@@ -13,8 +13,8 @@ class XMLTestIterator implements Iterator{
             $desc = (string)$testGroup->attributes()['desc'];
             foreach($testGroup->test as $test) {
                 $input = (string)$test->input;
-                $expected = strip_tags($test->expected->asXml());
-                $section = (string)($test->attributes()['section'] ?: $testGroup->attributes()['section'] ?: $xmlTests->attributes()['section']);
+                $expected = (string)$test->expected;
+                $section = (string)($test->attributes()['section'] ?: $testGroup->attributes()['section'] ?: $xmlTests->attributes()['section']) ?: 'default';
 
                 $this->tests[] = array($input, $expected, $desc, $section);
             }
