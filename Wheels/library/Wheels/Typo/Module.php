@@ -144,15 +144,9 @@ abstract class Module
                         return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть строкой или массивом строк");
                 }
 
-                $value = array_map('trim', $value);
-
-                $this->modules = array();
-
-                $typo = ($this instanceof Typo) ? $this : $this->typo;
                 foreach($value as &$module)
                 {
                     $module = self::getModuleClassname($module);
-                    $this->addModule($module, $typo->config_section);
                 }
             break;
 
@@ -178,8 +172,7 @@ abstract class Module
         $this->validateOption($name, $value);
 
         $this->options[$name] = $value;
-        if(method_exists($this, 'onChangeOption'))
-            $this->onChangeOption($name, $value);
+        $this->onChangeOption($name, $value);
     }
 
     /**
@@ -470,6 +463,28 @@ abstract class Module
 
 
     // --- Защищённые методы класса ---
+
+     /**
+     * Обработчик события изменения значения параметра.
+     *
+     * @param string $name      Название параметра.
+     * @param mixed  $value     Значение параметра.
+     */
+    protected function onChangeOption($name, &$value)
+    {
+        switch($name)
+        {
+            case 'modules' :
+                $typo = ($this instanceof Typo) ? $this : $this->typo;
+
+                $this->modules = array();
+                foreach($value as $module)
+                {
+                    $this->addModule($module, $typo->config_section);
+                }
+            break;
+        }
+    }
 
     protected function checkTextType()
     {
