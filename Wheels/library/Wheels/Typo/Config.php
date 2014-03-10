@@ -116,9 +116,9 @@ class Config
                     $config[$section] = array();
                     for($i = count($sections) - 1; $i > 0; $i--)
                     {
-                        $config[$section] = array_merge($config[$section], $config[$sections[$i]]);
+                        $config[$section] = array_merge_recursive_distinct($config[$section], $config[$sections[$i]]);
                     }
-                    $config[$section] = array_merge($config[$section], $this->processSection($value));
+                    $config[$section] = array_merge_recursive_distinct($config[$section], $this->processSection($value));
                 }
                 else
                 {
