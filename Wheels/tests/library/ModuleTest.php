@@ -11,22 +11,26 @@ abstract class ModuleTest extends PHPUnit_Framework_TestCase
 {
     protected $typo;
 
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->typo = new Typo();
         $this->typo->setConfigDir(TEST_DIR . DS . 'config' . DS . get_called_class());
     }
 
-    public function XMLProvider() {
-        $moduleName = preg_replace("~Test$~","",get_called_class()) . '.xml';
-        return new XMLTestIterator("resources/{$moduleName}");
+    public function XMLProvider()
+    {
+        $filename = preg_replace('~Test$~', '', get_called_class()) . '.xml';
+        return new XMLTestIterator('resources' . DS . $filename);
     }
+
     /**
      * @dataProvider XMLProvider
      */
-    public function testXMLFiles($input,$expected,$desc,$section) {
+    public function testXMLFiles($input, $expected, $desc, $section)
+    {
         $this->typo->setOptions($section);
-        $executed_text = (string)$this->typo->process($input);
-        $this->assertEquals($expected,$executed_text,$desc);
+        $output = (string) $this->typo->process($input);
+        $this->assertEquals($expected, $output, $desc);
     }
 
 }

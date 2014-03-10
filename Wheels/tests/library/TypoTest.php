@@ -28,10 +28,6 @@ class TypoTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($this->typo->getOption('encoding'), Typo::MODE_NONE);
         $this->assertEquals($this->typo->getOption('html-in-enabled'), true);
         $this->assertEquals($this->typo->getOption('html-out-enabled'), true);
-
-        // todo раскомментить, когда будут эти опции
-        //$this->assertEquals($this->typo->getOption('html-doctype'), Typo::DOCTYPE_HTML5);
-        //$this->assertEquals($this->typo->getOption('nl2br'), true);
         $this->assertEquals($this->typo->getOption('e-convert'), false);
     }
 

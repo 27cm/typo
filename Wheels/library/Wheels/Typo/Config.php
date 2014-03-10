@@ -36,13 +36,20 @@ class Config
 
     public function __construct($filename)
     {
-        if(!is_file($filename) || !is_readable($filename))
-            Module::throwException(Exception::E_RUNTIME, "Файл '$filename' не найден или закрыт для чтения");
+        if(!is_file($filename))
+            Module::throwException(Exception::E_RUNTIME, "Файл '$filename' не найден");
+        if(!is_readable($filename))
+            Module::throwException(Exception::E_RUNTIME, "Файл '$filename' закрыт для чтения");
 
         $this->filename = $filename;
         $this->directory = realpath(dirname($filename));
 
         $this->sections = $this->process();
+    }
+
+    public function getDirectory()
+    {
+        return $this->directory;
     }
 
     public function sectionExists($section)
@@ -216,6 +223,11 @@ class Config
         }
         else
         {
+            if(in_array($value, array(1, '1'), true))
+                $value = true;
+            elseif(in_array($value, array(0, '0', ''), true))
+                $value = false;
+            
             $config[$key] = $value;
         }
     }
