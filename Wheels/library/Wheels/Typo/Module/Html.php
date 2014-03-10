@@ -21,7 +21,7 @@ class Html extends Module
      *
      * @var array
      */
-    protected $default_options = array(
+    static protected $default_options = array(
         /**
          * Безопасные блоки, содержимое которых не обрабатывается типографом.
          *

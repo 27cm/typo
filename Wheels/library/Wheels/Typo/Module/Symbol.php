@@ -16,7 +16,7 @@ class Symbol extends Module
      *
      * @var array
      */
-    protected $default_options = array();
+    static protected $default_options = array();
 
     /**
      * Приоритет выполнения стадий.

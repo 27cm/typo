@@ -38,8 +38,7 @@ abstract class Module
      *
      * @var array
      */
-    // @todo: static
-    protected $default_options = array();
+    static protected $default_options = array();
 
     /**
      * Область работы модуля.
@@ -79,9 +78,11 @@ abstract class Module
     /**
      * Конфигурационный INI файл.
      *
-     * @var \Typo\Config
+     * @var \Wheels\Typo\Config
      */
     protected $config;
+
+    public $config_section;
 
 
     // --- Конструктор ---
@@ -94,6 +95,7 @@ abstract class Module
      * @param \Wheels\Typo $typo           Типограф, использующий данный модуль.
      *
      * @uses \Wheels\Typo\Module::setOptions()
+     * @uses \Wheels\Typo\Module::getDefaultOptions()
      */
     public function __construct($options = 'default', Typo $typo = null)
     {
@@ -101,16 +103,32 @@ abstract class Module
         {
             $this->typo = $typo;
             $this->text =& $typo->text;
+            $this->config_section = $typo->config_section;
+            $this->setConfigDir($typo->config->getDirectory());
+        }
+        else
+        {
+            $this->config_section = is_string($options) ? $options : 'default';
+            $this->setConfigDir(TYPO_CONFIG_DIR);
         }
 
-        $this->setConfigDir(TYPO_CONFIG_DIR);
         $this->setOptions($options);
-        
-        foreach($this->default_options as $name => $value)
+        foreach($this->getDefaultOptions() as $name => $value)
         {
             if(!array_key_exists($name, $this->options))
                 $this->setOption($name, $value);
         }
+    }
+
+    /**
+     * Возвращает массив опций по умолчанию.
+     *
+     * @return array
+     */
+    public function getDefaultOptions()
+    {
+        $class = get_called_class();
+        return $class::$default_options;
     }
 
 
@@ -167,7 +185,7 @@ abstract class Module
     {
         $name = strtolower($name);
 
-        if(!array_key_exists($name, $this->default_options))
+        if(!$this->checkOptionExists($name))
             return self::throwException(Exception::E_OPTION_NAME, "Несуществующий параметр '$name'");
 
         $this->validateOption($name, $value);
@@ -191,10 +209,12 @@ abstract class Module
     {
         if(is_string($options))
         {
-            $section = $options;
+            $this->config_section = $options;
 
-            if($this->config->sectionExists($section))
-                $options = $this->config->getSection($section);
+            if($this->config->sectionExists($this->config_section))
+                $options = $this->config->getSection($this->config_section);
+
+            // @todo: если в списке новых опций не изменились модули, но изменилась секция, то модули огут остаться без изменений секции
         }
 
         if(is_array($options))
@@ -228,7 +248,8 @@ abstract class Module
      */
     public function setDefaultOptions()
     {
-        $this->setOptions($this->default_options);
+        // @todo: для модулей также должны быть установлены defaultOptions
+        $this->setOptions($this->getDefaultOptions());
     }
 
     public function setConfigDir($dir)
@@ -474,12 +495,10 @@ abstract class Module
         switch($name)
         {
             case 'modules' :
-                $typo = ($this instanceof Typo) ? $this : $this->typo;
-
                 $this->modules = array();
                 foreach($value as $module)
                 {
-                    $this->addModule($module, $typo->config_section);
+                    $this->addModule($module, $this->config_section);
                 }
             break;
         }
@@ -500,7 +519,7 @@ abstract class Module
      */
     protected function checkOptionExists($name)
     {
-        return array_key_exists($name, $this->default_options);
+        return array_key_exists($name, $this->getDefaultOptions());
     }
 
     /**

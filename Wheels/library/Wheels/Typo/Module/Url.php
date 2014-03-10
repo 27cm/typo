@@ -21,7 +21,7 @@ class Url extends Module
      *
      * @var array
      */
-    protected $default_options = array(
+    static protected $default_options = array(
         /**
          * Дополнительные атрибуты.
          *

@@ -15,7 +15,7 @@ class Skype extends Emoticon
     /**
      * @see \Typo\Module::$default_options
      */
-    protected $default_options = array(
+    static protected $default_options = array(
         /**
          * URL изображений.
          *

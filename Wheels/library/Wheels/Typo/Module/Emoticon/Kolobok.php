@@ -16,7 +16,7 @@ class Kolobok extends Emoticon
      *
      * @var array
      */
-    protected $default_options = array(
+    static protected $default_options = array(
         /**
          * Используемые модули.
          *

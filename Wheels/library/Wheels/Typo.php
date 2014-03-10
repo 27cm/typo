@@ -62,7 +62,7 @@ class Typo extends Module
      *
      * @var array
      */
-    protected $default_options = array(
+    static protected $default_options = array(
         /**
          * Кодировка текста.
          *
@@ -105,7 +105,6 @@ class Typo extends Module
          * @var string[]
          */
         'modules' => array(
-            'code',
             'html',
             'nobr',
             'punct',
@@ -157,9 +156,6 @@ class Typo extends Module
      * @var string
      */
     static private $version = '0.3';
-
-
-    public $config_section;
 
 
     // --- Типы документов HTML ---
@@ -237,7 +233,6 @@ class Typo extends Module
     public function __construct($options = 'default')
     {
         $this->text = new Text();
-        $this->config_section = (is_string($options) ? $options : 'default');
 
         parent::__construct($options);
     }
@@ -288,6 +283,7 @@ class Typo extends Module
      *
      * @return string Оттипографированный текст.
      */
+    // @todo новый параметр $options
     public function process($text)
     {
         if($text instanceof Text)

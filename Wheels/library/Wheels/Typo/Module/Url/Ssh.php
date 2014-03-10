@@ -21,7 +21,7 @@ class Ssh extends Url
      *
      * @var array
      */
-    protected $default_options = array(
+    static protected $default_options = array(
         /**
          * Дополнительные атрибуты.
          *
