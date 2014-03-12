@@ -39,13 +39,6 @@ require_once TYPO_DIR . DS . 'Typo' . DS . 'functions.php';
 class Typo extends Module
 {
     /**
-     * Используемые символы.
-     *
-     * @var string[]
-     */
-    public $chr = array();
-
-    /**
      * Коды символов.
      *
      * @link http://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references
@@ -58,9 +51,7 @@ class Typo extends Module
     );
 
     /**
-     * Настройки типографа по умолчанию.
-     *
-     * @var array
+     * @see \Wheels\Typo\Module::$default_options
      */
     static protected $default_options = array(
         /**
@@ -119,31 +110,14 @@ class Typo extends Module
          * @var bool
          */
         'e-convert' => false,
-
-        /**
-         * Тип HTML документа.
-         *
-         * @var 'DOCTYPE_HTML4_STRICT'|'DOCTYPE_HTML4_TRANSITIONAL'|'DOCTYPE_HTML4_FRAMESET'|'DOCTYPE_XHTML1_STRICT'|
-         *      'DOCTYPE_XHTML1_TRANSITIONAL'|'DOCTYPE_XHTML1_FRAMESET'|'DOCTYPE_XHTML11'|'DOCTYPE_XHTML5'
-         */
-        // 'html-doctype' => self::DOCTYPE_HTML5,
-
-        /**
-         * Вставлять &lt;br&gt; перед каждым переводом строки.
-         *
-         * @var bool
-         */
-        // 'nl2br' => true,
     );
 
     /**
-     * Приоритет выполнения стадий.
-     *
-     * @var array
+     * @see \Wheels\Typo\Module::$order
      */
     static public $order = array(
-        'A' => 0,
-        'B' => 40, // 5
+        'A' => 5,
+        'B' => 40,
         'C' => 0,
         'D' => 35,
         'E' => 0,
@@ -151,42 +125,14 @@ class Typo extends Module
     );
 
     /**
-     * Версия типографа
+     * Версия типографа.
      *
      * @var string
      */
     static private $version = '0.3';
 
 
-    // --- Типы документов HTML ---
-
-    /** HTML4 Strict */
-    const DOCTYPE_HTML4_STRICT        = 'DOCTYPE_HTML4_STRICT';
-
-    /** HTML4 Transitional */
-    const DOCTYPE_HTML4_TRANSITIONAL  = 'DOCTYPE_HTML4_TRANSITIONAL';
-
-    /** HTML4 Frameset */
-    const DOCTYPE_HTML4_FRAMESET      = 'DOCTYPE_HTML4_FRAMESET';
-
-    /** XHTML1 Strict */
-    const DOCTYPE_XHTML1_STRICT       = 'DOCTYPE_XHTML1_STRICT';
-
-    /** XHTML1 Transitional */
-    const DOCTYPE_XHTML1_TRANSITIONAL = 'DOCTYPE_XHTML1_TRANSITIONAL';
-
-    /** XHTML1 Frameset */
-    const DOCTYPE_XHTML1_FRAMESET     = 'DOCTYPE_XHTML1_FRAMESET';
-
-    /** XHTML11 */
-    const DOCTYPE_XHTML11             = 'DOCTYPE_XHTML11';
-
-    /** HTML5 */
-    const DOCTYPE_HTML5               = 'DOCTYPE_HTML5';
-
-
     // --- Режимы кодирования спецсимволов ---
-
 
     /** Не кодировать. */
     const MODE_NONE  = 'MODE_NONE';
@@ -198,7 +144,7 @@ class Typo extends Module
     const MODE_CODES = 'MODE_CODES';
 
     /** В виде шестнадцатеричных кодов. */
-    const MODE_HEX_CODES   = 'MODE_HEX_CODES';
+    const MODE_HEX_CODES = 'MODE_HEX_CODES';
 
 
     // --- Заменители ---
@@ -232,6 +178,7 @@ class Typo extends Module
      */
     public function __construct($options = 'default')
     {
+        // @todo: вынести хранилище из text, тогда Text() не нужно будет создавать заранее
         $this->text = new Text();
 
         parent::__construct($options);
@@ -262,11 +209,6 @@ class Typo extends Module
                 }
             break;
 
-            case 'html-doctype' :
-                if(!Utility::validateConst(get_called_class(), $value, 'DOCTYPE'))
-                    return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный тип документа '$value'");
-            break;
-
             default : Module::validateOption($name, $value);
         }
     }
@@ -283,11 +225,13 @@ class Typo extends Module
      *
      * @return string Оттипографированный текст.
      */
-    // @todo новый параметр $options
-    public function process($text)
+    public function process($text, $options = null)
     {
+        if(isset($options))
+            $this->setOptions($options);
+
         if($text instanceof Text)
-            // @error нельзя переопределять
+            // @todo нельзя переопределять
             $this->text = $text;
         elseif($this->options['charset'] == self::AUTO)
         {
@@ -357,7 +301,7 @@ class Typo extends Module
     {
         $rules = array(
             #A1 Убираем лишние пробелы в кодах символов
-            '~(&(#\d+|[\da-z]+|#x[\da-f]+))\h+(?=\;)~i' => '$1',
+            '~(&(#\d+|[\da-z]+|#x[\da-f]+))\h+(?=\;)~iu' => '$1',
 
             #A2 Добавляем недостающие точки с запятой в кодах символов
             '~(&#\d+)(?![\;\d])~' => '$1;',
@@ -374,10 +318,16 @@ class Typo extends Module
 
         $this->text->html_entity_decode(ENT_QUOTES | ENT_HTML401);
 
-        if(!$this->options['html-in-enabled'])
-        {
-            $this->text->htmlspecialchars();
-        }
+        $rules = array(
+            #A1 Замена всех неизвестных символов на &#65533;
+            '~&(#\d+|[\da-z]+|#x[\da-f]+)\;~i' => Utility::chr(65533),
+        );
+        $this->applyRules($rules);
+
+//        if(!$this->options['html-in-enabled'])
+//        {
+//            $this->text->htmlspecialchars();
+//        }
     }
 
     /**
@@ -385,18 +335,32 @@ class Typo extends Module
      */
     protected function stageB()
     {
-        $s =& $this->chr;
-
         if($this->options['encoding'] !== self::MODE_NONE)
         {
-            $this->text->replace(array_values(self::$chars['chr']), array_values($this->chr));
-        }
+            $replace = array();
+            switch($this->options['encoding'])
+            {
+                case self::MODE_CODES :
+                    foreach(self::$chars['ord'] as $ent => $ord)
+                        $replace[$ent] = sprintf('&#%u;', $ord);
+                break;
+                case self::MODE_HEX_CODES :
+                    foreach(self::$chars['ord'] as $ent => $ord)
+                        $replace[$ent] = sprintf('&#x%x;', $ord);
+                break;
+                case self::MODE_NAMES :
+                    foreach(array_keys(self::$chars['chr']) as $ent)
+                        $replace[$ent] = sprintf('&%s;', $ent);;
+                break;
+            }
 
-        $rules = array(
-            #B1 Заменяем все неизвестные символы
-            '~' . preg_quote($s['amp'], '~') . '(#\d+|[\da-z]+|#x[\da-f]+)\;~i' => $this->chr(65533),
-        );
-        $this->applyRules($rules);
+            // @todo: Заменить все символы, не поддерживаемый выходной кодировкой на HTML-сущности
+
+            $search = self::$chars['chr'];
+            unset($search['amp']);
+            unset($replace['amp']);
+            $this->text->replace(array_values($search), array_values($replace));
+        }
     }
 
     /**
@@ -421,27 +385,7 @@ class Typo extends Module
         switch($name)
         {
             case 'encoding' :
-                if($value != self::AUTO)
-                {
-                    switch($value)
-                    {
-                        case self::MODE_NONE :
-                            $this->chr =& self::$chars['chr'];
-                        break;
-                        case self::MODE_CODES :
-                            foreach(self::$chars['ord'] as $ent => $ord)
-                                $this->chr[$ent] = sprintf('&#%u;', $ord);
-                        break;
-                        case self::MODE_HEX_CODES :
-                            foreach(self::$chars['ord'] as $ent => $ord)
-                                $this->chr[$ent] = sprintf('&#x%x;', $ord);
-                        break;
-                        case self::MODE_NAMES :
-                            foreach(array_keys(self::$chars['chr']) as $ent)
-                                $this->chr[$ent] = sprintf('&%s;', $ent);;
-                        break;
-                    }
-                }
+                // ...
             break;
 
             default : Module::onChangeOption($name, $value);

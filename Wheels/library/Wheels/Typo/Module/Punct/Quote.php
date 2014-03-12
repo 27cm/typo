@@ -88,7 +88,7 @@ class Quote extends Module
     // --- Открытые методы класса ---
 
     /**
-     * @see \Typo\Module::validateOption()
+     * @see \Wheels\Typo\Module::validateOption()
      */
     public function validateOption($name, &$value)
     {

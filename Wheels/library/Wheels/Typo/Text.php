@@ -210,6 +210,7 @@ class Text
      * @param callable        $callback Вызываемая callback-функция, которой будет передано найденное значение;
      *                                  callback-функция должна вернуть строку с заменой.
      */
+    // @todo: callable[]
     public function replace_callback($search, $callback)
     {
         if (is_array($search)) {

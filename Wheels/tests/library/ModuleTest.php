@@ -9,6 +9,10 @@ use Wheels\Typo;
  */
 abstract class ModuleTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     *
+     * @var \Wheels\Typo
+     */
     protected $typo;
 
     protected function setUp()

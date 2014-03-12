@@ -7,6 +7,10 @@ use Wheels\Typo\Module;
 use Wheels\Typo\Utility;
 use Wheels\Typo\Exception;
 
+use Net_IDNA2;
+use Net_IDNA;
+use idna_convert;
+
 /**
  * Ссылки.
  *
@@ -31,7 +35,7 @@ class Url extends Module
             'target' => array(
                 'name' => 'target',
                 'value' => '_blank',
-                'cond' => '\Typo\Module\Url::condTarget',
+                'cond' => '\Wheels\Typo\Module\Url::condTarget',
             ),
         ),
 
@@ -114,7 +118,6 @@ class Url extends Module
     {
         switch($name)
         {
-            // Дополнительные атрибуты
             case 'attrs' :
                 if(!is_array($value))
                     return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть массивом, а не " . gettype($value));
@@ -345,51 +348,81 @@ class Url extends Module
      */
     static public function url_host_encode($host, $idna = true, $_this = null)
     {
-        $idna_convert_filename = 'idna_convert.class.php';
+        $idna_convert_filename = '';
         $idna_convert_classname = '\idna_convert';
 
         // @todo: изменить регулярное выражение
         // @todo: исключение (warning), если библиотека не подключена
-        // http://stackoverflow.com/questions/5495607/test-whether-a-file-exists-anywhere-in-the-include-path
-        if($idna && preg_match('~[а-яё]~iu', $host))
+        // @todo: нужно ли парсить отдельные части хоста?
+        // @todo: idna class сделать static
+        if($idna && preg_match('~[^\x00-\xA7]~u', $host))
         {
-            if(stream_resolve_include_path($idna_convert_filename) !== FALSE)
+            $idna = self::getIDNA($_this);
+            $host = $idna->encode($host);
+        }
+
+        return $host;
+    }
+
+    static public function getIDNA($_this = null)
+    {
+        static $idna = null;
+
+        if(!isset($idna))
+        {
+            if(class_exists('\Net_IDNA2'))
             {
-                include_once $idna_convert_filename;
-
-                if(class_exists($idna_convert_classname))
+                return new Net_IDNA2(array(
+                    'encoding' => 'utf8',
+                    'idn_version' => '2003',
+                ));
+            }
+            elseif(class_exists('\Net_IDNA'))
+            {
+                return new Net_IDNA(array(
+                    'encoding' => 'utf8',
+                    'idn_version' => '2003',
+                ));
+            }
+            else
+            {
+                $idna_convert_filename = 'idna_convert.class.php';
+                if(class_exists('\idna_convert') || stream_resolve_include_path($idna_convert_filename) !== FALSE)
                 {
-                    $idna = new $idna_convert_classname(array(
-                        'encoding' => 'utf8',
-                        'idn_version' => '2008',
-                    ));
+                    include_once $idna_convert_filename;
 
-                    $host = $idna->encode($host);
+                    if(class_exists('\idna_convert'))
+                    {
+                        return new idna_convert(array(
+                            'encoding' => 'utf8',
+                            'idn_version' => '2003',
+                        ));
+                    }
+                    else
+                    {
+                        if(isset($_this))
+                        {
+                            $_this->setOption('idna', false);
+                            return self::throwException(Exception::E_OPTION_VALUE, "Не найден класс '{$idna_convert_classname}'. Опция 'idna' отключена.");
+                        }
+                        else
+                            return self::throwException(Exception::E_OPTION_VALUE, "Не найден класс '{$idna_convert_classname}'.");
+                    }
                 }
                 else
                 {
                     if(isset($_this))
                     {
                         $_this->setOption('idna', false);
-                        self::throwException(Exception::E_OPTION_VALUE, "Не найден класс '{$idna_convert_classname}'. Опция 'idna' отключена.");
+                        return self::throwException(Exception::E_OPTION_VALUE, "Не найден файл '{$idna_convert_filename}'. Опция 'idna' отключена.");
                     }
                     else
-                        self::throwException(Exception::E_OPTION_VALUE, "Не найден класс '{$idna_convert_classname}'.");
+                        return self::throwException(Exception::E_OPTION_VALUE, "Не найден файл '{$idna_convert_filename}'.");
                 }
-            }
-            else
-            {
-                if(isset($_this))
-                {
-                    $_this->setOption('idna', false);
-                    self::throwException(Exception::E_OPTION_VALUE, "Не найден файл '{$idna_convert_filename}'. Опция 'idna' отключена.");
-                }
-                else
-                    self::throwException(Exception::E_OPTION_VALUE, "Не найден файл '{$idna_convert_filename}'.");
             }
         }
 
-        return $host;
+        return $idna;
     }
 
     /**

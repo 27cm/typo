@@ -7,6 +7,8 @@ use Wheels\Typo\Module;
 use Wheels\Typo\Config;
 use Wheels\Typo\Exception;
 
+// @todo должно быть без разницы punct/quote или punct\quote или Punct\Quote или Typo\Module\Punct\Quote или \Wheel
+
 /**
  * Модуль.
  */
@@ -50,7 +52,7 @@ abstract class Module
     /**
      * Используемые модули.
      *
-     * @var \Typo\Module[]
+     * @var \Wheels\Typo\Module[]
      */
     protected $modules = array();
 
@@ -566,8 +568,10 @@ abstract class Module
             // Видимый элемент
             '{b}' => '(?:\[\[\[\w+\]\]\])',
 
-            // Меры длинны
-            '{m}' => '(?:[кдсмнпфази]?м|мкм)',
+            // Единицы измерения
+            // http://ru.wikipedia.org/wiki/%D0%9F%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D0%B8_%D0%A1%D0%98
+            // @todo: Отменить регистронезависимость
+            '{m}' => '(?:(?:[изафпнмсдгкМГТПЭЗИ]|мк|да)?(?:[бгмлтБВН]|Па|Гц|байт|бит|флоп\/?с)|(?:[yzafpnmcdhkMGTPEZY\xB5]|da)?(?:[bgmlLtBVN]|Pa|Hz|byte|bit|FLOPS|flop\/?s))',
 
             // Знаки препинания
             '{p}' => '[!?:;,.]',

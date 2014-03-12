@@ -227,7 +227,7 @@ class Config
                 $value = true;
             elseif(in_array($value, array(0, '0', ''), true))
                 $value = false;
-            
+
             $config[$key] = $value;
         }
     }

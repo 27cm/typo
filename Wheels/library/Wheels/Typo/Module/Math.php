@@ -78,11 +78,20 @@ class Math extends Module
             '~(\+-|-\+)~' => $c['plusmn'],
 
             #B7 Меры измерения в квадрате, в кубе
-            '~\s(кв|куб)\.\h?({m})\b~u' => function($m) use($_this, $c) {
+            // @todo: неразрывных пробел перед ед. измерения
+            '~(?<=\b)(кв|куб)\.\h?(([изафпнмсдгкМГТПЭЗИ]|мк|да)?м|([yzafpnmcdhkMGTPEZY\xB5]|da)?m)(?=\b)~u' => function($m) use($_this, $c) {
                 $d = ($m[1] == 'кв') ? '2' : '3';
 
                 if($_this->typo->options['html-out-enabled'])
-                    return $c['nbsp'] . '$1' . $_this->sup($d);
+                    return '$1' . $_this->sup($d);
+                else
+                    return $c['sup' . $d];
+            },
+            '~(?<=\b)(([изафпнмсдгкМГТПЭЗИ]|мк|да)?м|([yzafpnmcdhkMGTPEZY\xB5]|da)?m)([23])(?=\b)~u' => function($m) use($_this, $c) {
+                $d = $m[2];
+
+                if($_this->typo->options['html-out-enabled'])
+                    return '$1' . $_this->sup($d);
                 else
                     return $c['sup' . $d];
             },
@@ -96,10 +105,13 @@ class Math extends Module
                 $c['sup3'] => $this->sup('3'),
 
                 #B5 Надстрочный текст после символа ^
-                '~\^(({a}|\d)+|\[({a}|\d)+\])(?=\b)~iu' => $this->sup('$2'),
+                '~\^(({a}|\d)+|\[({a}|\d)+\])(?=\b)~iu' => $this->sup('$1'),
 
                 # Возведение в степень
                 '~(({a}|{b}|\d){t}*)\*\*(\d+)(?=\b)~iu' => '$1' . $this->sup('$2'),
+
+                # мм2, км2, ...
+
             );
         }
         else
