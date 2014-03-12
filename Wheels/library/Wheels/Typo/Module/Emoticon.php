@@ -13,24 +13,8 @@ use Wheels\Typo\Utility;
  *
  * @link http://en.wikipedia.org/wiki/Emoticon
  */
-class Emoticon extends Module
+abstract class Emoticon extends Module
 {
-    /**
-     * Настройки по умолчанию.
-     *
-     * @var array
-     */
-    static protected $default_options = array(
-        /**
-         * Используемые модули.
-         *
-         * @var string[]
-         */
-        'modules' => array(
-            'emoticon/kolobok',
-        ),
-    );
-
     /**
      * Приоритет выполнения стадий.
      *
@@ -53,21 +37,37 @@ class Emoticon extends Module
     static public $smiles = array();
 
 
-
-    /**
-     * URL изображений.
-     *
-     * @var string
-     */
-    static public $url = '';
-
-
     // --- Заменитель ---
 
     const REPLACER = 'EMOTICON';
 
 
     // --- Защищенные методы класса ---
+
+    public function validateOption($name, &$value)
+    {
+        switch($name)
+        {
+            case 'url' :
+
+            break;
+
+            case 'attrs' :
+                if(!is_array($value))
+                    return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть массивом, а не " . gettype($value));
+
+                foreach($value as &$attr)
+                {
+                    if(!is_array($attr) || !array_key_exists('name', $attr) || !array_key_exists('value', $attr))
+                        return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть массивом элементов array('name' => '...', 'value' => '...', ['cond' => '...'])");
+                    if(!array_key_exists('cond', $attr))
+                        $attr['cond'] = true;
+                }
+            break;
+
+            default : Module::validateOption($name, $value);
+        }
+    }
 
     /**
      * Стадия A.
@@ -87,33 +87,45 @@ class Emoticon extends Module
 
         $_this = $this;
 
-        $callback = function($matches) use($_this, $class)
+        $smiles = array();
+        foreach($class::$smiles as $i => $group)
         {
-            $smile = $matches[0];
+            foreach($group['replaces'] as $replace)
+                $smiles[$replace] = $i;
+        }
 
-            $attrs = array(
-                'src' => $class::$url . $class::$smiles[$smile] . '.' . $class::$ext,
-                'title' => $smile,
-                'alt' => $smile,
-            );
+        uksort($smiles, function ($a, $b) {
+            return (strlen($a) > strlen($b)) ? -1 : 1;
+        });
+
+        $callback = function($smile) use($_this, $smiles, $class)
+        {
+            $i = $smiles[$smile];
+            $parts = $class::$smiles[$i];
+
+            $src = $_this->getOption('url');
+            foreach($parts as $key => $value)
+            {
+                if(!is_array($value))
+                    $src = str_replace('{' . $key . '}', (string) $value, $src);
+            }
+            $parts = array_merge($parts, array('smile' => $smile));
+
+            $attrs = array('src' => $src);
+
+            $_this->setAttrs($parts, $attrs);
+
             $data = Utility::createElement('img', null, $attrs);
             return $_this->text->pushStorage($data, Emoticon::REPLACER, Typo::VISIBLE);
         };
 
-        $smiles = array_map('preg_quote', array_keys($class::$smiles));
-
-        $pattern = '~(?<!{p})(?:' . implode('|', $smiles) . ')(?!{p})~u';
-        self::pregHelpers($pattern);
-
-        $this->typo->text->preg_replace_callback($pattern, $callback);
+        $this->typo->text->replace_callback(array_keys($smiles), $callback);
     }
 
     /**
      * Стадия D.
      *
      * Восстанавливает смайлики.
-     *
-     * @return void
      */
     protected function stageD()
     {
@@ -121,5 +133,43 @@ class Emoticon extends Module
         {
             $this->text->popStorage(self::REPLACER, Typo::VISIBLE);
         }
+    }
+
+    /**
+     *
+     * @param type $parts
+     * @param array $attrs
+     */
+    public function setAttrs($parts, array &$attrs)
+    {
+        foreach($this->options['attrs'] as $attr)
+        {
+            $a_cond = $attr['cond'];
+            if(is_callable($a_cond))
+                $a_cond = call_user_func($a_cond, $parts, $this);
+
+            if($a_cond)
+            {
+                $a_name = $attr['name'];
+                if(is_callable($a_name))
+                    $a_name = call_user_func($a_name, $parts, $this);
+
+                $a_value = $attr['value'];
+                if(is_callable($a_value))
+                    $a_value = call_user_func($a_value, $parts, $this);
+
+                $attrs[$a_name] = $a_value;
+            }
+        }
+    }
+
+    static public function attrTitle(array $parts, Module $_this)
+    {
+        return htmlspecialchars($parts['smile']);
+    }
+
+    static public function attrAlt(array $parts, Module $_this)
+    {
+        return htmlspecialchars($parts['smile']);
     }
 }

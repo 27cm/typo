@@ -1,6 +1,10 @@
 <?php
-namespace Module\Punct;
+
+namespace Module\Emoticon;
+
 use ModuleTest;
 
-class QuoteTest extends ModuleTest {
+class SkypeTest extends ModuleTest
+{
+
 }
