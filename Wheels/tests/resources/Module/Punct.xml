@@ -58,7 +58,7 @@
             <expected><![CDATA[Труба длиной 5&hellip;10 м.]]></expected>
         </test>
     </group>
-    <group desc="#B8 Расстановка запятых перед союзами 'а' и 'но'">
+    <group desc="#B8 Расстановка запятых перед союзами 'а' и 'но'" section="auto">
         <test>
             <input>Он беден но зато талантлив.</input>
             <expected>Он беден, но зато талантлив.</expected>
@@ -68,7 +68,7 @@
             <expected>Мы больше не увидимся, а жаль.</expected>
         </test>
     </group>
-    <group desc="#B9 Добавление забытой точки в конце текста">
+    <group desc="#B9 Добавление забытой точки в конце текста" section="auto">
         <test>
             <input>В конце предложения ставится точка</input>
             <expected>В конце предложения ставится точка.</expected>
