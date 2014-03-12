@@ -4,6 +4,17 @@ namespace Wheels\Typo;
 
 class Utility
 {
+    static public function iconv($in_charset, $out_charset, $str)
+    {
+        $in_charset = strtoupper($in_charset);
+        if($in_charset === 'UTF-8')
+        {
+
+        }
+        else
+            return iconv($in_charset, $out_charset, $str);
+    }
+
     /**
      * Функция ord() для мультибайтовых символов.
      *
