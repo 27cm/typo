@@ -47,7 +47,7 @@
         </test>
         <test>
             <input><![CDATA[(blush) :$ :-$ :=$ :">]]></input>
-            <expected><![CDATA[<img src="/img/emoticons/skype/12.gif" width="20" height="20" title="(blush)" alt="(blush)"> <img src="/img/emoticons/skype/12.gif" width="20" height="20" title=":$" alt=":$"> <img src="/img/emoticons/skype/12.gif" width="20" height="20" title=":-$" alt=":-$"> <img src="/img/emoticons/skype/12.gif" width="20" height="20" title=":=$" alt=":=$"> <img src="/img/emoticons/skype/12.gif" width="20" height="20" title=":">" alt=":">">]]></expected>
+            <expected><![CDATA[<img src="/img/emoticons/skype/12.gif" width="20" height="20" title="(blush)" alt="(blush)"> <img src="/img/emoticons/skype/12.gif" width="20" height="20" title=":$" alt=":$"> <img src="/img/emoticons/skype/12.gif" width="20" height="20" title=":-$" alt=":-$"> <img src="/img/emoticons/skype/12.gif" width="20" height="20" title=":=$" alt=":=$"> <img src="/img/emoticons/skype/12.gif" width="20" height="20" title=":&quot;&gt;" alt=":&quot;&gt;">]]></expected>
         </test>
         <test>
             <input><![CDATA[(wonder) :^)]]></input>
