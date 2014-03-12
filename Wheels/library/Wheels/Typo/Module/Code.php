@@ -133,7 +133,7 @@ class Code extends Module
 
         $rules = array(
             '~<\h*code((?:\h[^>]*)?)>(.*(?:[\n\r]|<br\h*/?>).*)</code>~iusU' => function($m) use ($_this) {
-                $eol = str_replace(array('LF', 'CR'), array('\n', '\r'), $_this->getOption('end-of-line'));
+                $eol = str_replace(array('LF', 'CR'), array("\n", "\r"), $_this->getOption('end-of-line'));
 
                 $rules = array(
                     #A1 Оборачиваем каждую строку в тег code
