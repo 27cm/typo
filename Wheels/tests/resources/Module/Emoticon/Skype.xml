@@ -22,8 +22,8 @@
             <expected><![CDATA[<img src="/img/emoticons/skype/5.gif" width="20" height="20" title="(surprised)" alt="(surprised)"> <img src="/img/emoticons/skype/5.gif" width="20" height="20" title=":o" alt=":o"> <img src="/img/emoticons/skype/5.gif" width="20" height="20" title=":=o" alt=":=o"> <img src="/img/emoticons/skype/5.gif" width="20" height="20" title=":-o" alt=":-o"> <img src="/img/emoticons/skype/5.gif" width="20" height="20" title=":O" alt=":O"> <img src="/img/emoticons/skype/5.gif" width="20" height="20" title=":=O" alt=":=O"> <img src="/img/emoticons/skype/5.gif" width="20" height="20" title=":-O" alt=":-O">]]></expected>
         </test>
         <test>
-            <input><![CDATA[(wink) ;) ;) ;=)]]></input>
-            <expected><![CDATA[<img src="/img/emoticons/skype/6.gif" width="20" height="20" title="(wink)" alt="(wink)"> <img src="/img/emoticons/skype/6.gif" width="20" height="20" title=";)" alt=";)"> <img src="/img/emoticons/skype/6.gif" width="20" height="20" title=";)" alt=";)"> <img src="/img/emoticons/skype/6.gif" width="20" height="20" title=";=)" alt=";=)">]]></expected>
+            <input><![CDATA[(wink) ;) ;-) ;=)]]></input>
+            <expected><![CDATA[<img src="/img/emoticons/skype/6.gif" width="20" height="20" title="(wink)" alt="(wink)"> <img src="/img/emoticons/skype/6.gif" width="20" height="20" title=";)" alt=";)"> <img src="/img/emoticons/skype/6.gif" width="20" height="20" title=";-)" alt=";-)"> <img src="/img/emoticons/skype/6.gif" width="20" height="20" title=";=)" alt=";=)">]]></expected>
         </test>
         <test>
             <input><![CDATA[(cry) ;( ;-( ;=( :'(]]></input>
@@ -392,6 +392,12 @@
         <test>
             <input><![CDATA[(skype) (ss)]]></input>
             <expected><![CDATA[<img src="/img/emoticons/skype/99.gif" width="20" height="20" title="(skype)" alt="(skype)"> <img src="/img/emoticons/skype/99.gif" width="20" height="20" title="(ss)" alt="(ss)">]]></expected>
+        </test>
+    </group>
+    <group>
+        <test section="A">
+            <input><![CDATA[(wink) ;) ;-) ;=)]]></input>
+            <expected><![CDATA[<i class="smile smile-wink" style="width:18px; height:19px; background-image:url('/img/emoticons/skype/6.gif');" title="(wink) (Wink)" alt="(wink)"></i> <i class="smile smile-wink" style="width:18px; height:19px; background-image:url('/img/emoticons/skype/6.gif');" title=";) (Wink)" alt=";)"></i> <i class="smile smile-wink" style="width:18px; height:19px; background-image:url('/img/emoticons/skype/6.gif');" title=";-) (Wink)" alt=";-)"></i> <i class="smile smile-wink" style="width:18px; height:19px; background-image:url('/img/emoticons/skype/6.gif');" title=";=) (Wink)" alt=";=)"></i>]]></expected>
         </test>
     </group>
 </tests>

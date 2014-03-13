@@ -5,6 +5,7 @@ namespace Wheels\Typo\Module;
 use Wheels\Typo;
 use Wheels\Typo\Module;
 use Wheels\Typo\Utility;
+use Wheels\Typo\Exception;
 
 /**
  * Эмотиконы (смайлики).
@@ -36,30 +37,45 @@ abstract class Emoticon extends Module
      */
     static public $smiles = array();
 
+    /**
+     * Массив номеров эмотиконов.
+     *
+     * @var int[]
+     */
+    static protected $emoticons = null;
+
 
     // --- Заменитель ---
 
     const REPLACER = 'EMOTICON';
 
 
-    // --- Защищенные методы класса ---
+    // --- Открытые методы класса ---
 
     public function validateOption($name, &$value)
     {
         switch($name)
         {
-            case 'url' :
+            case 'tag' :
 
+            break;
+
+            case 'width' :
+            case 'height' :
+                if(!is_int($value))
+                    $value = intval($value);
             break;
 
             case 'attrs' :
                 if(!is_array($value))
                     return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть массивом, а не " . gettype($value));
 
-                foreach($value as &$attr)
+                foreach($value as $key => &$attr)
                 {
-                    if(!is_array($attr) || !array_key_exists('name', $attr) || !array_key_exists('value', $attr))
-                        return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть массивом элементов array('name' => '...', 'value' => '...', ['cond' => '...'])");
+                    if(!is_array($attr) || !array_key_exists('value', $attr))
+                        return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть массивом элементов array('value' => '...', ['name' => '...', 'cond' => '...'])");
+                    if(!array_key_exists('name', $attr))
+                        $attr['name'] = (string) $key;
                     if(!array_key_exists('cond', $attr))
                         $attr['cond'] = true;
                 }
@@ -69,107 +85,116 @@ abstract class Emoticon extends Module
         }
     }
 
+
+    // --- Защищенные методы класса ---
+
     /**
      * Стадия A.
      *
      * Заменяет смайлики на заменитель.
-     *
-     * @return void
      */
     protected function stageA()
     {
-        if(!$this->typo->options['html-out-enabled'])
-            return;
-
         $class = get_called_class();
-        if(empty($class::$smiles))
-            return;
 
-        $_this = $this;
-
-        $smiles = array();
-        foreach($class::$smiles as $i => $group)
+        if(is_null($class::$emoticons))
         {
-            foreach($group['replaces'] as $replace)
-                $smiles[$replace] = $i;
+            $class::$emoticons = array();
+            if(!empty($class::$smiles))
+            {
+                foreach($class::$smiles as $key => $group)
+                {
+                    foreach($group['replaces'] as $emoticon)
+                    {
+                        // @todo: сделать W_RUNTIME и не прерывать выполнение
+                        if(array_key_exists($emoticon, $class::$emoticons))
+                            return self::throwException(Exception::E_RUNTIME, "В массиве '$class::\$smiles' обнаружен повторящийся эмотикон {$emoticon}");
+                        $class::$emoticons[$emoticon] = $key;
+                    }
+                }
+
+                uksort($class::$emoticons, array($this, 'strlencmp'));
+            }
         }
 
-        uksort($smiles, function ($a, $b) {
-            return (strlen($a) > strlen($b)) ? -1 : 1;
-        });
-
-        $callback = function($smile) use($_this, $smiles, $class)
+        if($this->typo->options['html-out-enabled'] && !empty($class::$emoticons))
         {
-            $i = $smiles[$smile];
-            $parts = $class::$smiles[$i];
+            $_this = $this;
 
-            $src = $_this->getOption('url');
-            foreach($parts as $key => $value)
+            $callback = function($emoticon) use($_this)
             {
-                if(!is_array($value))
-                    $src = str_replace('{' . $key . '}', (string) $value, $src);
-            }
-            $parts = array_merge($parts, array('smile' => $smile));
+                $class = get_called_class();
 
-            $attrs = array('src' => $src);
+                $key = $class::$emoticons[$emoticon];
+                $smile = $class::$smiles[$key];
+                $data = array(
+                    'id'       => $smile['id'],
+                    'name'     => $smile['name'],
+                    'title'    => $smile['title'],
+                    'emoticon' => $emoticon,
+                    'width'    => $_this->getOption('width'),
+                    'height'   => $_this->getOption('height'),
+                );
 
-            $_this->setAttrs($parts, $attrs);
+                $attrs = $_this->setAttrs($data);
+                foreach($attrs as &$value)
+                {
+                    foreach($data as $key => $val)
+                        $value = str_replace('{' . $key . '}', (string) $val, $value);
+                }
 
-            $data = Utility::createElement('img', null, $attrs);
-            return $_this->text->pushStorage($data, Emoticon::REPLACER, Typo::VISIBLE);
-        };
+                $elem = Utility::createElement($_this->getOption('tag'), null, $attrs);
+                return $_this->text->pushStorage($elem, Emoticon::REPLACER, Typo::VISIBLE);
+            };
 
-        $this->typo->text->replace_callback(array_keys($smiles), $callback);
+            $this->typo->text->replace_callback(array_keys($class::$emoticons), $callback);
+        }
     }
 
     /**
      * Стадия D.
-     *
-     * Восстанавливает смайлики.
      */
     protected function stageD()
     {
-        if($this->typo->options['html-out-enabled'])
-        {
-            $this->text->popStorage(self::REPLACER, Typo::VISIBLE);
-        }
+        $this->text->popStorage(self::REPLACER, Typo::VISIBLE);
     }
 
     /**
      *
-     * @param type $parts
+     * @param type $data
      * @param array $attrs
      */
-    public function setAttrs($parts, array &$attrs)
+    public function setAttrs($data)
     {
+        $attrs = array();
         foreach($this->options['attrs'] as $attr)
         {
             $a_cond = $attr['cond'];
             if(is_callable($a_cond))
-                $a_cond = call_user_func($a_cond, $parts, $this);
+                $a_cond = call_user_func($a_cond, $data, $this);
 
             if($a_cond)
             {
                 $a_name = $attr['name'];
                 if(is_callable($a_name))
-                    $a_name = call_user_func($a_name, $parts, $this);
+                    $a_name = call_user_func($a_name, $data, $this);
 
                 $a_value = $attr['value'];
                 if(is_callable($a_value))
-                    $a_value = call_user_func($a_value, $parts, $this);
+                    $a_value = call_user_func($a_value, $data, $this);
 
                 $attrs[$a_name] = $a_value;
             }
         }
+
+        return $attrs;
     }
 
-    static public function attrTitle(array $parts, Module $_this)
+    static public function strlencmp($a, $b)
     {
-        return htmlspecialchars($parts['smile']);
-    }
+        $len_a = mb_strlen($a);
+        $len_b = mb_strlen($b);
 
-    static public function attrAlt(array $parts, Module $_this)
-    {
-        return htmlspecialchars($parts['smile']);
+        return (($len_a != $len_b) ? $len_b - $len_a : 0);
     }
 }

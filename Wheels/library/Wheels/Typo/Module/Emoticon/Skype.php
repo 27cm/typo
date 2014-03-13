@@ -17,33 +17,50 @@ class Skype extends Emoticon
      */
     static protected $default_options = array(
         /**
-         * URL изображений.
+         * HTML тег для изображений.
          *
          * @var string
          */
+        'tag' => 'img',
         // @todo: путь к файлу для WINDOWS и UNIX
-        'url' => '/img/emoticons/skype/{id}.gif',
 
         /**
-         * Дополнительные атрибуты.
+         * Ширина изображений смайликов.
+         *
+         * @var int
+         */
+        'width' => 20,
+
+        /**
+         * Высота изображений смайликов.
+         *
+         * @var int
+         */
+        'height' => 20,
+
+        /**
+         * Атрибуты.
+         *
+         * {id}       - номер;
+         * {name}     - имя;
+         * {title}    - название;
+         * {emoticon} - эмотикон;
+         * {width}    - ширина;
+         * {height}   - высота.
          *
          * @var array
          */
         'attrs' => array(
-//            'src' => array(
-//                'name' => 'src',
-//                'value' => '\Wheels\Typo\Module\Emoticon::attrSrc', /// ???
-//            ),
+            'src' => array(
+                'value' => '/img/emoticons/skype/{id}.gif',
+            ),
             'width' => array(
-                'name' => 'width',
-                'value' => '20',
+                'value' => '\Wheels\Typo\Module\Emoticon::attrWidth',
             ),
             'height' => array(
-                'name' => 'height',
-                'value' => '20',
+                'value' => '\Wheels\Typo\Module\Emoticon::attrHeight',
             ),
             'title' => array(
-                'name' => 'title',
                 'value' => '\Wheels\Typo\Module\Emoticon::attrTitle',
             ),
             'alt' => array(
@@ -91,8 +108,8 @@ class Skype extends Emoticon
         array(
             'id'       => 6,
             'name'     => 'wink',
-            'title'    => '',
-            'replaces' => array('(wink)', ';)', ';)', ';=)'),
+            'title'    => 'Wink',
+            'replaces' => array('(wink)', ';)', ';-)', ';=)'),
         ),
         array(
             'id'       => 7,
