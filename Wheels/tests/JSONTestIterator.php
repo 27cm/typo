@@ -4,7 +4,23 @@ class JSONTestIterator implements Iterator{
     private $tests;
     private $cur;
     public function __construct($file) {
-        // ...
+        $this->tests = array();
+        if (!file_exists($file)) {
+            return;
+        }
+        $string = file_get_contents($file);
+        $jsonTests = json_decode($string, true);
+        foreach($jsonTests['tests'] as $testGroup) {
+            $desc = $testGroup['desc'];
+            foreach($testGroup['group'] as $test) {
+                $input = str_replace("\n","\r\n",$test['input']);
+                $expected = str_replace("\n","\r\n",$test['expected']);
+                $section = (string)($test['section'] ?: $testGroup['section'] ?: $jsonTests['section']) ?: 'default';
+
+                $this->tests[] = array($input, $expected, $desc, $section);
+            }
+        }
+        $this->cur = 0;
     }
     public function current()
     {
