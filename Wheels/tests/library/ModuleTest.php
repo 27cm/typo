@@ -1,5 +1,6 @@
 <?php
 require_once 'XMLTestIterator.php';
+require_once 'JSONTestIterator.php';
 use Wheels\Typo;
 
 /**
@@ -27,14 +28,29 @@ abstract class ModuleTest extends PHPUnit_Framework_TestCase
         return new XMLTestIterator('resources' . DS . $filename);
     }
 
+    public function JSONProvider()
+    {
+        $filename = preg_replace('~Test$~', '', get_called_class()) . '.json';
+        return new XMLTestIterator('resources' . DS . $filename);
+    }
+
     /**
      * @dataProvider XMLProvider
      */
     public function testXMLFiles($input, $expected, $desc, $section)
     {
         $this->typo->setOptions($section);
-        $output = (string) $this->typo->process($input);
+        $output = $this->typo->process($input);
         $this->assertEquals($expected, $output, $desc);
     }
 
+    /**
+     * @dataProvider JSONProvider
+     */
+    public function testJSONFiles($input, $expected, $desc, $section)
+    {
+        $this->typo->setOptions($section);
+        $output = $this->typo->process($input);
+        $this->assertEquals($expected, $output, $desc);
+    }
 }
