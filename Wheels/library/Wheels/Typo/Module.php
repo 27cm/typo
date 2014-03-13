@@ -354,9 +354,7 @@ abstract class Module
         }
         elseif(!array_key_exists($classname, $this->modules))
         {
-            // @todo: fix \\
-            $classname = '\\' . $classname;
-            if($classname instanceof Wheels\Typo\Module)
+            if(is_subclass_of($classname, __CLASS__))
             {
                 $typo = ($this instanceof Typo) ? $this : $this->typo;
                 $this->modules[$classname] = new $classname($options, $typo);
@@ -654,7 +652,7 @@ abstract class Module
         if(class_exists($name))
             return $name;
 
-        $classname = __CLASS__;
+        $classname = '\\' . __CLASS__;
         foreach(explode('/', $name) as $part)
         {
             $classname .= '\\' . ucfirst($part);
