@@ -301,6 +301,31 @@ abstract class Module
     }
 
     /**
+     * Возвращает модуль с заданным именем.
+     *
+     * @param string $name  Имя модуля.
+     *
+     * @return \Wheels\Typo\Module
+     */
+    public function getModule($name)
+    {
+        $name = trim($name);
+        $name = str_replace('/', '\\', $name);
+
+        if(substr($name, 0, 1) !== '\\')
+            $name = '\\' . $name;
+
+        $name = preg_quote($name, '~');
+        foreach($this->modules as $key => $module)
+        {
+            if(preg_match('~' . $name . '$~i', '\\' . $key))
+                return $module;
+        }
+
+        return NULL;
+    }
+
+    /**
      * Добавляет модуль.
      *
      * @param string $name          Название класса, либо абсолютное или относительное (например ./module/name) название модуля.
@@ -318,7 +343,8 @@ abstract class Module
         elseif(!array_key_exists($classname, $this->modules))
         {
             // @todo: fix \\
-            if('\\' . $classname instanceof Wheels\Typo\Module)
+            $classname = '\\' . $classname;
+            if($classname instanceof Wheels\Typo\Module)
             {
                 $typo = ($this instanceof Typo) ? $this : $this->typo;
                 $this->modules[$classname] = new $classname($options, $typo);
