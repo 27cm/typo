@@ -328,13 +328,25 @@ abstract class Module
     /**
      * Добавляет модуль.
      *
-     * @param string $name          Название класса, либо абсолютное или относительное (например ./module/name) название модуля.
+     * @param \Wheels\Typo\Module|string $name  Модуль или его имя.
      * @param string|array $options
      *
      * @throws \Wheels\Typo\Exception
      */
     public function addModule($name, $options = 'default')
     {
+        if(is_object($module = $name) && ($module instanceof Wheels\Typo\Module))
+        {
+            $classname = get_class($module);
+            if(!array_key_exists($classname, $this->modules))
+            {
+                $module->setOptions($options);
+                $this->modules[$classname] = $module;
+                // $module->setTypo(...)
+            }
+            return;
+        }
+
         $classname = self::getModuleClassname($name);
         if(!class_exists($classname))
         {

@@ -210,7 +210,7 @@ class Utility
     {
         $a = '';
         foreach($attrs as $n => $v)
-            $a .= ' ' . $n . '="' . $v . '"';
+            $a .= ' ' . $n . '="' . htmlspecialchars($v) . '"';
 
         if($name == 'img')
             return "<{$name}{$a}>";
