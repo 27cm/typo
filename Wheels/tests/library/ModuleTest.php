@@ -31,7 +31,10 @@ abstract class ModuleTest extends PHPUnit_Framework_TestCase
     public function JSONProvider()
     {
         $filename = preg_replace('~Test$~', '', get_called_class()) . '.json';
-        return new XMLTestIterator('resources' . DS . $filename);
+
+        $filename = 'Module/Nobr.json'; // TODO удалить строку после конвертации json-файлов из xml
+
+        return new JSONTestIterator('resources' . DS . $filename);
     }
 
     /**
