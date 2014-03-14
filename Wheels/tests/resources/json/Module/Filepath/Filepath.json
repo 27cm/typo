@@ -1,0 +1,13 @@
+{
+	"tests" : [
+		{
+			"desc"    : "Файловый путь",
+			"group"   : [
+				{
+					"input"    : "C:\zzz.txt",
+					"expected" : "C:\zzz.txt"
+				}   
+			]
+		}   
+	]
+}
