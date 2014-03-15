@@ -32,8 +32,6 @@ abstract class ModuleTest extends PHPUnit_Framework_TestCase
     {
         $filename = preg_replace('~Test$~', '', get_called_class()) . '.json';
 
-        $filename = 'Module/Nobr.json'; // TODO удалить строку после конвертации json-файлов из xml
-
         return new JSONTestIterator('resources' . DS . $filename);
     }
 
@@ -42,7 +40,11 @@ abstract class ModuleTest extends PHPUnit_Framework_TestCase
      */
     public function testXMLFiles($input, $expected, $desc, $section)
     {
-        $this->typo->setOptions($section);
+        static $old_section = null;
+        if (!isset($old_section) || $section != $old_section) {
+            $this->typo->setOptions($section);
+            $old_section = $section;
+        }
         $output = $this->typo->process($input);
         $this->assertEquals($expected, $output, $desc);
     }
@@ -52,7 +54,11 @@ abstract class ModuleTest extends PHPUnit_Framework_TestCase
      */
     public function testJSONFiles($input, $expected, $desc, $section)
     {
-        $this->typo->setOptions($section);
+        static $old_section = null;
+        if (!isset($old_section) || $section != $old_section) {
+            $this->typo->setOptions($section);
+            $old_section = $section;
+        }
         $output = $this->typo->process($input);
         $this->assertEquals($expected, $output, $desc);
     }

@@ -13,9 +13,9 @@ class JSONTestIterator implements Iterator{
         foreach($jsonTests['tests'] as $testGroup) {
             $desc = $testGroup['desc'];
             foreach($testGroup['group'] as $test) {
-                $input = str_replace("\n","\r\n",$test['input']);
-                $expected = str_replace("\n","\r\n",$test['expected']);
-                $section = (string)($test['section'] ?: $testGroup['section'] ?: $jsonTests['section']) ?: 'default';
+                $input = $test['input'];
+                $expected = $test['expected'];
+                $section = $test['section'] ?: $testGroup['section'] ?: $jsonTests['section'] ?: 'default';
 
                 $this->tests[] = array($input, $expected, $desc, $section);
             }
