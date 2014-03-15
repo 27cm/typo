@@ -1,47 +1,49 @@
 <?php
 
 function escapeJSONString($str) {
-   return  str_replace(array("\\","\"","\r\n","\n","\t"),array("\\\\","\\\"","\\r\\n","\\n","\\t"),$str);
+   return  str_replace(array("\\","\"","\r\n","\n","\t"),array("\\\\","\\\"","\\r\\n","\\r\\n","\\t"),$str);
 }
+
 function xmlTest2json($file) {
     $xmlTests = simplexml_load_file($file);
 
     $indent = "    ";
+    $lineSep =  "\r\n";
     $section = escapeJSONString($xmlTests->attributes()['section']);
-    $section = $section ? "{$indent}\"section\" : \"" . $section . "\",\r\n" : '';
+    $section = $section ? "{$indent}\"section\" : \"" . $section . "\",'{$lineSep}" : '';
     $tests = "{$indent}\"tests\" : ";
     $json =
-    "{\r\n" .
+    "{{$lineSep}" .
     $section .
     $tests .
-    "[\r\n";
+    "[{$lineSep}";
 
     $firstGroup = true;
     foreach($xmlTests->group as $testGroup) {
         if (!$firstGroup) {
-            $json .= ",\r\n";
+            $json .= ",{$lineSep}";
         }
         $firstGroup = false;
         $desc = (string)$testGroup->attributes()['desc'];
 
         $section = escapeJSONString($testGroup->attributes()['section']);
-        $section = $section ? "{$indent}\"section\"  : \"" . $section . "\",\r\n" : '';
+        $section = $section ? "{$indent}\"section\"  : \"" . $section . "\",{$lineSep}" : '';
 
         if ($desc) {
             $desc  = escapeJSONString($desc);
-            $desc = "{$indent}\"desc\"    : \"{$desc}\",\r\n";
+            $desc = "{$indent}\"desc\"    : \"{$desc}\",{$lineSep}";
         }
         $group = "{$indent}\"group\"   : ";
-        $jGroup = "{\r\n" .
+        $jGroup = "{{$lineSep}" .
                   $section .
                   $desc .
                   $group .
-            "[\r\n";
+            "[{$lineSep}";
 
         $firstTest = true;
         foreach($testGroup->test as $test) {
             if (!$firstTest) {
-                $jGroup .= ",\r\n";
+                $jGroup .= ",{$lineSep}";
             }
             $firstTest = false;
             $input = escapeJSONString($test->input);
@@ -49,10 +51,10 @@ function xmlTest2json($file) {
 
             $section = escapeJSONString($test->attributes()['section']);
 
-            $section = $section ? "{$indent}\"section\"   : \"" . $section . "\",\r\n" : '';
-            $input = "{$indent}\"input\"    : \"{$input}\",\r\n";
-            $expected = "{$indent}\"expected\" : \"{$expected}\"\r\n";
-            $jTest ="{\r\n" .
+            $section = $section ? "{$indent}\"section\"   : \"" . $section . "\",{$lineSep}" : '';
+            $input = "{$indent}\"input\"    : \"{$input}\",{$lineSep}";
+            $expected = "{$indent}\"expected\" : \"{$expected}\"{$lineSep}";
+            $jTest ="{{$lineSep}" .
                     $section .
                     $input .
                     $expected .
@@ -60,7 +62,7 @@ function xmlTest2json($file) {
 
             $jGroup .= preg_replace('~^~m',"{$indent}{$indent}",$jTest);
         }
-        $jGroup .= "{$indent}\r\n{$indent}]\r\n" .
+        $jGroup .= "{$indent}{$lineSep}{$indent}]{$lineSep}" .
             "}";
 
         $json .= preg_replace('~^~m',"{$indent}{$indent}",$jGroup);
@@ -68,7 +70,7 @@ function xmlTest2json($file) {
 
 
     $json .=
-    "{$indent}\r\n{$indent}]\r\n" .
+    "{$indent}{$lineSep}{$indent}]{$lineSep}" .
     "}";
     return $json;
 }

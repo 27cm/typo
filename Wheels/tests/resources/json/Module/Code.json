@@ -17,20 +17,20 @@
             "desc"    : "Обработка многострочного участка кода",
             "group"   : [
                 {
-                    "input"    : "<code>function fib($n) {<br />    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);\n}</code>",
-                    "expected" : "<pre><code>function fib($n) {</code>\n<code>    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);</code>\n<code>}</code></pre>"
+                    "input"    : "<code>function fib($n) {<br />    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);\r\n}</code>",
+                    "expected" : "<pre><code>function fib($n) {</code>\r\n<code>    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);</code>\r\n<code>}</code></pre>"
                 },
                 {
-                    "input"    : "<code>function fib($n) {\n    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);\n}        </code>",
-                    "expected" : "<pre><code>function fib($n) {</code>\n<code>    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);</code>\n<code>}</code></pre>"
+                    "input"    : "<code>function fib($n) {\r\n    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);\r\n}        </code>",
+                    "expected" : "<pre><code>function fib($n) {</code>\r\n<code>    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);</code>\r\n<code>}</code></pre>"
                 },
                 {
-                    "input"    : "<code>function fib($n) {\n\treturn ($n < 3) ? 1 : fib($n-1) + fib($n-2);\n}</code>",
-                    "expected" : "<pre><code>function fib($n) {</code>\n<code>    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);</code>\n<code>}</code></pre>"
+                    "input"    : "<code>function fib($n) {\r\n\treturn ($n < 3) ? 1 : fib($n-1) + fib($n-2);\r\n}</code>",
+                    "expected" : "<pre><code>function fib($n) {</code>\r\n<code>    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);</code>\r\n<code>}</code></pre>"
                 },
                 {
-                    "input"    : "<code id=\"example\" class=\"code code-example\">function fib($n) {\n    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);\n}</code>",
-                    "expected" : "<pre id=\"example\" class=\"code code-example\"><code>function fib($n) {</code>\n<code>    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);</code>\n<code>}</code></pre>"
+                    "input"    : "<code id=\"example\" class=\"code code-example\">function fib($n) {\r\n    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);\r\n}</code>",
+                    "expected" : "<pre id=\"example\" class=\"code code-example\"><code>function fib($n) {</code>\r\n<code>    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);</code>\r\n<code>}</code></pre>"
                 }    
             ]
         }    

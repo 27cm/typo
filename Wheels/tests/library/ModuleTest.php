@@ -14,12 +14,12 @@ abstract class ModuleTest extends PHPUnit_Framework_TestCase
      *
      * @var \Wheels\Typo
      */
-    protected $typo;
+    protected static $typo;
 
-    protected function setUp()
+    public static function setUpBeforeClass()
     {
-        $this->typo = new Typo();
-        $this->typo->setConfigDir(TEST_DIR . DS . 'config' . DS . get_called_class());
+        self::$typo = new Typo();
+        self::$typo->setConfigDir(TEST_DIR . DS . 'config' . DS . get_called_class());
     }
 
     public function XMLProvider()
@@ -35,19 +35,19 @@ abstract class ModuleTest extends PHPUnit_Framework_TestCase
         return new JSONTestIterator('resources' . DS . "json" . DS . $filename);
     }
 
-//    /**
-//     * @dataProvider XMLProvider
-//     */
-//    public function testXMLFiles($input, $expected, $desc, $section)
-//    {
-//        static $old_section = null;
-//        if (!isset($old_section) || $section != $old_section) {
-//            $this->typo->setOptions($section);
-//            $old_section = $section;
-//        }
-//        $output = $this->typo->process($input);
-//        $this->assertEquals($expected, $output, $desc);
-//    }
+    /**
+     * @dataProvider XMLProvider
+     */
+    public function testXMLFiles($input, $expected, $desc, $section)
+    {
+        static $old_section = null;
+        if (!isset($old_section) || $section != $old_section) {
+            self::$typo->setOptions($section);
+            $old_section = $section;
+        }
+        $output = self::$typo->process($input);
+        $this->assertEquals($expected, $output, $desc);
+    }
 
     /**
      * @dataProvider JSONProvider
@@ -56,10 +56,10 @@ abstract class ModuleTest extends PHPUnit_Framework_TestCase
     {
         static $old_section = null;
         if (!isset($old_section) || $section != $old_section) {
-            $this->typo->setOptions($section);
+            self::$typo->setOptions($section);
             $old_section = $section;
         }
-        $output = $this->typo->process($input);
+        $output = self::$typo->process($input);
         $this->assertEquals($expected, $output, $desc);
     }
 }

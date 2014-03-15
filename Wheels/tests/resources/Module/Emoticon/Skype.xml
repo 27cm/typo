@@ -395,7 +395,7 @@
         </test>
     </group>
     <group>
-        <test>
+        <test section="A">
             <input><![CDATA[(wink) ;) ;-) ;=)]]></input>
             <expected><![CDATA[<i class="smile smile-wink" style="width:18px; height:19px; background-image:url('/img/emoticons/skype/6.gif');" title="(wink) (Wink)" alt="(wink)"></i> <i class="smile smile-wink" style="width:18px; height:19px; background-image:url('/img/emoticons/skype/6.gif');" title=";) (Wink)" alt=";)"></i> <i class="smile smile-wink" style="width:18px; height:19px; background-image:url('/img/emoticons/skype/6.gif');" title=";-) (Wink)" alt=";-)"></i> <i class="smile smile-wink" style="width:18px; height:19px; background-image:url('/img/emoticons/skype/6.gif');" title=";=) (Wink)" alt=";=)"></i>]]></expected>
         </test>
