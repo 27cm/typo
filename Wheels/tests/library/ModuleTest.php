@@ -32,22 +32,22 @@ abstract class ModuleTest extends PHPUnit_Framework_TestCase
     {
         $filename = preg_replace('~Test$~', '', get_called_class()) . '.json';
 
-        return new JSONTestIterator('resources' . DS . $filename);
+        return new JSONTestIterator('resources' . DS . "json" . DS . $filename);
     }
 
-    /**
-     * @dataProvider XMLProvider
-     */
-    public function testXMLFiles($input, $expected, $desc, $section)
-    {
-        static $old_section = null;
-        if (!isset($old_section) || $section != $old_section) {
-            $this->typo->setOptions($section);
-            $old_section = $section;
-        }
-        $output = $this->typo->process($input);
-        $this->assertEquals($expected, $output, $desc);
-    }
+//    /**
+//     * @dataProvider XMLProvider
+//     */
+//    public function testXMLFiles($input, $expected, $desc, $section)
+//    {
+//        static $old_section = null;
+//        if (!isset($old_section) || $section != $old_section) {
+//            $this->typo->setOptions($section);
+//            $old_section = $section;
+//        }
+//        $output = $this->typo->process($input);
+//        $this->assertEquals($expected, $output, $desc);
+//    }
 
     /**
      * @dataProvider JSONProvider
