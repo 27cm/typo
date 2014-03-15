@@ -53,7 +53,7 @@ class Typo extends Module
     /**
      * @see \Wheels\Typo\Module::$default_options
      */
-    static protected $default_options = array(
+    static protected $_default_options = array(
         /**
          * Кодировка текста.
          *
@@ -233,21 +233,21 @@ class Typo extends Module
         if($text instanceof Text)
             // @todo нельзя переопределять
             $this->text = $text;
-        elseif($this->options['charset'] == self::AUTO)
+        elseif($this->_options['charset'] == self::AUTO)
         {
             $this->text->setText($text);
             $this->setOption('charset', $this->text->getEncoding());
         }
         else
         {
-            $this->text->setText($text, $this->options['charset']);
+            $this->text->setText($text, $this->_options['charset']);
         }
 
         // @todo: исправить ошибки повторного вызова
         // text->getCharset();
-        if($this->options['encoding'] == self::AUTO)
+        if($this->_options['encoding'] == self::AUTO)
         {
-            switch($this->options['charset'])
+            switch($this->_options['charset'])
             {
                 case 'utf-8' :
                     $this->setOption('encoding', self::MODE_NONE);
@@ -258,7 +258,7 @@ class Typo extends Module
             }
         }
 
-        $charset = $this->options['charset'];
+        $charset = $this->_options['charset'];
         $int_encoding = mb_internal_encoding();
         $default_charset = 'UTF-8';
 
@@ -335,10 +335,10 @@ class Typo extends Module
      */
     protected function stageB()
     {
-        if($this->options['encoding'] !== self::MODE_NONE)
+        if($this->_options['encoding'] !== self::MODE_NONE)
         {
             $replace = array();
-            switch($this->options['encoding'])
+            switch($this->_options['encoding'])
             {
                 case self::MODE_CODES :
                     foreach(self::$chars['ord'] as $ent => $ord)
@@ -401,7 +401,7 @@ class Typo extends Module
      */
     protected function chr($c)
     {
-        switch($this->options['encoding'])
+        switch($this->_options['encoding'])
         {
             case self::MODE_NONE :
                 return Utility::chr($c);

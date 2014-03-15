@@ -20,7 +20,7 @@ class Nobr extends Module
     /**
      * @see \Wheels\Typo\Module::$default_options
      */
-    static protected $default_options = array(
+    static protected $_default_options = array(
         /**
          * Открывающий тег для неразрывных конструкций.
          *

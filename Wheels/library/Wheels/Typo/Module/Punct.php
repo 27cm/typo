@@ -16,7 +16,7 @@ class Punct extends Module
     /**
      * @see \Wheels\Typo\Module::$default_options
      */
-    static protected $default_options = array(
+    static protected $_default_options = array(
         /**
          * Исправление пробелов возле знаков препинания.
          *

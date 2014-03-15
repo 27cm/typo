@@ -117,7 +117,7 @@ abstract class Emoticon extends Module
             }
         }
 
-        if($this->typo->options['html-out-enabled'] && !empty($class::$emoticons))
+        if($this->typo->_options['html-out-enabled'] && !empty($class::$emoticons))
         {
             $_this = $this;
 
@@ -167,7 +167,7 @@ abstract class Emoticon extends Module
     public function setAttrs($data)
     {
         $attrs = array();
-        foreach($this->options['attrs'] as $attr)
+        foreach($this->_options['attrs'] as $attr)
         {
             $a_cond = $attr['cond'];
             if(is_callable($a_cond))

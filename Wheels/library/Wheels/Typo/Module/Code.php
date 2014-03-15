@@ -20,7 +20,7 @@ class Code extends Module
      *
      * @var array
      */
-    static protected $default_options = array(
+    static protected $_default_options = array(
         /**
          * Перевод строки.
          *
@@ -126,7 +126,7 @@ class Code extends Module
      */
     protected function stageA()
     {
-        if(!$this->typo->options['html-in-enabled'])
+        if(!$this->typo->_options['html-in-enabled'])
             return;
 
         $_this = $this;

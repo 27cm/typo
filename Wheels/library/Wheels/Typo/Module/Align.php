@@ -15,7 +15,7 @@ class Align extends Module
      *
      * @var array
      */
-    static protected $default_options = array(
+    static protected $_default_options = array(
         /**
          * Открывающая кавычка.
          *
@@ -90,12 +90,12 @@ class Align extends Module
         $c =& Typo::$chars['chr'];
 
         $q1 = array(
-            'open'  => $c[$this->options['quote-open']],
-            'close' => $c[$this->options['quote-close']],
+            'open'  => $c[$this->_options['quote-open']],
+            'close' => $c[$this->_options['quote-close']],
         );
         $q2 = array(
-            'open'  => $c[$this->options['subquote-open']],
-            'close' => $c[$this->options['subquote-close']],
+            'open'  => $c[$this->_options['subquote-open']],
+            'close' => $c[$this->_options['subquote-close']],
         );
 
         $classes = array(

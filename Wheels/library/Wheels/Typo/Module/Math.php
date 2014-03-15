@@ -17,7 +17,7 @@ class Math extends Module
      *
      * @var array
      */
-    static protected $default_options = array(
+    static protected $_default_options = array(
         /**
          * Дроби.
          *
@@ -82,7 +82,7 @@ class Math extends Module
             '~(?<=\b)(кв|куб)\.\h?(([изафпнмсдгкМГТПЭЗИ]|мк|да)?м|([yzafpnmcdhkMGTPEZY\xB5]|da)?m)(?=\b)~u' => function($m) use($_this, $c) {
                 $d = ($m[1] == 'кв') ? '2' : '3';
 
-                if($_this->typo->options['html-out-enabled'])
+                if($_this->typo->_options['html-out-enabled'])
                     return '$1' . $_this->sup($d);
                 else
                     return $c['sup' . $d];
@@ -90,14 +90,14 @@ class Math extends Module
             '~(?<=\b)(([изафпнмсдгкМГТПЭЗИ]|мк|да)?м|([yzafpnmcdhkMGTPEZY\xB5]|da)?m)([23])(?=\b)~u' => function($m) use($_this, $c) {
                 $d = $m[2];
 
-                if($_this->typo->options['html-out-enabled'])
+                if($_this->typo->_options['html-out-enabled'])
                     return '$1' . $_this->sup($d);
                 else
                     return $c['sup' . $d];
             },
         );
 
-        if($this->typo->options['html-out-enabled'])
+        if($this->typo->_options['html-out-enabled'])
         {
             $rules += array(
                 $c['sup1'] => $this->sup('1'),

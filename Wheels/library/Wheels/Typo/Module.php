@@ -33,14 +33,14 @@ abstract class Module
      *
      * @var array
      */
-    protected $options = array();
+    protected $_options = array();
 
     /**
      * Настройки по умолчанию.
      *
      * @var array
      */
-    static protected $default_options = array();
+    static protected $_default_options = array();
 
     /**
      * Область работы модуля.
@@ -54,14 +54,14 @@ abstract class Module
      *
      * @var \Wheels\Typo\Module[]
      */
-    protected $modules = array();
+    protected $_modules = array();
 
     /**
      * Текущая стадия.
      *
      * @var int
      */
-    protected $stage;
+    protected $_stage;
 
     /**
      * Приоритет выполнения стадий
@@ -117,7 +117,7 @@ abstract class Module
         $this->setOptions($options);
         foreach($this->getDefaultOptions() as $name => $value)
         {
-            if(!array_key_exists($name, $this->options))
+            if(!array_key_exists($name, $this->_options))
                 $this->setOption($name, $value);
         }
     }
@@ -130,7 +130,7 @@ abstract class Module
     public function getDefaultOptions()
     {
         $class = get_called_class();
-        return $class::$default_options;
+        return $class::$_default_options;
     }
 
 
@@ -192,7 +192,7 @@ abstract class Module
 
         $this->validateOption($name, $value);
 
-        $this->options[$name] = $value;
+        $this->_options[$name] = $value;
         $this->onChangeOption($name, $value);
     }
 
@@ -283,7 +283,7 @@ abstract class Module
         if(!$this->checkOptionExists($name))
             return self::throwException(Exception::E_OPTION_NAME, "Несуществующий параметр '$name'");
 
-        return $this->options[$name];
+        return $this->_options[$name];
     }
 
     /**
@@ -295,7 +295,7 @@ abstract class Module
     {
         $class = get_called_class();
         $stages = self::getStages();
-        $key = $stages[$this->stage];
+        $key = $stages[$this->_stage];
 
         return $class::$order[$key];
     }
@@ -316,7 +316,7 @@ abstract class Module
             $name = '\\' . $name;
 
         $name = preg_quote($name, '~');
-        foreach($this->modules as $key => $module)
+        foreach($this->_modules as $key => $module)
         {
             if(preg_match('~' . $name . '$~i', '\\' . $key))
                 return $module;
@@ -338,10 +338,10 @@ abstract class Module
         if(is_object($module = $name) && ($module instanceof Wheels\Typo\Module))
         {
             $classname = get_class($module);
-            if(!array_key_exists($classname, $this->modules))
+            if(!array_key_exists($classname, $this->_modules))
             {
                 $module->setOptions($options);
-                $this->modules[$classname] = $module;
+                $this->_modules[$classname] = $module;
                 // $module->setTypo(...)
             }
             return;
@@ -352,12 +352,12 @@ abstract class Module
         {
             return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный модуль '$name' (класс $classname не найден)");
         }
-        elseif(!array_key_exists($classname, $this->modules))
+        elseif(!array_key_exists($classname, $this->_modules))
         {
             if(is_subclass_of($classname, __CLASS__))
             {
                 $typo = ($this instanceof Typo) ? $this : $this->typo;
-                $this->modules[$classname] = new $classname($options, $typo);
+                $this->_modules[$classname] = new $classname($options, $typo);
             }
             else
                 return self::throwException(Exception::E_OPTION_VALUE, "Класс $classname не является модулем");
@@ -380,10 +380,10 @@ abstract class Module
         {
             return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный модуль '$name' (класс " . $classname . " не найден)");
         }
-        elseif(array_key_exists($classname, $this->modules))
+        elseif(array_key_exists($classname, $this->_modules))
         {
-            $this->options['modules'] = array_diff($this->options['modules'], array($classname));
-            unset($this->modules[$classname]);
+            $this->_options['modules'] = array_diff($this->_options['modules'], array($classname));
+            unset($this->_modules[$classname]);
         }
     }
 
@@ -394,7 +394,7 @@ abstract class Module
 
     public function setNextStage()
     {
-        return $this->setStage($this->stage + 1);
+        return $this->setStage($this->_stage + 1);
     }
 
     /**
@@ -410,12 +410,12 @@ abstract class Module
         if($stage < 0 || $stage >= $count)
             return false;
 
-        $this->stage = $stage;
+        $this->_stage = $stage;
 
-        foreach($this->modules as $module)
+        foreach($this->_modules as $module)
             $module->setStage($stage);
 
-        uasort($this->modules, function(Module $a, Module $b) {
+        uasort($this->_modules, function(Module $a, Module $b) {
             return ($a->getOrder() < $b->getOrder()) ? -1 : 1;
         });
 
@@ -435,7 +435,7 @@ abstract class Module
         $method = $this->getStageMethod();
 
         $fl = true;
-        foreach($this->modules as $module)
+        foreach($this->_modules as $module)
         {
             if($fl && $module->getOrder() >= $this->getOrder())
             {
@@ -470,9 +470,9 @@ abstract class Module
         $replaces = array();
         foreach($rules as $key => $value)
         {
-            if(is_array($value) && array_key_exists($key, $this->options))
+            if(is_array($value) && array_key_exists($key, $this->_options))
             {
-                if($this->options[$key])
+                if($this->_options[$key])
                 {
                     $patterns = array_merge($patterns, array_keys($value));
                     $replaces = array_merge($replaces, array_values($value));
@@ -533,7 +533,7 @@ abstract class Module
         switch($name)
         {
             case 'modules' :
-                $this->modules = array();
+                $this->_modules = array();
                 foreach($value as $module)
                 {
                     $this->addModule($module, $this->config_section);
@@ -568,7 +568,7 @@ abstract class Module
     protected function getStageMethod()
     {
         $stages = self::getStages();
-        $name = $stages[$this->stage];
+        $name = $stages[$this->_stage];
         return 'stage' . $name;
     }
 

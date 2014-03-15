@@ -21,7 +21,7 @@ class Html extends Module
      *
      * @var array
      */
-    static protected $default_options = array(
+    static protected $_default_options = array(
         /**
          * Безопасные блоки, содержимое которых не обрабатывается типографом.
          *
@@ -131,10 +131,10 @@ class Html extends Module
      */
     protected function stageA()
     {
-        if($this->typo->options['html-in-enabled'])
+        if($this->typo->_options['html-in-enabled'])
         {
-            $safe_blocks_visible = array_diff($this->options['safe-blocks'], self::$invisible_blocks);
-            $safe_blocks_invisible = array_intersect($this->options['safe-blocks'], self::$invisible_blocks);
+            $safe_blocks_visible = array_diff($this->_options['safe-blocks'], self::$invisible_blocks);
+            $safe_blocks_invisible = array_intersect($this->_options['safe-blocks'], self::$invisible_blocks);
 
             $this->removeBlocks($safe_blocks_visible, self::REPLACER_BLOCK, Typo::VISIBLE);
             $this->removeBlocks($safe_blocks_invisible, self::REPLACER_BLOCK, Typo::INVISIBLE);
@@ -145,7 +145,7 @@ class Html extends Module
         }
         else
         {
-            $this->removeBlocks($this->options['safe-blocks'], self::REPLACER_BLOCK, Typo::VISIBLE);
+            $this->removeBlocks($this->_options['safe-blocks'], self::REPLACER_BLOCK, Typo::VISIBLE);
 
             $this->removeAllTags(self::REPLACER_TAG, Typo::VISIBLE);
         }
@@ -158,7 +158,7 @@ class Html extends Module
      */
     protected function stageD()
     {
-        if($this->typo->options['html-in-enabled'])
+        if($this->typo->_options['html-in-enabled'])
         {
             $this->text->popStorage(self::REPLACER_TAG, Typo::INVISIBLE);
             $this->text->popStorage(self::REPLACER_TAG, Typo::VISIBLE);
@@ -237,7 +237,7 @@ class Html extends Module
      */
     public function removeAllTags($replacer, $type)
     {
-        if(!empty($this->options['typo-attrs']))
+        if(!empty($this->_options['typo-attrs']))
         {
             $_this = $this;
             /*$typo = new Typo(array(
@@ -245,10 +245,10 @@ class Html extends Module
                 'html-out-enabled' => false,
             ));*/
 
-            $pattern = '~(?<=\s)(?<name>' . implode('|', array_map('preg_quote', $this->options['typo-attrs'])) . ')\=["\'](?<value>[^"\']*)["\']~iu';
+            $pattern = '~(?<=\s)(?<name>' . implode('|', array_map('preg_quote', $this->_options['typo-attrs'])) . ')\=["\'](?<value>[^"\']*)["\']~iu';
 
             $callback = function($matches) use(/*$typo, */$_this) {
-                $text = new Text($matches['value'], Text::TYPE_HTML_ATTR_VALUE, $_this->options['charset']);
+                $text = new Text($matches['value'], Text::TYPE_HTML_ATTR_VALUE, $_this->_options['charset']);
                 return $matches['name'] . '="' . /*$typo->execute(*/$text/*)*/ . '"';
             };
 

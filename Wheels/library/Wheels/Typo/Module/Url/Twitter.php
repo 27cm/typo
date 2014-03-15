@@ -16,7 +16,7 @@ class Twitter extends Url
      *
      * @var array
      */
-    static protected $default_options = array(
+    static protected $_default_options = array(
         /**
          * Дополнительные атрибуты.
          *
@@ -70,7 +70,7 @@ class Twitter extends Url
      */
     protected function stageA()
     {
-        if($this->typo->options['html-out-enabled'])
+        if($this->typo->_options['html-out-enabled'])
         {
             $_this = $this;
             $rules = array(

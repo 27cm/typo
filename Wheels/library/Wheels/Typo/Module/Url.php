@@ -25,7 +25,7 @@ class Url extends Module
      *
      * @var array
      */
-    static protected $default_options = array(
+    static protected $_default_options = array(
         /**
          * Дополнительные атрибуты.
          *
@@ -142,7 +142,7 @@ class Url extends Module
      */
     public function setAttrs($parts, array &$attrs)
     {
-        foreach($this->options['attrs'] as $attr)
+        foreach($this->_options['attrs'] as $attr)
         {
             $a_cond = $attr['cond'];
             if(is_callable($a_cond))
