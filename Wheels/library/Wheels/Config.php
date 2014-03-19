@@ -1,66 +1,291 @@
 <?php
 
-namespace Wheels\Typo;
+namespace Wheels;
 
+use Wheels\Typo\Module;
 use Wheels\Typo\Exception;
 
 /**
- * Конфигурационный INI файл.
+ * Класс для работы с параметрами настроек.
  *
- * Считывает данные из конфигурационного INI файла.
+ * Объекту этого класса может быть задано описание конфигурации,
+ * включающее имена, типы, значения параметров по умолчанию и т.п.
+ *
+ * Параметры конфигурации могут быть установлены из ассоциативного массива,
+ * конфигурационного INI файла, в том числе из отдельной секции INI файла.
  */
 class Config
 {
     /**
-     * Разделитель ключей параметров.
+     * Описание конфигурации.
      *
-     * @var string
+     * @var array|NULL
      */
-    protected $sep = '.';
+    protected $_schema = NULL;
 
     /**
-     * Директория обрабатываемого файла.
+     * Значения параметров.
      *
-     * @var string
+     * @var array
      */
-    protected $directory;
+    protected $_options = array();
 
     /**
      * Загруженные секции.
      *
      * @var array
      */
-    protected $sections = array();
+    protected $_sections = array();
 
-    protected $filename;
+    /**
+     * Директория обрабатываемого файла.
+     *
+     * @var string
+     */
+    private $_directory;
 
-    public function __construct($filename)
+
+    // --- Константы ---
+
+    /**
+     * Разделитель ключей параметров.
+     */
+    const INI_KEY_SEP = '.';
+
+    /**
+     * Разделитель секций.
+     */
+    const INI_SECTION_SEP = ':';
+
+
+    // --- Конструктор ---
+
+    public function __construct(array $schema = NULL)
     {
-        if(!is_file($filename))
-            Module::throwException(Exception::E_RUNTIME, "Файл '$filename' не найден");
-        if(!is_readable($filename))
-            Module::throwException(Exception::E_RUNTIME, "Файл '$filename' закрыт для чтения");
+        if(!is_null($schema))
+        {
+            if(!is_array($schema))
+                Module::throwException(Exception::E_RUNTIME, "Параметр 'schema' должен быть массивом");
 
-        $this->filename = $filename;
-        $this->directory = realpath(dirname($filename));
+            $diff = array_diff(array_keys($schema), array('options', 'case-sensitive'));
+            if(!empty($diff))
+                Module::throwException(Exception::E_RUNTIME, 'Неизвестные разделы описания конфигурации: ' . implode(', ', $diff));
 
-        $this->sections = $this->process();
+            if(!array_key_exists('case-sensitive', $schema))
+                $schema['case-sensitive'] = TRUE;
+            else
+                $schema['case-sensitive'] = (bool) $schema['case-sensitive'];
+
+            if(!array_key_exists('options', $schema))
+                $schema['options'] = array();
+
+            if(!is_array($schema['options']))
+                Module::throwException(Exception::E_RUNTIME, "Раздел 'options' описания конфигурации должен быть массивом");
+
+            foreach($schema['options'] as $name => $option_schema)
+            {
+                if(!is_string($name))
+                    Module::throwException(Exception::E_RUNTIME, "Ключи массива в разделе 'options' описания конфигурации должны быть строками");
+
+                if(!is_array($option_schema))
+                    Module::throwException(Exception::E_RUNTIME, "Элементы раздела 'options' описания конфигурации должны быть массивами");
+
+                $diff = array_diff(array_keys($option_schema), array('desc', 'type', 'default', 'inherit'));
+                if(!empty($diff))
+                    Module::throwException(Exception::E_RUNTIME, "Неизвестные элементы раздела 'options' описания конфигурации: " . implode(', ', $diff));
+
+                if(!array_key_exists('default', $option_schema))
+                    Module::throwException(Exception::E_RUNTIME, "Для параметра '$name' раздела 'options' описания конфигурации не задано значение по умолчанию");
+            }
+
+            $this->_schema = $schema;
+        }
+
+        $this->setDefaultOptions();
     }
 
-    public function getDirectory()
+
+    // --- Открытые методы ---
+
+    public function getDefaultOptions()
     {
-        return $this->directory;
+        $options = array();
+
+        if($this->_isSchema())
+        {
+            foreach($this->_schema['options'] as $name => $option_schema)
+            {
+                $options[$name] = $option_schema['default'];
+            }
+        }
+
+        return $options;
+    }
+
+    public function setOptions(array $options)
+    {
+        $exception = null;
+
+        foreach($options as $name => $value)
+        {
+            try
+            {
+                $this->setOption($name, $value);
+            }
+            catch(Exception $e)
+            {
+                if(isset($exception))
+                    $exception = new Exception($e->getMessage(), $e->getCode(), $exception);
+                else
+                    $exception = new Exception($e->getMessage(), $e->getCode());
+            }
+        }
+
+        if(isset($exception))
+            throw $exception;
+    }
+
+    public function setDefaultOptions()
+    {
+        $this->_options = array();
+        $this->setOptions($this->getDefaultOptions());
+    }
+
+    public function setOptionsFromFile($filename, $section = NULL)
+    {
+        $options = $this->_processIniFile($filename, $section);
+
+        $this->setOptions($options);
+    }
+
+    public function setOption($name, $value)
+    {
+        $name = $this->_prepareOptionName($name);
+
+        $this->_validateOptionName($name);
+        $this->_validateOptionValue($name, $value);
+
+        $this->_options[$name] = $value;
+    }
+
+    public function getOptions()
+    {
+        return $this->_options;
+    }
+
+    public function getOption($name)
+    {
+        $name = $this->_prepareOptionName($name);
+
+        if(!array_key_exists($name, $this->_options))
+            return Module::throwException(Exception::E_OPTION_NAME, "Неизвестный параметр '$name'");
+
+        return $this->_options[$name];
+    }
+
+    protected function _isSchema()
+    {
+        return (!is_null($this->_schema));
+    }
+
+    protected function _isCaseSensitive()
+    {
+        return ($this->_isSchema() ? $this->_schema['case-sensitive'] : TRUE);
+    }
+
+    protected function _prepareSectionName($section)
+    {
+        return ($this->_isCaseSensitive() ? $section : strtolower($section));
+    }
+
+    protected function _prepareOptionName($name)
+    {
+        return ($this->_isCaseSensitive() ? $name : strtolower($name));
+    }
+
+    protected function _validateOptionName($name)
+    {
+        $name = $this->_prepareOptionName($name);
+
+        if($this->_isSchema())
+        {
+            if(!array_key_exists($name, $this->_schema['options']))
+                return Module::throwException(Exception::E_OPTION_NAME, "Неизвестный параметр '$name'");
+        }
+    }
+
+    protected function _validateOptionValue($name, $value)
+    {
+        $name = $this->_prepareOptionName($name);
+
+        if($this->_isSchema())
+        {
+
+        }
+    }
+
+    public function validateKeyValue($key, $value)
+    {
+        // @todo: Конфигурационный файл может отсутствовать
+        // @todo: Перенести в класс Wheel, Сделать Config\Exception
+        if(!array_key_exists($key, $this->_schema['options']))
+            Module::throwException(Exception::E_RUNTIME, "Неизвестный параметр '$key'");
+
+        $schema = $this->_schema['options'][$key];
+
+        $type = $schema['type'];
+        if(in_array($type, array('dir', 'int', 'integer', 'bool', 'float', 'numeric', 'real'), TRUE))
+        {
+            $func = 'is_' . $type;
+            if(!$func($value))
+            {
+                $types_expected = array(
+                    'dir'     => '',
+                    'int'     => 'целым числом',
+                    'integer' => '',
+                    'bool'    => '',
+                    'float'   => '',
+                    'numeric' => '',
+                    'real'    => '',
+                    'string'  => 'строкой',
+                );
+                $types_actual = array();
+                Module::throwException(Exception::E_RUNTIME, "Значение параметра '$key' должно быть {$types_expected[$type]}, a не " . $types_actual[gettype($value)]);
+            }
+        }
+        if(in_array($type, array('dir[]', 'int[]', 'integer[]', 'bool[]', 'float[]', 'numeric[]', 'real[]'), TRUE))
+        {
+            $func = 'is_' . $type;
+            if(!is_array($value))
+            {
+                $types_expected = array(
+                    'dir'     => '',
+                    'int'     => 'целых чисел',
+                    'integer' => '',
+                    'bool'    => '',
+                    'float'   => '',
+                    'numeric' => '',
+                    'real'    => '',
+                    'string'  => 'строк',
+                );
+                Module::throwException(Exception::E_RUNTIME, "Значение параметра '$key' должно быть массивом {$types_expected[$type]}, a не " . $types_expected[gettype($value)]);
+            }
+        }
     }
 
     public function sectionExists($section)
     {
-        return array_key_exists($section, $this->sections);
+        $section = $this->_prepareSectionName($section);
+
+        return array_key_exists($section, $this->_sections);
     }
 
     public function getSection($section)
     {
+        $section = $this->_prepareSectionName($section);
+
         if($this->sectionExists($section))
-            return $this->sections[$section];
+            return $this->_sections[$section];
         else
             Module::throwException(Exception::E_RUNTIME, "Раздел настроек '$section' не найден в конфигурационном файле '{$this->filename}'");
     }
@@ -72,18 +297,23 @@ class Config
      *
      * @throws \Wheels\Typo\Exception
      */
-    protected function process()
+    protected function _processIniFile($filename, $section = NULL)
     {
-        $_this = $this;
+        if(!is_file($filename))
+            Module::throwException(Exception::E_RUNTIME, "Файл '$filename' не найден");
+        if(!is_readable($filename))
+            Module::throwException(Exception::E_RUNTIME, "Файл '$filename' закрыт для чтения");
 
-        $err_handler = function ($error, $message = '', $file = '', $line = 0) use ($_this) {
-            Module::throwException(Exception::E_RUNTIME, "Ошибка чтения INI файла '{$_this->filename}': $message");
+        $this->_directory = realpath(dirname($filename));
+
+        $err_handler = function ($error, $message = '', $file = '', $line = 0) use ($filename) {
+            Module::throwException(Exception::E_RUNTIME, "Ошибка чтения файла '{$filename}': $message");
         };
         set_error_handler($err_handler, E_WARNING);
-        $data = parse_ini_file($this->filename, true);
+        $data = parse_ini_file($filename, true);
         restore_error_handler();
 
-        return $this->processData($data);
+        return $this->_processData($data, $section);
     }
 
     /**
@@ -93,41 +323,44 @@ class Config
      *
      * @return array
      */
-    protected function processData(array $data)
+    protected function _processData(array $data, $section = NULL)
     {
+        // @todo: если задана конкретная секция, то возвращаем только её
+        // @todo: все секции по умолчанию наследую параметры вне секции
+
         $config = array();
 
-        foreach($data as $section => $value)
+        foreach($data as $key => $value)
         {
             if(is_array($value))
             {
-                if(strpos($section, $this->sep) !== false)
+                if(strpos($key, self::INI_KEY_SEP) !== false)
                 {
-                    $sections = explode($this->sep, $section);
+                    $sections = explode(self::INI_KEY_SEP, $key);
                     $config = array_merge_recursive($config, $this->buildNestedSection($sections, $value));
                 }
-                elseif(strpos($section, ':') !== false)
+                elseif(strpos($key, self::INI_SECTION_SEP) !== false)
                 {
-                    $sections = explode(':', $section, 2);
+                    $sections = explode(self::INI_SECTION_SEP, $key, 2);
                     $sections = array_map('trim', $sections);
 
-                    $section = $sections[0];
+                    $key = $sections[0];
 
-                    $config[$section] = array();
+                    $config[$key] = array();
                     for($i = count($sections) - 1; $i > 0; $i--)
                     {
-                        $config[$section] = array_merge_recursive_distinct($config[$section], $config[$sections[$i]]);
+                        $config[$key] = array_merge_recursive_distinct($config[$key], $config[$sections[$i]]);
                     }
-                    $config[$section] = array_merge_recursive_distinct($config[$section], $this->processSection($value));
+                    $config[$key] = array_merge_recursive_distinct($config[$key], $this->processSection($value));
                 }
                 else
                 {
-                    $config[$section] = $this->processSection($value);
+                    $config[$key] = $this->processSection($value);
                 }
             }
             else
             {
-                $this->processKey($section, $value, $config);
+                $this->processKey($key, $value, $config);
             }
         }
 
@@ -186,9 +419,9 @@ class Config
      */
     protected function processKey($key, $value, array &$config)
     {
-        if(strpos($key, $this->sep) !== false)
+        if(strpos($key, self::INI_KEY_SEP) !== false)
         {
-            list($first, $second) = explode($this->sep, $key, 2);
+            list($first, $second) = explode(self::INI_KEY_SEP, $key, 2);
 
             if (!strlen($first) || !strlen($second))
             {
@@ -214,15 +447,16 @@ class Config
         }
         elseif ($key === '@include')
         {
-            if (is_null($this->directory))
+            if (is_null($this->_directory))
                 Module::throwException(Exception::E_RUNTIME, "Не удалось обработать выражение @include");
 
             $reader = clone $this;
-            $include = $reader->process($this->directory . '/' . $value);
+            $include = $reader->_processIniFile($this->_directory . '/' . $value);
             $config  = array_replace_recursive($config, $include);
         }
         else
         {
+            // @todo: Потенциальный баг
             if(in_array($value, array(1, '1'), true))
                 $value = true;
             elseif(in_array($value, array(0, '0', ''), true))
@@ -230,5 +464,41 @@ class Config
 
             $config[$key] = $value;
         }
+    }
+
+    static public function create(/* ... */)
+    {
+        if(func_num_args() == 2)
+        {
+            list($arg1, $arg2) = func_get_args();
+
+            if(is_array($arg1))
+                return static::createFromArray($arg1);
+            elseif(is_string($arg1))
+                return static::createFromFile($arg1);
+        }
+        elseif(func_num_args() == 3)
+        {
+            list($arg1, $arg2, $arg3) = func_get_args();
+
+            if(is_string($arg1) && is_string($arg2))
+                return static::createFromFile($arg1, $arg2);
+        }
+
+        return Module::throwException(Exception::E_UNKNOWN, 'Недопустимые параметры метода ' . __CLASS__ . '::' . __METHOD__ . ' ' . var_dump(func_get_args()));
+    }
+
+    static protected function createFromArray(array $options, array $schema = NULL)
+    {
+        $config = new Config($schema);
+        $config->setOptions($options);
+        return $config;
+    }
+
+    static protected function createFromFile($filename, $section = NULL, array $schema = NULL)
+    {
+        $config = new Config($schema);
+        $config->setOptionsFromFile($filename, $section);
+        return $config;
     }
 }
