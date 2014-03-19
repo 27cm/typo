@@ -45,15 +45,57 @@ class Typo extends Module
      *
      * @var array
      */
-    static public $chars = array(
+    static protected $_chars = array(
         'chr' => array(),
         'ord' => array(),
     );
 
     /**
+     * @see \Wheels\Typo\Module::$_config_schema
+     */
+    static protected $_config_schema = array(
+        'options' => array(
+            'charset' => array(
+                'desc'    => 'Кодировка текста',
+                'type'    => 'string',
+                'default' => 'UTF-8',
+            ),
+            'encoding' => array(
+                'desc'    => 'Режим кодирования спецсимволов',
+                'type'    => array(
+                    self::AUTO,
+                    self::MODE_NONE,
+                    self::MODE_NAMES,
+                    self::MODE_CODES,
+                    self::MODE_HEX_CODES,
+                ),
+                'default' => self::MODE_NONE,
+            ),
+            'html-in-enabled' => array(
+                'desc'    => 'Включение HTML в тексте на входе',
+                'type'    => 'bool',
+                'default' => true,
+            ),
+            'html-out-enabled' => array(
+                'desc'    => 'Включение HTML в тексте на выходе',
+                'type'    => 'bool',
+                'default' => true,
+            ),
+            'modules' => array(
+                'default' => array('html', 'nobr', 'punct', 'space', 'symbol', 'url'),
+            ),
+            'html-in-enabled' => array(
+                'desc'    => "Замена буквы 'ё' на 'е'",
+                'type'    => 'bool',
+                'default' => false,
+            ),
+        ),
+    );
+
+    /**
      * @see \Wheels\Typo\Module::$default_options
      */
-    static protected $_default_options = array(
+    static protected $_default_options2 = array(
         /**
          * Кодировка текста.
          *
@@ -115,7 +157,7 @@ class Typo extends Module
     /**
      * @see \Wheels\Typo\Module::$order
      */
-    static public $order = array(
+    static protected $_order = array(
         'A' => 5,
         'B' => 40,
         'C' => 0,
@@ -316,7 +358,7 @@ class Typo extends Module
         );
         $this->applyRules($rules);
 
-        $this->text->html_entity_decode(ENT_QUOTES | ENT_HTML401);
+        $this->text->html_entity_decode(ENT_QUOTES);
 
         $rules = array(
             #A1 Замена всех неизвестных символов на &#65533;
@@ -341,22 +383,22 @@ class Typo extends Module
             switch($this->_options['encoding'])
             {
                 case self::MODE_CODES :
-                    foreach(self::$chars['ord'] as $ent => $ord)
+                    foreach(self::getChars('ord') as $ent => $ord)
                         $replace[$ent] = sprintf('&#%u;', $ord);
                 break;
                 case self::MODE_HEX_CODES :
-                    foreach(self::$chars['ord'] as $ent => $ord)
+                    foreach(self::getChars('ord') as $ent => $ord)
                         $replace[$ent] = sprintf('&#x%x;', $ord);
                 break;
                 case self::MODE_NAMES :
-                    foreach(array_keys(self::$chars['chr']) as $ent)
+                    foreach(array_keys(self::getChars('chr')) as $ent)
                         $replace[$ent] = sprintf('&%s;', $ent);;
                 break;
             }
 
             // @todo: Заменить все символы, не поддерживаемый выходной кодировкой на HTML-сущности
 
-            $search = self::$chars['chr'];
+            $search = self::getChars('chr');
             unset($search['amp']);
             unset($replace['amp']);
             $this->text->replace(array_values($search), array_values($replace));
@@ -445,12 +487,26 @@ class Typo extends Module
 
         return $typo->process($text);
     }
-}
 
-$chars = get_html_translation_table(HTML_ENTITIES, ENT_HTML401, 'UTF-8');
-foreach($chars as $chr => $entitie)
-{
-    $name = substr($entitie, 1, strlen($entitie) - 2);
-    Typo::$chars['ord'][$name] = Utility::ord($chr);
-    Typo::$chars['chr'][$name] = $chr;
+    /**
+     *
+     */
+    static public function getChars($mode = NULL)
+    {
+        static $fl = TRUE;
+        if($fl)
+        {
+            $chars = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES /*ENT_HTML401*/, 'UTF-8');
+            foreach($chars as $chr => $entitie)
+            {
+                // @todo #039
+                $name = substr($entitie, 1, strlen($entitie) - 2);
+                Typo::$_chars['ord'][$name] = Utility::ord($chr);
+                Typo::$_chars['chr'][$name] = $chr;
+            }
+            $fl = FALSE;
+        }
+
+        return (isset($mode) ? self::$_chars[$mode] : self::$_chars);
+    }
 }

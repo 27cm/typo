@@ -7,9 +7,7 @@ use Wheels\Typo\Module;
 use Wheels\Typo\Utility;
 use Wheels\Typo\Exception;
 
-use Net_IDNA2;
-use Net_IDNA;
-use idna_convert;
+use Wheels\Utility\IDNA;
 
 /**
  * Ссылки.
@@ -21,47 +19,36 @@ use idna_convert;
 class Url extends Module
 {
     /**
-     * Настройки по умолчанию.
-     *
-     * @var array
+     * @see \Wheels\Typo\Module::$_config_schema
      */
-    static protected $_default_options = array(
-        /**
-         * Дополнительные атрибуты.
-         *
-         * @var array
-         */
-        'attrs' => array(
-            'target' => array(
-                'name' => 'target',
-                'value' => '_blank',
-                'cond' => '\Wheels\Typo\Module\Url::condTarget',
+    static protected $_config_schema = array(
+        'options' => array(
+            'attrs' => array(
+                'desc'    => 'Дополнительные атрибуты',
+                'type'    => 'array',
+                'default' => array(
+                    'target' => array(
+                        'name' => 'target',
+                        'value' => '_blank',
+                        'cond' => '\Wheels\Typo\Module\Url::condTarget',
+                    ),
+                ),
             ),
-        ),
-
-        /**
-         * IDNA.
-         *
-         * @var bool
-         */
-        'idna' => true,
-
-        /**
-         * Используемые модули.
-         *
-         * @var string[]
-         */
-        'modules' => array(
-            'url/ssh',
+            'idn-convert' => array(
+                'desc'    => 'Преобразование интернационализованных доменных имён (IDN)',
+                'type'    => 'bool',
+                'default' => true,
+            ),
+            'modules' => array(
+                'default' => array('url/ssh'),
+            ),
         ),
     );
 
     /**
-     * Приоритет выполнения стадий.
-     *
-     * @var array
+     * @see \Wheels\Typo\Module::$_order
      */
-    static public $order = array(
+    static protected $_order = array(
         'A' => 20,
         'B' => 0,
         'C' => 0,
@@ -112,7 +99,7 @@ class Url extends Module
     // --- Открытые методы класса ---
 
     /**
-     * @see \Typo\Module::validateOption()
+     * @see \Wheels\Typo\Module::validateOption()
      */
     public function validateOption($name, &$value)
     {
@@ -348,81 +335,15 @@ class Url extends Module
      */
     static public function url_host_encode($host, $idna = true, $_this = null)
     {
-        $idna_convert_filename = '';
-        $idna_convert_classname = '\idna_convert';
-
-        // @todo: изменить регулярное выражение
         // @todo: исключение (warning), если библиотека не подключена
         // @todo: нужно ли парсить отдельные части хоста?
-        // @todo: idna class сделать static
         if($idna && preg_match('~[^\x00-\xA7]~u', $host))
         {
-            $idna = self::getIDNA($_this);
+            $idna = IDNA::singleton();
             $host = $idna->encode($host);
         }
 
         return $host;
-    }
-
-    static public function getIDNA($_this = null)
-    {
-        static $idna = null;
-
-        if(!isset($idna))
-        {
-            if(class_exists('\Net_IDNA2'))
-            {
-                return new Net_IDNA2(array(
-                    'encoding' => 'utf8',
-                    'idn_version' => '2003',
-                ));
-            }
-            elseif(class_exists('\Net_IDNA'))
-            {
-                return new Net_IDNA(array(
-                    'encoding' => 'utf8',
-                    'idn_version' => '2003',
-                ));
-            }
-            else
-            {
-                $idna_convert_filename = 'idna_convert.class.php';
-                if(class_exists('\idna_convert') || stream_resolve_include_path($idna_convert_filename) !== FALSE)
-                {
-                    include_once $idna_convert_filename;
-
-                    if(class_exists('\idna_convert'))
-                    {
-                        return new idna_convert(array(
-                            'encoding' => 'utf8',
-                            'idn_version' => '2003',
-                        ));
-                    }
-                    else
-                    {
-                        if(isset($_this))
-                        {
-                            $_this->setOption('idna', false);
-                            return self::throwException(Exception::E_OPTION_VALUE, "Не найден класс '{$idna_convert_classname}'. Опция 'idna' отключена.");
-                        }
-                        else
-                            return self::throwException(Exception::E_OPTION_VALUE, "Не найден класс '{$idna_convert_classname}'.");
-                    }
-                }
-                else
-                {
-                    if(isset($_this))
-                    {
-                        $_this->setOption('idna', false);
-                        return self::throwException(Exception::E_OPTION_VALUE, "Не найден файл '{$idna_convert_filename}'. Опция 'idna' отключена.");
-                    }
-                    else
-                        return self::throwException(Exception::E_OPTION_VALUE, "Не найден файл '{$idna_convert_filename}'.");
-                }
-            }
-        }
-
-        return $idna;
     }
 
     /**

@@ -13,6 +13,7 @@ use Wheels\Typo\Utility;
  *
  * @link http://en.wikipedia.org/wiki/Dash
  * @link http://en.wikipedia.org/wiki/Hyphen
+ * @link http://www.quirksmode.org/oddsandends/wbr.html
  */
 class Dash extends Module
 {
@@ -39,15 +40,15 @@ class Dash extends Module
          *
          * @link http://shy.dklab.ru/new/js/Autohyphen.htc
          *
-         * @var bool
+         * @var HYPEN_NONE|HYPEN_SHY|HYPEN_WBR
          */
-        'hyphenation' => false,
+        'hyphenation' => self::HYPEN_NONE,
     );
 
     /**
      * @see \Wheels\Typo\Module::$order
      */
-    static public $order = array(
+    static protected $_order = array(
         'A' => 0,
         'B' => 20,
         'C' => 5,
@@ -56,6 +57,9 @@ class Dash extends Module
         'F' => 0,
     );
 
+    const HYPEN_NONE = 'HYPEN_NONE';
+    const HYPEN_SHY = 'HYPEN_SHY';
+    const HYPEN_WBR = 'HYPEN_WBR';
 
     // --- Защищенные методы класса ---
 
@@ -66,7 +70,7 @@ class Dash extends Module
      */
     protected function stageB()
     {
-        $c =& Typo::$chars['chr'];
+        $c = Typo::getChars('chr');
 
         $rules = array(
             # Принудительная замена.
@@ -128,35 +132,43 @@ class Dash extends Module
      */
     protected function stageC()
     {
-        $с =& Typo::$chars['chr'];
+        if($this->_options['hyphenation'] !== self::HYPEN_NONE)
+        {
+            $c = Typo::getChars('chr');
 
-        $helpers = array(
-            // Гласные
-            '{g}' => '[аеёиоуыэюяaeiouy]',
+            if($this->_options['hyphenation'] === self::HYPEN_SHY)
+                $hyphen = $c['shy'];
+            else
+                $hyphen = $this->text->pushStorage('<wbr>', Typo::REPLACER, Typo::INVISIBLE);
 
-            // Согласные
-            '{s}' => '[бвгджзклмнпрстфхцчшщbcdfghjklmnpqrstvwxz]',
+            $helpers = array(
+                // Гласные
+                '{g}' => '[аеёиоуыэюяaeiouy]',
 
-            // Буквы й, ь, ъ
-            '{x}' => '[йьъ]',
-        );
+                // Согласные
+                '{s}' => '[бвгджзклмнпрстфхцчшщbcdfghjklmnpqrstvwxz]',
 
-        $rules = array(
-            // http://www.licey.net/russian/phonetics/1_6
-            #C1 Расстановка мягких переносов (мест возможного переноса) в словах.
-            'hyphenation' => array(
-                '~(?<!\{\{\{|\[\[\[)(?<=\b){a}+(?=\b)(?!\}\}\}|\]\]\])~iu' => array(
-                    '~({a}*{x})({a}{2,})~iu' => '$1' . $с['shy'] . '$2',
-                    '~({a}*{g}{s}{2})({s}{2}{g}{a}*)~iu' => '$1' . $с['shy'] . '$2',
-                    '~({a}*{g}{s}{2})({s}{g}{a}*)~iu' => '$1' . $с['shy'] . '$2',
-                    '~({a}*{s}{g})({s}{g}{a}*)~iu' => '$1' . $с['shy'] . '$2',
-                    '~({a}*{g}{s})({s}{g}{a}*)~iu' => '$1' . $с['shy'] . '$2',
-                    '~({a}*{s}{g})({g}{2}{a}*)~iu' => '$1' . $с['shy'] . '$2',
-                    '~({a}*{s}{g})({g}{a}{1,})~iu' => '$1' . $с['shy'] . '$2',
+                // Буквы й, ь, ъ
+                '{x}' => '[йьъ]',
+            );
+
+            $rules = array(
+                // http://www.licey.net/russian/phonetics/1_6
+                #C1 Расстановка мягких переносов (мест возможного переноса) в словах.
+                'hyphenation' => array(
+                    '~(?<!\{\{\{|\[\[\[)(?<=\b){a}+(?=\b)(?!\}\}\}|\]\]\])~iu' => array(
+                        '~({a}*{x})({a}{2,})~iu' => '$1' . $hyphen . '$2',
+                        '~({a}*{g}{s}{2})({s}{2}{g}{a}*)~iu' => '$1' . $hyphen . '$2',
+                        '~({a}*{g}{s}{2})({s}{g}{a}*)~iu' => '$1' . $hyphen . '$2',
+                        '~({a}*{s}{g})({s}{g}{a}*)~iu' => '$1' . $hyphen . '$2',
+                        '~({a}*{g}{s})({s}{g}{a}*)~iu' => '$1' . $hyphen . '$2',
+                        '~({a}*{s}{g})({g}{2}{a}*)~iu' => '$1' . $hyphen . '$2',
+                        '~({a}*{s}{g})({g}{a}{1,})~iu' => '$1' . $hyphen . '$2',
+                    ),
                 ),
-            ),
-        );
+            );
 
-        $this->applyRules($rules, $helpers);
+            $this->applyRules($rules, $helpers);
+        }
     }
 }

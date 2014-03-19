@@ -23,7 +23,7 @@ class Symbol extends Module
      *
      * @var array
      */
-    static public $order = array(
+    static protected $_order = array(
         'A' => 0,
         'B' => 30,
         'C' => 0,

@@ -26,7 +26,7 @@ class Filepath extends Module
      *
      * @var array
      */
-    static public $order = array(
+    static protected $_order = array(
         'A' => 30,
         'B' => 0,
         'C' => 0,

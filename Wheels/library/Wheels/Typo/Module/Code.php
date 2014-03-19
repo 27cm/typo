@@ -53,7 +53,7 @@ class Code extends Module
      *
      * @var array
      */
-    static public $order = array(
+    static protected $_order = array(
         'A' => 5,
         'B' => 0,
         'C' => 0,

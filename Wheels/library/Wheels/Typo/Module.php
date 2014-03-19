@@ -4,7 +4,7 @@ namespace Wheels\Typo;
 
 use Wheels\Typo;
 use Wheels\Typo\Module;
-use Wheels\Typo\Config;
+use Wheels\Config;
 use Wheels\Typo\Exception;
 
 // @todo должно быть без разницы punct/quote или punct\quote или Punct\Quote или Typo\Module\Punct\Quote или \Wheel
@@ -17,14 +17,14 @@ abstract class Module
     /**
      * Типограф, использующий данный модуль.
      *
-     * @var \Typo
+     * @var \Wheels\Typo
      */
     public $typo;
 
     /**
      * Текст.
      *
-     * @var \Typo\Text
+     * @var \Wheels\Typo\Text
      */
     public $text;
 
@@ -41,6 +41,22 @@ abstract class Module
      * @var array
      */
     static protected $_default_options = array();
+
+    /**
+     * Описание конфигурации модуля.
+     *
+     * @var array
+     */
+    static protected $_config_schema = array(
+        'options' => array(
+            'modules' => array(
+                'desc'    => 'Используемые модули',
+                'type'    => 'string[]',
+                'default' => array(),
+                'inherit' => true,
+            ),
+        ),
+    );
 
     /**
      * Область работы модуля.
@@ -68,7 +84,7 @@ abstract class Module
      *
      * @var array
      */
-    static public $order = array(
+    static protected $_order = array(
         'A' => 0,
         'B' => 0,
         'C' => 0,
@@ -80,7 +96,7 @@ abstract class Module
     /**
      * Конфигурационный INI файл.
      *
-     * @var \Wheels\Typo\Config
+     * @var \Wheels\Config
      */
     protected $config;
 
@@ -114,6 +130,10 @@ abstract class Module
             $this->setConfigDir(TYPO_CONFIG_DIR);
         }
 
+        $schema = static::getConfigSchema();
+        $this->config = new Config($schema);
+        $this->setOptionsFromFile($section);
+
         $this->setOptions($options);
         foreach($this->getDefaultOptions() as $name => $value)
         {
@@ -122,19 +142,18 @@ abstract class Module
         }
     }
 
+
+    // --- Открытые методы класса ---
+
     /**
-     * Возвращает массив опций по умолчанию.
+     * Возвращает массив значений параметров по умолчанию.
      *
      * @return array
      */
     public function getDefaultOptions()
     {
-        $class = get_called_class();
-        return $class::$_default_options;
+        return $this->config->getDefaultOptions();
     }
-
-
-    // --- Открытые методы класса ---
 
     /**
      * Проверка значения параметра (с возможной корректировкой).
@@ -146,6 +165,8 @@ abstract class Module
     {
         if(!$this->checkOptionExists($name))
             return self::throwException(Exception::E_OPTION_NAME, "Несуществующий параметр '$name'");
+
+        // $scheme = static::getConfigSchema($name);
 
         switch($name)
         {
@@ -185,15 +206,20 @@ abstract class Module
      */
     public function setOption($name, $value)
     {
-        $name = strtolower($name);
-
-        if(!$this->checkOptionExists($name))
-            return self::throwException(Exception::E_OPTION_NAME, "Несуществующий параметр '$name'");
-
-        $this->validateOption($name, $value);
-
-        $this->_options[$name] = $value;
+        $this->prepareOption($name, $value);
+        $this->config->setOption($name, $value);
         $this->onChangeOption($name, $value);
+    }
+
+    public function setOptionsFromFile($section = NULL)
+    {
+        $filename = $this->
+        $this->config->setOptionsFromFile($filename, $section);
+
+        foreach($this->_modules as $module)
+        {
+            $module->setOptionsFromFile($section);
+        }
     }
 
     /**
@@ -216,42 +242,26 @@ abstract class Module
             if($this->config->sectionExists($this->config_section))
                 $options = $this->config->getSection($this->config_section);
 
-            // @todo: если в списке новых опций не изменились модули, но изменилась секция, то модули огут остаться без изменений секции
+            // @todo: если в списке новых опций не изменились модули, но изменилась секция, то модули могут остаться без изменений секции
         }
 
         if(is_array($options))
         {
-            $exception = null;
-
-            foreach($options as $name => $value)
-            {
-                try
-                {
-                    $this->setOption($name, $value);
-                }
-                catch(Exception $e)
-                {
-                    if(isset($exception))
-                        $exception = new Exception($e->getMessage(), $e->getCode(), $exception);
-                    else
-                        $exception = new Exception($e->getMessage(), $e->getCode());
-                }
-            }
-
-            if(isset($exception))
-                throw $exception;
+            $this->config->setOptions($options);
         }
     }
 
     /**
      * Установливает значения параметров настроек по умолчанию.
-     *
-     * @uses \Wheels\Typo\Module::setOptions()
      */
     public function setDefaultOptions()
     {
-        // @todo: для модулей также должны быть установлены defaultOptions
-        $this->setOptions($this->getDefaultOptions());
+        $this->config->setDefaultOptions();
+
+        foreach($this->_modules as $module)
+        {
+            $module->setDefaultOptions();
+        }
     }
 
     public function setConfigDir($dir)
@@ -293,17 +303,21 @@ abstract class Module
      */
     public function getOrder()
     {
-        $class = get_called_class();
         $stages = self::getStages();
         $key = $stages[$this->_stage];
 
-        return $class::$order[$key];
+        return static::$_order[$key];
     }
 
     /**
      * Возвращает модуль с заданным именем.
      *
-     * @param string $name  Имя модуля.
+     * @param string $name  Имя модуля (полное или частичное имя класса модуля).
+     *
+     * @example $module->getModule('\\Wheels\\Typo\\Module\\Name')
+     * @example $module->getModule('/Typo/module/name')
+     * @example $module->getModule('Module/Name')
+     * @example $module->getModule('name')
      *
      * @return \Wheels\Typo\Module
      */
@@ -362,6 +376,8 @@ abstract class Module
             else
                 return self::throwException(Exception::E_OPTION_VALUE, "Класс $classname не является модулем");
         }
+        else
+            return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный модуль '$name' (класс $classname не найден)");
     }
 
     /**
@@ -576,13 +592,13 @@ abstract class Module
     // --- Статические методы класса ---
 
     /**
-     * Вовзвращает массив имён всех стадий.
+     * Возвращает массив имён всех стадий.
      *
      * @return array
      */
     static protected function getStages()
     {
-        return array_keys(self::$order);
+        return array_keys(self::$_order);
     }
 
     /**
@@ -659,6 +675,37 @@ abstract class Module
         }
 
         return $classname;
+    }
+
+    static public function getConfigSchema()
+    {
+        if(!array_key_exists('extends', static::$_config_schema) || !static::$_config_schema['extends'])
+        {
+            foreach(static::$_config_schema['options'] as $n => $schema)
+            {
+                if(!array_key_exists('inherit', $schema))
+                    static::$_config_schema['options'][$n]['inherit'] = FALSE;
+            }
+
+            $parent = get_parent_class(get_called_class());
+            if($parent !== FALSE)
+            {
+                $parent_schema = $parent::getConfigSchema();
+                foreach($parent_schema['options'] as $n => $schema)
+                {
+                    if($schema['inherit'])
+                    {
+                        if(!array_key_exists($n, static::$_config_schema['options']))
+                            static::$_config_schema['options'][$n] = array();
+                        static::$_config_schema['options'][$n] = array_merge($schema, static::$_config_schema['options'][$n]);
+                    }
+                }
+            }
+
+            static::$_config_schema['extends'] = true;
+        }
+
+        return static::$_config_schema;
     }
 
     /**

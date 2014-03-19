@@ -46,7 +46,7 @@ class Nobr extends Module
     /**
      * @see \Wheels\Typo\Module::$order
      */
-    static public $order = array(
+    static protected $_order = array(
         'A' => 0,
         'B' => 40,
         'C' => 0,
@@ -123,7 +123,7 @@ class Nobr extends Module
      */
     protected function stageB()
     {
-        $c =& Typo::$chars['chr'];
+        $c = Typo::getChars('chr');
 
         $_this = $this;
 

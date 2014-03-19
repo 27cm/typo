@@ -75,7 +75,7 @@ class Quote extends Module
     /**
      * @see \Wheels\Typo\Module::$order
      */
-    static public $order = array(
+    static protected $_order = array(
         'A' => 0,
         'B' => 30,
         'C' => 0,
@@ -98,7 +98,7 @@ class Quote extends Module
             case 'quote-close' :
             case 'subquote-open' :
             case 'subquote-close' :
-                if(!array_key_exists($value, Typo::$chars['chr']))
+                if(!array_key_exists($value, Typo::getChars('chr')))
                     return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный символ '&{$value};' (параметр '$name')");
             break;
 
@@ -118,7 +118,7 @@ class Quote extends Module
      */
     protected function stageB()
     {
-        $c =& Typo::$chars['chr'];
+        $c = Typo::getChars('chr');
 
         $q1 = array(
             'open'  => $c[$this->_options['quote-open']],

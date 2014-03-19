@@ -384,7 +384,7 @@ class Text
     public function htmlentities($flags = null, $double_encode = true)
     {
         if(is_null($flags))
-            $flags = ENT_COMPAT | ENT_HTML401;
+            $flags = ENT_COMPAT /*| ENT_HTML401*/;
 
         $this->text = htmlentities($this->text, $flags, $this->encoding, $double_encode);
     }
@@ -401,7 +401,7 @@ class Text
     public function htmlspecialchars($flags = null, $double_encode = true)
     {
         if(is_null($flags))
-            $flags = ENT_COMPAT | ENT_HTML401;
+            $flags = ENT_COMPAT /*| ENT_HTML401*/;
 
         $this->text = htmlspecialchars($this->text, $flags, $this->encoding, $double_encode);
     }
@@ -416,7 +416,7 @@ class Text
     public function html_entity_decode($flags = null)
     {
         if(is_null($flags))
-            $flags = ENT_COMPAT | ENT_HTML401;
+            $flags = ENT_COMPAT /*| ENT_HTML401*/;
 
         $this->text = html_entity_decode($this->text, $flags, $this->encoding);
     }

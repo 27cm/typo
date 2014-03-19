@@ -66,7 +66,7 @@ class Align extends Module
      *
      * @var array
      */
-    static public $order = array(
+    static protected $_order = array(
         'A' => 0,
         'B' => 10,
         'C' => 0,
@@ -87,7 +87,7 @@ class Align extends Module
      */
     protected function stageB()
     {
-        $c =& Typo::$chars['chr'];
+        $c = Typo::getChars('chr');
 
         $q1 = array(
             'open'  => $c[$this->_options['quote-open']],

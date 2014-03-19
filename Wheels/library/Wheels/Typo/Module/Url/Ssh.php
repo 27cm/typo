@@ -49,7 +49,7 @@ class Ssh extends Url
      *
      * @var array
      */
-    static public $order = array(
+    static protected $_order = array(
         'A' => 15,
         'B' => 0,
         'C' => 0,

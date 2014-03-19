@@ -21,7 +21,7 @@ abstract class Emoticon extends Module
      *
      * @var array
      */
-    static public $order = array(
+    static protected $_order = array(
         'A' => 35,
         'B' => 0,
         'C' => 0,

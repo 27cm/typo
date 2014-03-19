@@ -42,7 +42,7 @@ class Twitter extends Url
      *
      * @var array
      */
-    static public $order = array(
+    static protected $_order = array(
         'A' => 25,
         'B' => 0,
         'C' => 0,

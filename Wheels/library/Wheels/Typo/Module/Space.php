@@ -48,7 +48,7 @@ class Space extends Module
     /**
      * @see \Wheels\Typo\Module::$order
      */
-    static public $order = array(
+    static protected $_order = array(
         'A' => 0,
         'B' => 25,
         'C' => 0,
@@ -72,7 +72,7 @@ class Space extends Module
      */
     protected function stageB()
     {
-        $c =& Typo::$chars['chr'];
+        $c = Typo::getChars('chr');
 
         $helpers = array(
             // Открывающая кавычка

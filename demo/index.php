@@ -8,7 +8,7 @@ define('PS', PATH_SEPARATOR);
 
 $root    = realpath(dirname(__FILE__) . DS . '..');
 $include = $root . DS . 'include';
-set_include_path(get_include_path() . PS . $include);
+set_include_path(get_include_path() . PS . $include . PS . $include . DS . 'idna_convert_081');
 
 
 
@@ -38,9 +38,17 @@ try
 {
     require_once $root . DS . 'Wheels' . DS . 'library' . DS . 'Wheels.php';
 
-    $typo = new Typo(array(
-        'encoding' => Typo::MODE_NAMES
-    ));
+//    setlocale(LC_ALL, 'ru_RU');
+//    for($i = 0; $i < 65000; $i++)
+//        if(preg_match('~[\x00-\xFF]~', Typo\Utility::chr($i)))
+//            echo $i . ' = ' . Typo\Utility::chr($i) . '<br>';
+//    die();
+
+    $typo = new Typo();
+//    $typo->setConfigDir($root . DS . 'Wheels' . DS . 'tests' . DS . 'config' . DS . 'Module' . DS . 'Punct' . DS . 'QuoteTest');
+//    $typo->setOptions('default');
+    $typo->addModule('emoticon/skype');
+    // var_dump($typo);
     $output = $typo->process($input);
 }
 catch(Wheels\Typo\Exception $e)
@@ -52,6 +60,10 @@ catch(Wheels\Typo\Exception $e)
         $e = $e->getPrevious();
         echo $e->getMessage() . '<br>';
     }
+}
+catch(Exception $e)
+{
+    echo $e->getMessage() . '<br>';
 }
 
 ?>

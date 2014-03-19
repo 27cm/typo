@@ -45,7 +45,7 @@ class Punct extends Module
     /**
      * @see \Wheels\Typo\Module::$order
      */
-    static public $order = array(
+    static protected $_order = array(
         'A' => 0,
         'B' => 10,
         'C' => 0,
@@ -64,7 +64,7 @@ class Punct extends Module
      */
     protected function stageB()
     {
-        $c =& Typo::$chars['chr'];
+        $c = Typo::getChars('chr');
 
         $rules = array(
             // Исправление пробелов возле знаков препинания

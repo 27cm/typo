@@ -49,7 +49,7 @@ class Html extends Module
      *
      * @var array
      */
-    static public $order = array(
+    static protected $_order = array(
         'A' => 10,
         'B' => 0,
         'C' => 0,

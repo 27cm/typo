@@ -31,7 +31,7 @@ class Math extends Module
      *
      * @var array
      */
-    static public $order = array(
+    static protected $_order = array(
         'A' => 0,
         'B' => 15,
         'C' => 0,
@@ -52,7 +52,7 @@ class Math extends Module
      */
     protected function stageB()
     {
-        $c =& Typo::$chars['chr'];
+        $c = Typo::getChars('chr');
 
         $_this = $this;
 
