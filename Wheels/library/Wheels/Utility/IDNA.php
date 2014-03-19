@@ -1,7 +1,9 @@
 <?php
+
+namespace Wheels\Utility;
+
 // {{{ license
 
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker: */
 //
 // +----------------------------------------------------------------------+
 // | This library is free software; you can redistribute it and/or modify |
@@ -24,17 +26,17 @@
 // }}}
 
 /**
- * Encode/decode Internationalized Domain Names.
+ * Кодирование/декодирование интернационализованных доменных имён (IDN).
  *
- * The class allows to convert internationalized domain names
- * (see RFC 3490 for details) as they can be used with various registries worldwide
+ * Класс позволяет преобразовывать интернационализированные доменные имена
+ * (см. RFC 3490) as they can be used with various registries worldwide
  * to be translated between their original (localized) form and their encoded form
  * as it will be used in the DNS (Domain Name System).
  *
- * The class provides two public methods, encode() and decode(), which do exactly
- * what you would expect them to do. You are allowed to use complete domain names,
- * simple strings and complete email addresses as well. That means, that you might
- * use any of the following notations:
+ * Класс предоставляет два публичных метода: encode() и decode(), соотвественно
+ * для кодирования и декодирования доменных имён. You are allowed to use complete domain names,
+ * simple strings and complete email addresses as well. Это означает, что Вы можете
+ * использовать любой представление:
  *
  * - www.nörgler.com
  * - xn--nrgler-wxa
@@ -47,14 +49,13 @@
  * ACE input and output is always expected to be ASCII.
  *
  * @author  Matthias Sommerfeld <mso@phlylabs.de>
+ *
  * @copyright 2004-2011 phlyLabs Berlin, http://phlylabs.de
+ *
  * @version 0.8.1 2011-12-19
  */
-class idna_convert
+class IDNA
 {
-    // NP See below
-
-    // Internal settings, do not mess with them
     protected $_punycode_prefix = 'xn--';
     protected $_invalid_ucs = 0x80000000;
     protected $_max_ucs = 0x10FFFF;
@@ -72,38 +73,55 @@ class idna_convert
     protected $_lcount = 19;
     protected $_vcount = 21;
     protected $_tcount = 28;
-    protected $_ncount = 588;   // _vcount * _tcount
-    protected $_scount = 11172; // _lcount * _tcount * _vcount
     protected $_error = false;
 
     protected static $_mb_string_overload = null;
 
-    // See {@link set_paramter()} for details of how to change the following
-    // settings from within your script / application
-    protected $_api_encoding = 'utf8';   // Default input charset is UTF-8
-    protected $_allow_overlong = false;  // Overlong UTF-8 encodings are forbidden
-    protected $_strict_mode = false;     // Behave strict or not
-    protected $_idn_version = 2003;      // Can be either 2003 (old, default) or 2008
+    /**
+     * Кодировка.
+     *
+     * @var string
+     */
+    protected $encoding = 'utf8';
 
     /**
-     * the constructor
+     * Overlong UTF-8 encodings are forbidden.
      *
-     * @param array $options
-     * @return boolean
-     * @since 0.5.2
+     * @var bool
+     */
+    protected $_allow_overlong = false;
+
+    /**
+     * Behave strict or not.
+     *
+     * @var bool
+     */
+    protected $_strict_mode = false;
+
+    /**
+     * Версия IDN.
+     *
+     * @var int
+     */
+    protected $_idn_version = 2008;
+
+
+    // --- Конструктор ---
+
+    /**
+     * @param array $options Параметры.
      */
     public function __construct($options = false)
     {
         $this->slast = $this->_sbase + $this->_lcount * $this->_vcount * $this->_tcount;
-        // If parameters are given, pass these to the respective method
-        if (is_array($options)) {
+
+        if (is_array($options))
             $this->set_parameter($options);
-        }
 
         // populate mbstring overloading cache if not set
-        if (self::$_mb_string_overload === null) {
-            self::$_mb_string_overload = (extension_loaded('mbstring')
-                && (ini_get('mbstring.func_overload') & 0x02) === 0x02);
+        if (self::$_mb_string_overload === null)
+        {
+            self::$_mb_string_overload = (extension_loaded('mbstring') && (ini_get('mbstring.func_overload') & 0x02) === 0x02);
         }
     }
 
@@ -134,7 +152,7 @@ class idna_convert
                 case 'utf8':
                 case 'ucs4_string':
                 case 'ucs4_array':
-                    $this->_api_encoding = $v;
+                    $this->encoding = $v;
                     break;
                 default:
                     $this->_error('Set Parameter: Unknown parameter '.$v.' for option '.$k);
@@ -171,8 +189,10 @@ class idna_convert
 
     /**
      * Decode a given ACE domain name
+     *
      * @param    string   Domain name (ACE string)
      * [@param    string   Desired output encoding, see {@link set_parameter}]
+     *
      * @return   string   Decoded Domain name (UTF-8 or UCS-4)
      */
     public function decode($input, $one_time_encoding = false)
@@ -254,7 +274,7 @@ class idna_convert
         }
         // The output is UTF-8 by default, other output formats need conversion here
         // If one time encoding is given, use this, else the objects property
-        switch (($one_time_encoding) ? $one_time_encoding : $this->_api_encoding) {
+        switch (($one_time_encoding) ? $one_time_encoding : $this->encoding) {
         case 'utf8':
             return $return;
             break;
@@ -280,7 +300,7 @@ class idna_convert
     {
         // Forcing conversion of input to UCS4 array
         // If one time encoding is given, use this, else the objects property
-        switch ($one_time_encoding ? $one_time_encoding : $this->_api_encoding) {
+        switch ($one_time_encoding ? $one_time_encoding : $this->encoding) {
         case 'utf8':
             $decoded = $this->_utf8_to_ucs4($decoded);
             break;
@@ -289,7 +309,7 @@ class idna_convert
         case 'ucs4_array':
            break;
         default:
-            $this->_error('Unsupported input format: '.($one_time_encoding ? $one_time_encoding : $this->_api_encoding));
+            $this->_error('Unsupported input format: '.($one_time_encoding ? $one_time_encoding : $this->encoding));
             return false;
         }
 
@@ -680,10 +700,12 @@ class idna_convert
     protected function _hangul_decompose($char)
     {
         $sindex = (int) $char - $this->_sbase;
-        if ($sindex < 0 || $sindex >= $this->_scount) return array($char);
+        $scount = $this->_lcount * $this->_tcount * $this->_vcount;
+        if ($sindex < 0 || $sindex >= $scount) return array($char);
         $result = array();
-        $result[] = (int) $this->_lbase + $sindex / $this->_ncount;
-        $result[] = (int) $this->_vbase + ($sindex % $this->_ncount) / $this->_tcount;
+        $ncount = $this->_vcount * $this->_tcount;
+        $result[] = (int) $this->_lbase + $sindex / $ncount;
+        $result[] = (int) $this->_vbase + ($sindex % $ncount) / $this->_tcount;
         $T = intval($this->_tbase + $sindex % $this->_tcount);
         if ($T != $this->_tbase) $result[] = $T;
         return $result;
@@ -702,6 +724,7 @@ class idna_convert
         $last = (int) $input[0];
         $result[] = $last; // copy first char from input to output
 
+        $scount = $this->_lcount * $this->_tcount * $this->_vcount;
         for ($i = 1; $i < $inp_len; ++$i) {
             $char = (int) $input[$i];
             $sindex = $last - $this->_sbase;
@@ -709,7 +732,7 @@ class idna_convert
             $vindex = $char - $this->_vbase;
             $tindex = $char - $this->_tbase;
             // Find out, whether two current characters are LV and T
-            if (0 <= $sindex && $sindex < $this->_scount && ($sindex % $this->_tcount == 0)
+            if (0 <= $sindex && $sindex < $scount && ($sindex % $this->_tcount == 0)
                     && 0 <= $tindex && $tindex <= $this->_tcount) {
                 // create syllable of form LVT
                 $last += $tindex;
@@ -979,12 +1002,12 @@ class idna_convert
      * Attempts to return a concrete IDNA instance.
      *
      * @param array $params Set of paramaters
-     * @return idna_convert
+     * @return self
      * @access public
      */
-    public function getInstance($params = array())
+    static public function getInstance($params = array())
     {
-        return new idna_convert($params);
+        return new self($params);
     }
 
     /**
@@ -994,18 +1017,18 @@ class idna_convert
      *
      * @param array $params Set of paramaters
      *
-     * @return object idna_convert
+     * @return object self
      * @access public
      */
-    public function singleton($params = array())
+    static public function singleton($params = array())
     {
-        static $instances;
-        if (!isset($instances)) {
+        static $instances = NULL;
+        if (is_null($instances)) {
             $instances = array();
         }
         $signature = serialize($params);
         if (!isset($instances[$signature])) {
-            $instances[$signature] = idna_convert::getInstance($params);
+            $instances[$signature] = self::getInstance($params);
         }
         return $instances[$signature];
     }
