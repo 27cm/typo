@@ -374,7 +374,7 @@ abstract class Module
                 $this->_modules[$classname] = new $classname($options, $typo);
             }
             else
-                return self::throwException(Exception::E_OPTION_VALUE, "Класс $classname не является модулем");
+                return self::throwException(Exception::E_OPTION_VALUE, "Класс $classname не является наследником класса " . __CLASS__);
         }
         else
             return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный модуль '$name' (класс $classname не найден)");

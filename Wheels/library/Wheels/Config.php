@@ -2,6 +2,8 @@
 
 namespace Wheels;
 
+use Wheels\Config\Schema;
+
 use Wheels\Typo\Module;
 use Wheels\Typo\Exception;
 
@@ -19,7 +21,7 @@ class Config
     /**
      * Описание конфигурации.
      *
-     * @var array|NULL
+     * @var \Wheels\Config\Schema|NULL
      */
     protected $_schema = NULL;
 
@@ -64,41 +66,9 @@ class Config
     {
         if(!is_null($schema))
         {
-            if(!is_array($schema))
-                Module::throwException(Exception::E_RUNTIME, "Параметр 'schema' должен быть массивом");
+            $this->_schema = new Schema($schema);
 
-            $diff = array_diff(array_keys($schema), array('options', 'case-sensitive'));
-            if(!empty($diff))
-                Module::throwException(Exception::E_RUNTIME, 'Неизвестные разделы описания конфигурации: ' . implode(', ', $diff));
 
-            if(!array_key_exists('case-sensitive', $schema))
-                $schema['case-sensitive'] = TRUE;
-            else
-                $schema['case-sensitive'] = (bool) $schema['case-sensitive'];
-
-            if(!array_key_exists('options', $schema))
-                $schema['options'] = array();
-
-            if(!is_array($schema['options']))
-                Module::throwException(Exception::E_RUNTIME, "Раздел 'options' описания конфигурации должен быть массивом");
-
-            foreach($schema['options'] as $name => $option_schema)
-            {
-                if(!is_string($name))
-                    Module::throwException(Exception::E_RUNTIME, "Ключи массива в разделе 'options' описания конфигурации должны быть строками");
-
-                if(!is_array($option_schema))
-                    Module::throwException(Exception::E_RUNTIME, "Элементы раздела 'options' описания конфигурации должны быть массивами");
-
-                $diff = array_diff(array_keys($option_schema), array('desc', 'type', 'default', 'inherit'));
-                if(!empty($diff))
-                    Module::throwException(Exception::E_RUNTIME, "Неизвестные элементы раздела 'options' описания конфигурации: " . implode(', ', $diff));
-
-                if(!array_key_exists('default', $option_schema))
-                    Module::throwException(Exception::E_RUNTIME, "Для параметра '$name' раздела 'options' описания конфигурации не задано значение по умолчанию");
-            }
-
-            $this->_schema = $schema;
         }
 
         $this->setDefaultOptions();
