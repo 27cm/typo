@@ -36,13 +36,6 @@ abstract class Module
     protected $_options = array();
 
     /**
-     * Настройки по умолчанию.
-     *
-     * @var array
-     */
-    static protected $_default_options = array();
-
-    /**
      * Описание конфигурации модуля.
      *
      * @var array
@@ -98,7 +91,7 @@ abstract class Module
      *
      * @var \Wheels\Config
      */
-    protected $config;
+    protected $_config;
 
     public $config_section;
 
@@ -122,7 +115,7 @@ abstract class Module
             $this->typo = $typo;
             $this->text =& $typo->text;
             $this->config_section = $typo->config_section;
-            $this->setConfigDir($typo->config->getDirectory());
+            $this->setConfigDir($typo->_config->getDirectory());
         }
         else
         {
@@ -131,7 +124,7 @@ abstract class Module
         }
 
         $schema = static::getConfigSchema();
-        $this->config = new Config($schema);
+        $this->_config = new Config($schema);
         $this->setOptionsFromFile($section);
 
         $this->setOptions($options);
@@ -152,7 +145,7 @@ abstract class Module
      */
     public function getDefaultOptions()
     {
-        return $this->config->getDefaultOptions();
+        return $this->_config->getDefaultOptions();
     }
 
     /**
@@ -207,14 +200,14 @@ abstract class Module
     public function setOption($name, $value)
     {
         $this->prepareOption($name, $value);
-        $this->config->setOption($name, $value);
+        $this->_config->setOption($name, $value);
         $this->onChangeOption($name, $value);
     }
 
     public function setOptionsFromFile($section = NULL)
     {
         $filename = $this->
-        $this->config->setOptionsFromFile($filename, $section);
+        $this->_config->setOptionsFromFile($filename, $section);
 
         foreach($this->_modules as $module)
         {
@@ -239,15 +232,15 @@ abstract class Module
         {
             $this->config_section = $options;
 
-            if($this->config->sectionExists($this->config_section))
-                $options = $this->config->getSection($this->config_section);
+            if($this->_config->sectionExists($this->config_section))
+                $options = $this->_config->getSection($this->config_section);
 
             // @todo: если в списке новых опций не изменились модули, но изменилась секция, то модули могут остаться без изменений секции
         }
 
         if(is_array($options))
         {
-            $this->config->setOptions($options);
+            $this->_config->setOptions($options);
         }
     }
 
@@ -256,7 +249,7 @@ abstract class Module
      */
     public function setDefaultOptions()
     {
-        $this->config->setDefaultOptions();
+        $this->_config->setDefaultOptions();
 
         foreach($this->_modules as $module)
         {
@@ -276,7 +269,7 @@ abstract class Module
         $filename = str_replace(strtolower('Typo' . DS . 'Module' . DS), '', $filename);
         $filename = $dir . DS . $filename;
 
-        $this->config = new Config($filename);
+        $this->_config = new Config($filename);
     }
 
     /**

@@ -16,7 +16,7 @@ abstract class ModuleTest extends PHPUnit_Framework_TestCase
      */
     protected static $typo;
 
-    public static function setUpBeforeClass()
+    static public function setUpBeforeClass()
     {
         self::$typo = new Typo();
         self::$typo->setConfigDir(TEST_DIR . DS . 'config' . DS . get_called_class());

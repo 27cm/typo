@@ -1,6 +1,6 @@
 <?php
 
-use Wheels\Typo\Config;
+use Wheels\Config;
 use Wheels\Typo\Exception;
 
 class ConfigTest extends PHPUnit_Framework_TestCase

@@ -2,6 +2,8 @@
 
 namespace Wheels\Config\Schema\Option;
 
+use Wheels\Config\Schema\Option\Type\Tarray;
+
 use Wheels\Typo\Module;
 use Wheels\Typo\Exception;
 
@@ -10,11 +12,6 @@ use Wheels\Typo\Exception;
  */
 abstract class Type
 {
-    /**
-     *
-     * @var
-     */
-    protected $_isArray;
 
     // --- Открытые методы ---
 
@@ -30,9 +27,13 @@ abstract class Type
      */
     static public function create($classname)
     {
+        $matches = array();
+        if(preg_match('/(.+)\[\]$/', $classname, $matches))
+            return Tarray::create($matches[1]);
+
         if(!class_exists($classname))
         {
-            $alt_classname = __CLASS__ . '\\' . ucfirst(strtolower($classname));
+            $alt_classname = __CLASS__ . '\\T' . ucfirst(strtolower($classname));
             if(class_exists($alt_classname))
                 $classname = $alt_classname;
             else
@@ -51,18 +52,18 @@ abstract class Type
     /**
      * Приводит заданного значения к данному типу.
      *
-     * @param mixed $value Преобразуемое значение.
+     * @param mixed $var Преобразуемое значение.
      *
      * @return mixed Преобразованное значение.
      */
-    abstract public function convert($value);
+    abstract public function convert($var);
 
     /**
      * Проверяет, соответствует ли заданное значение данному типу.
      *
-     * @param mixed $value Проверяемое значение.
+     * @param mixed $var Проверяемое значение.
      *
      * @return bool
      */
-    abstract public function validate($value);
+    abstract public function validate($var);
 }

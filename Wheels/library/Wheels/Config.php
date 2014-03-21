@@ -65,11 +65,7 @@ class Config
     public function __construct(array $schema = NULL)
     {
         if(!is_null($schema))
-        {
             $this->_schema = new Schema($schema);
-
-
-        }
 
         $this->setDefaultOptions();
     }
@@ -83,9 +79,9 @@ class Config
 
         if($this->_isSchema())
         {
-            foreach($this->_schema['options'] as $name => $option_schema)
+            foreach($this->_schema->getOptions() as $name => $option)
             {
-                $options[$name] = $option_schema['default'];
+                $options[$name] = $option->getDefault();
             }
         }
 
@@ -130,7 +126,7 @@ class Config
 
     public function setOption($name, $value)
     {
-        $name = $this->_prepareOptionName($name);
+        $name = $this->prepareOptionName($name);
 
         $this->_validateOptionName($name);
         $this->_validateOptionValue($name, $value);
@@ -145,7 +141,7 @@ class Config
 
     public function getOption($name)
     {
-        $name = $this->_prepareOptionName($name);
+        $name = $this->prepareOptionName($name);
 
         if(!array_key_exists($name, $this->_options))
             return Module::throwException(Exception::E_OPTION_NAME, "Неизвестный параметр '$name'");
@@ -158,40 +154,30 @@ class Config
         return (!is_null($this->_schema));
     }
 
-    protected function _isCaseSensitive()
-    {
-        return ($this->_isSchema() ? $this->_schema['case-sensitive'] : TRUE);
-    }
-
-    protected function _prepareSectionName($section)
-    {
-        return ($this->_isCaseSensitive() ? $section : strtolower($section));
-    }
-
-    protected function _prepareOptionName($name)
-    {
-        return ($this->_isCaseSensitive() ? $name : strtolower($name));
-    }
-
     protected function _validateOptionName($name)
     {
-        $name = $this->_prepareOptionName($name);
+        $name = $this->prepareOptionName($name);
 
         if($this->_isSchema())
         {
-            if(!array_key_exists($name, $this->_schema['options']))
+            if(!array_key_exists($name, $this->_schema->getOptions()))
                 return Module::throwException(Exception::E_OPTION_NAME, "Неизвестный параметр '$name'");
         }
     }
 
     protected function _validateOptionValue($name, $value)
     {
-        $name = $this->_prepareOptionName($name);
+        $name = $this->prepareOptionName($name);
 
         if($this->_isSchema())
         {
 
         }
+    }
+    
+    public function prepareOptionName($name)
+    {
+        return $this->_schema->prepareOptionName($name);
     }
 
     public function validateKeyValue($key, $value)
@@ -245,14 +231,14 @@ class Config
 
     public function sectionExists($section)
     {
-        $section = $this->_prepareSectionName($section);
+        $section = $this->prepareOptionName($section);
 
         return array_key_exists($section, $this->_sections);
     }
 
     public function getSection($section)
     {
-        $section = $this->_prepareSectionName($section);
+        $section = $this->prepareOptionName($section);
 
         if($this->sectionExists($section))
             return $this->_sections[$section];

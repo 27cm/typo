@@ -40,6 +40,20 @@ class Option
      */
     protected $_desc;
 
+    /**
+     * Ассоциативный массив псевдонимов.
+     *
+     * @var array
+     */
+    protected $_aliases = array();
+
+    /**
+     * Массив допустимых значений.
+     *
+     * @var array
+     */
+    protected $_allowed = array();
+
 
     // --- Конструктор ---
 
@@ -56,6 +70,9 @@ class Option
         $this->setType($type);
     }
 
+
+    // --- Открытые методы ---
+
     public function setDesc($desc)
     {
         if(!is_string($desc))
@@ -70,6 +87,16 @@ class Option
         $this->_name = $name;
     }
 
+    public function setAliases(array $aliases)
+    {
+        $this->_aliases = $aliases;
+    }
+
+    public function setAllowed(array $allowed)
+    {
+        $this->_allowed = $allowed;
+    }
+
     public function setType($type)
     {
         $this->_type = (is_null($type) ? Type::create('mixed') : $type);
@@ -81,9 +108,21 @@ class Option
     {
         if(isset($this->_type))
         {
+            if(array_key_exists($value, $this->_aliases))
+                $value = $this->_aliases[$value];
+
             $value = $this->_type->convert($value);
-            $this->_type->validate($value);
+            if(!$this->_type->validate($value))
+                Module::throwException(Exception::E_RUNTIME, "Значение параметра '{$this->_name}' имеет не верный тип");
+
+            if(!empty($this->_allowed) && array_search($value, $this->_allowed, TRUE) !== FALSE)
+                Module::throwException(Exception::E_RUNTIME, "Недопустимое значение параметра '{$this->_name}'");
         }
         $this->_default = $value;
+    }
+
+    public function getDefault()
+    {
+        return $this->_default;
     }
 }

@@ -58,6 +58,8 @@ class Schema
 
     public function addOption($name, array $schema)
     {
+        $name = $this->prepareOptionName($name);
+
         if(!array_key_exists('default', $schema))
             Module::throwException(Exception::E_RUNTIME, "Для параметра '$name' раздела 'options' описания конфигурации не задано значение по умолчанию");
 
@@ -76,6 +78,27 @@ class Schema
         if(array_key_exists('desc', $schema))
             $option->setDesc($schema['desc']);
 
+        if(array_key_exists('aliases', $schema))
+            $option->setAliases($schema['aliases']);
+
+        if(array_key_exists('allowed', $schema))
+            $option->setAllowed($schema['allowed']);
+
         $this->_options[$name] = $option;
+    }
+
+    public function getOptions()
+    {
+        return $this->_options;
+    }
+
+    public function getCaseSensitive()
+    {
+        return $this->_case_sensitive;
+    }
+
+    public function prepareOptionName($name)
+    {
+        return ($this->getCaseSensitive() ? $name : strtolower($name));
     }
 }

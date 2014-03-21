@@ -62,14 +62,20 @@ class Typo extends Module
             ),
             'encoding' => array(
                 'desc'    => 'Режим кодирования спецсимволов',
-                'type'    => array(
-                    self::AUTO,
+                'type'    => 'string',
+                'aliases'    => array(
+                    'none'     => self::MODE_NONE,
+                    'names'    => self::MODE_NAMES,
+                    'codes'    => self::MODE_CODES,
+                    'hexcodes' => self::MODE_HEX_CODES,
+                ),
+                'allowed'    => array(
                     self::MODE_NONE,
                     self::MODE_NAMES,
                     self::MODE_CODES,
                     self::MODE_HEX_CODES,
                 ),
-                'default' => self::MODE_NONE,
+                'default' => 'none',
             ),
             'html-in-enabled' => array(
                 'desc'    => 'Включение HTML в тексте на входе',
@@ -231,6 +237,8 @@ class Typo extends Module
      */
     public function validateOption($name, &$value)
     {
+        $name = $this->_config->prepareOptionName($name);
+
         switch($name)
         {
             case 'charset' :
@@ -244,11 +252,8 @@ class Typo extends Module
             break;
 
             case 'encoding' :
-                if($value != self::AUTO)
-                {
-                    if(!Utility::validateConst(get_called_class(), $value, 'MODE'))
-                        return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный режим кодирования спецсимволов '$value'");
-                }
+                if(!Utility::validateConst(get_called_class(), $value, 'MODE'))
+                    return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный режим кодирования спецсимволов '$value'");
             break;
 
             default : Module::validateOption($name, $value);
@@ -287,18 +292,6 @@ class Typo extends Module
 
         // @todo: исправить ошибки повторного вызова
         // text->getCharset();
-        if($this->_options['encoding'] == self::AUTO)
-        {
-            switch($this->_options['charset'])
-            {
-                case 'utf-8' :
-                    $this->setOption('encoding', self::MODE_NONE);
-                break;
-                default :
-                    $this->setOption('encoding', self::MODE_NAMES);
-                break;
-            }
-        }
 
         $charset = $this->_options['charset'];
         $int_encoding = mb_internal_encoding();
@@ -499,10 +492,12 @@ class Typo extends Module
             $chars = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES /*ENT_HTML401*/, 'UTF-8');
             foreach($chars as $chr => $entitie)
             {
-                // @todo #039
-                $name = substr($entitie, 1, strlen($entitie) - 2);
-                Typo::$_chars['ord'][$name] = Utility::ord($chr);
-                Typo::$_chars['chr'][$name] = $chr;
+                if(preg_match('/&\w+;/', $entitie))
+                {
+                    $name = substr($entitie, 1, strlen($entitie) - 2);
+                    Typo::$_chars['ord'][$name] = Utility::ord($chr);
+                    Typo::$_chars['chr'][$name] = $chr;
+                }
             }
             $fl = FALSE;
         }

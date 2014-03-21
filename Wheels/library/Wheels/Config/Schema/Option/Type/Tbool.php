@@ -5,23 +5,23 @@ namespace Wheels\Config\Schema\Option\Type;
 use Wheels\Config\Schema\Option\Type;
 
 /**
- *
+ * Логический тип.
  */
-class Bool extends Type
+class Tbool extends Type
 {
     /**
      * @see Wheels\Config\Schema\Option\Type::convert()
      */
-    static public function convert($value)
+    public function convert($var)
     {
-        return (bool) $value;
+        return (bool) $var;
     }
 
     /**
      * @see Wheels\Config\Schema\Option\Type::validate()
      */
-    static public function validate($value)
+    public function validate($var)
     {
-        return is_bool($value);
+        return is_bool($var);
     }
 }

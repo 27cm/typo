@@ -91,7 +91,6 @@ class Ssh extends Url
             $href = Url::urlencode($matches[0]);
             $value = htmlentities($matches[0], ENT_QUOTES, 'utf-8');
 
-            // @todo: исправить массив $parts
             $parts = array('url' => $href);
 
             if($_this->typo->getOption('html-out-enabled'))
