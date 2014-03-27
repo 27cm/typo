@@ -29,15 +29,6 @@ class Tnumber extends Type
     // --- Открытые методы ---
 
     /**
-     * @see Wheels\Config\Schema\Option\Type::convert()
-     */
-    public function convert($var)
-    {
-        static::_init();
-        return static::$_float->validate($var);
-    }
-
-    /**
      * @see Wheels\Config\Schema\Option\Type::validate()
      */
     public function validate($var)

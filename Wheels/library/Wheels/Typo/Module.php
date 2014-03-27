@@ -7,8 +7,6 @@ use Wheels\Typo\Module;
 use Wheels\Config;
 use Wheels\Typo\Exception;
 
-// @todo должно быть без разницы punct/quote или punct\quote или Punct\Quote или Typo\Module\Punct\Quote или \Wheel
-
 /**
  * Модуль.
  */
@@ -307,17 +305,13 @@ abstract class Module
      *
      * @param string $name  Имя модуля (полное или частичное имя класса модуля).
      *
-     * @example $module->getModule('\\Wheels\\Typo\\Module\\Name')
-     * @example $module->getModule('/Typo/module/name')
-     * @example $module->getModule('Module/Name')
-     * @example $module->getModule('name')
      *
-     * @return \Wheels\Typo\Module
+     * @return \Wheels\Typo\Module Модуль с заданным именем либо NULL, если модуль
+     *                             с таким именем класса не найден среди используемых.
      */
     public function getModule($name)
     {
-        $name = trim($name);
-        $name = str_replace('/', '\\', $name);
+        $name = str_replace('/', '\\', trim($name));
 
         if(substr($name, 0, 1) !== '\\')
             $name = '\\' . $name;

@@ -242,6 +242,8 @@ class Typo extends Module
         switch($name)
         {
             case 'charset' :
+                // @todo: избавляемся от AUTO
+                // @todo: ошибки кодировки перенести в момент вызова iconv
                 if($value != self::AUTO)
                 {
                     $value = mb_strtoupper($value);

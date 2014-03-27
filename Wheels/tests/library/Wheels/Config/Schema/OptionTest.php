@@ -1,92 +1,192 @@
 <?php
 
-namespace Wheels\Config\Schema\Option;
+namespace Wheels\Config\Schema;
 
-use Wheels\Config\Schema\Option\Type;
+use Wheels\Config\Schema\Option;
+use Wheels\Config\Schema\Option\Type\Tmixed;
+use Wheels\Config\Schema\Option\Type\Tstring;
 
-use Wheels\Typo\Exception;
-
-class TypeTest extends PHPUnit_Framework_TestCase
+class OptionTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @var string
-     */
-    static protected $_typename;
-
-    /**
-     * @var \Wheels\Config\Schema\Option\Type
-     */
-    static protected $_type;
-
-    /**
-     * @var \Wheels\Config\Schema\Option\Type\Tarray
-     */
-    static protected $_array_type;
-
-    static protected $_testValidateData = array();
-    
-    static protected $_testArrayValidateData = array();
-
-    static public function setUpBeforeClass()
+    public function testGetName()
     {
-        static::$_typename = preg_replace('/Test$/', '', get_called_class());
-        static::$_typename = preg_replace('/^Wheels\Config\Schema\Option\Type\T/', '', static::$_typename);
+        $expected = 'optionName';
+        $option = new Option($expected, 'default');
 
-        static::$_type = Type::create(static::$_typename);
-        static::$_array_type = Type::create(static::$_typename . '[]');
-    }
-
-    public function testCreate()
-    {
-        $this->assertInstanceOf('Wheels\Config\Schema\Option\Type\T' . static::$_typename, static::$_type);
-
-        $this->assertInstanceOf('Wheels\Config\Schema\Option\Type\Tarray', static::$_array_type);
-        $this->assertAttributeInstanceOf('Wheels\Config\Schema\Option\Type\T' . static::$_typename, '_type', static::$_array_type);
-    }
-
-    /**
-     * @expectedException        Wheels\Typo\Exception
-     * @expectedExceptionMessage Тип (класс) unknown не найден
-     */
-    public function testCreateUnknownException()
-    {
-        Type::create('unknown');
-    }
-
-    /**
-     * @expectedException        Wheels\Typo\Exception
-     * @expectedExceptionMessage Класс Wheels\Config не является наследником класса Wheels\Config\Schema\Option\Type
-     */
-    public function testCreateWrongClassException()
-    {
-        Type::create('Wheels\Config');
-    }
-
-    /**
-     * @dataProvider testValidateDataProvider
-     */
-    public function testValidate($var, $expected)
-    {
-        $actual = $static::$_type->validate($var);
+        $actual = $option->getName();
         $this->assertEquals($expected, $actual);
     }
 
-    /**
-     * @dataProvider testArrayValidateDataProvider
-     */
-    public function testArrayValidate($var, $expected)
+    public function testGetType()
     {
-        $actual = $static::$_type->validate($var);
+        $option = new Option('name', 'default');
+
+        $actual = $option->getType();
+        $expected = 'Wheels\Config\Schema\Option\Type\Tmixed';
+        $this->assertInstanceOf($expected, $actual);
+
+        $type = new Tstring();
+        $option = new Option('name', 'default', $type);
+
+        $actual = $option->getType();
+        $expected = get_class($type);
+        $this->assertInstanceOf($expected, $actual);
+    }
+
+    public function testGetDefault()
+    {
+        $expected = 'defaultValue';
+        $option = new Option('name', $expected);
+
+        $actual = $option->getDefault();
         $this->assertEquals($expected, $actual);
     }
 
-    public function testValidateDataProvider()
+    public function testGetDesc()
     {
-        return static::$_testValidateData;
+        $option = new Option('name', 'default');
+
+        $actual = $option->getDesc();
+        $this->assertNull($actual);
     }
 
-    public function testArrayValidateDataProvider()
+    public function testGetAliases()
     {
-        return static::$_testArrayValidateData;
+        $option = new Option('name', 'default');
+
+        $actual = $option->getAliases();
+        $expected = array();
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testGetAllowed()
+    {
+        $option = new Option('name', 'default');
+
+        $actual = $option->getAllowed();
+        $expected = array();
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testSetName()
+    {
+        $option = new Option('nameA', 'default');
+        $expected = 'nameB';
+        $option->setName($expected);
+
+        $actual = $option->getName();
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testSetNameException()
+    {
+        $this->setExpectedException('\Wheels\Config\Schema\Option\Exception', 'Имя параметра должно быть строкой');
+
+        $option = new Option('name', 'default');
+        $option->setName(1);
+    }
+
+    public function testSetType()
+    {
+        $option = new Option('name', 'default');
+        $type = new Tstring();
+        $option->setType($type);
+
+        $actual = $option->getType();
+        $expected = get_class($type);
+        $this->assertInstanceOf($expected, $actual);
+
+        $type = new Tstring();
+        $option = new Option('name', 'default', $type);
+        $type = new Tmixed();
+        $option->setType($type);
+
+        $actual = $option->getType();
+        $expected = get_class($type);
+        $this->assertInstanceOf($expected, $actual);
+    }
+
+    public function testSetDefault()
+    {
+        $option = new Option('name', 'defaultA');
+        $expected = 'defaultB';
+        $option->setDefault($expected);
+
+
+        $actual = $option->getDefault();
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testSetDefaultExceptionA()
+    {
+        $this->setExpectedException('\Wheels\Config\Schema\Option\Exception', "Недопустимое значение по умолчанию параметра 'name'");
+
+        $type = new Tstring();
+        $option = new Option('name', 'default', $type);
+        $option->setDefault(1);
+    }
+
+    public function testSetDesc()
+    {
+        $option = new Option('name', 'default');
+        $expected = 'description';
+        $option->setDesc($expected);
+
+        $actual = $option->getDesc();
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testSetDescException()
+    {
+        $this->setExpectedException('\Wheels\Config\Schema\Option\Exception', "Текстовое описание параметра 'name' должно быть строкой");
+
+        $option = new Option('name', 'default');
+        $option->setDesc(1);
+    }
+
+    public function testSetAliases()
+    {
+        $option = new Option('name', 'default');
+        $expected = array(
+            'aliasA' => 'valueA',
+            'aliasB' => 'valueB',
+            'aliasC' => 'valueC',
+        );
+        $option->setAliases($expected);
+
+        $actual = $option->getAliases();
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testSetAllowed()
+    {
+        $option = new Option('name', 'default');
+        $allowed = array(
+            'keyA' => 'valueA',
+            'keyB' => 'valueB',
+            'keyC' => 'valueC',
+        );
+        $option->setAllowed($allowed);
+
+        $actual = $option->getAllowed();
+        $expected = array_values($allowed);
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testAliases()
+    {
+        $option = new Option('name', 'default');
+        $alias = 'aliasB';
+        $expected = 'valueB';
+        $aliases = array(
+            'aliasA' => 'valueA',
+            $alias   => $expected,
+            'aliasC' => 'valueC',
+        );
+        $option->setAliases($aliases);
+
+        $option->setDefault($alias);
+        $actual = $option->getDefault();
+        $this->assertEquals($expected, $actual);
     }
 }

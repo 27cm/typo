@@ -29,7 +29,7 @@ abstract class Type
     {
         $matches = array();
         if(preg_match('/(.+)\[\]$/', $classname, $matches))
-            return Tarray::create($matches[1]);
+            return new Tarray($matches[1]);
 
         if(!class_exists($classname))
         {
@@ -43,20 +43,11 @@ abstract class Type
         if(is_subclass_of($classname, __CLASS__))
             return new $classname();
         else
-            Module::throwException(Exception::E_RUNTIME, "Класс $classname не является наследником класса " . __CLASS__);
+            Module::throwException(Exception::E_RUNTIME, "Класс $classname не является наследником " . __CLASS__);
     }
 
 
     // --- Абстрактные методы ---
-
-    /**
-     * Приводит заданного значения к данному типу.
-     *
-     * @param mixed $var Преобразуемое значение.
-     *
-     * @return mixed Преобразованное значение.
-     */
-    abstract public function convert($var);
 
     /**
      * Проверяет, соответствует ли заданное значение данному типу.

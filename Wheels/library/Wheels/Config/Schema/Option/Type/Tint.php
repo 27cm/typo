@@ -9,13 +9,8 @@ use Wheels\Config\Schema\Option\Type;
  */
 class Tint extends Type
 {
-    /**
-     * @see Wheels\Config\Schema\Option\Type::convert()
-     */
-    public function convert($var)
-    {
-        return (int) $var;
-    }
+
+    // --- Открытые методы ---
 
     /**
      * @see Wheels\Config\Schema\Option\Type::validate()

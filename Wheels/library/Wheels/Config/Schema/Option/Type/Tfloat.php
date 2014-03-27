@@ -9,15 +9,8 @@ use Wheels\Config\Schema\Option\Type;
  */
 class Tfloat extends Type
 {
-    // --- Открытые методы ---
 
-    /**
-     * @see Wheels\Config\Schema\Option\Type::convert()
-     */
-    public function convert($var)
-    {
-        return (float) $var;
-    }
+    // --- Открытые методы ---
 
     /**
      * @see Wheels\Config\Schema\Option\Type::validate()

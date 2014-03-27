@@ -14,7 +14,15 @@ abstract class ModuleTest extends PHPUnit_Framework_TestCase
      *
      * @var \Wheels\Typo
      */
-    protected static $typo;
+    static protected $typo;
+
+    static public $providerGetModule = array(
+        array('\\Wheels\\Typo\\Module\\Html', '\\Wheels\\Typo\\Module\\Html'),
+        array('\\Wheels\\Typo\\Module\\Html', '/Typo/Module/Html'),
+        array('\\Wheels\\Typo\\Module\\Html', 'Module/Html'),
+        array('\\Wheels\\Typo\\Module\\Html', 'module\\html'),
+        array('\\Wheels\\Typo\\Module\\Html', ' html '),
+    );
 
     static public function setUpBeforeClass()
     {
@@ -33,6 +41,21 @@ abstract class ModuleTest extends PHPUnit_Framework_TestCase
         $filename = preg_replace('~Test$~', '', get_called_class()) . '.json';
 
         return new JSONTestIterator('resources' . DS . "json" . DS . $filename);
+    }
+
+    /**
+     * @dataProvider self::$providerGetModule
+     */
+    public function testGetModule($expected, $name)
+    {
+        $actual = self::$typo->getModule($name);
+        $this->assertInstanceOf($expected, $actual);
+    }
+
+    public function testGetModuleNull()
+    {
+        $actual = self::$typo->getModule('tml');
+        $this->assertNull($actual);
     }
 
     /**

@@ -16,21 +16,26 @@ class Tarray extends Type
      */
     protected $_type;
 
-    /**
-     * @see Wheels\Config\Schema\Option\Type::convert()
-     */
-    public function convert($var)
-    {
-        if(is_array($var))
-        {
-            foreach($var as &$value)
-            {
-                $value = $this->_type->convert($value);
-            }
-        }
 
-        return $var;
+    // --- Конструктор ---
+
+    /**
+     * @param \Wheels\Config\Schema\Option\Type|string $type
+     *
+     * @uses \Wheels\Config\Schema\Option\Type::create()
+     */
+    public function __construct($type = NULL)
+    {
+        if($type instanceof Type)
+            $this->_type = $type;
+        elseif(is_null($type))
+            $this->_type = static::create('mixed');
+        else
+            $this->_type = static::create($type);
     }
+
+
+    // --- Открытые методы ---
 
     /**
      * @see Wheels\Config\Schema\Option\Type::validate()

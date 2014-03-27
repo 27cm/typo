@@ -2,10 +2,8 @@
 
 namespace Wheels\Config\Schema;
 
+use Wheels\Config\Schema\Option\Exception;
 use Wheels\Config\Schema\Option\Type;
-
-use Wheels\Typo\Module;
-use Wheels\Typo\Exception;
 
 /**
  * Класс описания параметра настроек.
@@ -36,9 +34,9 @@ class Option
     /**
      * Текстовое описание параметра.
      *
-     * @var string
+     * @var string|NULL
      */
-    protected $_desc;
+    protected $_desc = NULL;
 
     /**
      * Ассоциативный массив псевдонимов.
@@ -66,63 +64,163 @@ class Option
     public function __construct($name, $default, Type $type = NULL)
     {
         $this->setName($name);
+
+        if(is_null($type))
+            $this->_type = Type::create('mixed');
+        else
+            $this->_type = $type;
+
         $this->setDefault($default);
-        $this->setType($type);
     }
 
 
     // --- Открытые методы ---
 
-    public function setDesc($desc)
+    /**
+     * Возвращает имя параметра.
+     *
+     * @return string
+     */
+    public function getName()
     {
-        if(!is_string($desc))
-            Module::throwException(Exception::E_RUNTIME, 'Текстовое описание параметра должно быть строкой');
-        $this->_desc = $desc;
+        return $this->_name;
     }
 
+    /**
+     * Возвращает имя параметра.
+     *
+     * @return \Wheels\Config\Schema\Option\Type
+     */
+    public function getType()
+    {
+        return $this->_type;
+    }
+
+    /**
+     * Возвращает значение параметра по умолчанию.
+     *
+     * @return mixed
+     */
+    public function getDefault()
+    {
+        return $this->_default;
+    }
+
+    /**
+     * Возвращает текстовое описание параметра.
+     *
+     * @return string|NULL
+     */
+    public function getDesc()
+    {
+        return $this->_desc;
+    }
+
+    /**
+     * Возвращает ассоциативный массив псевдонимов.
+     *
+     * @return array
+     */
+    public function getAliases()
+    {
+        return $this->_aliases;
+    }
+
+    /**
+     * Возвращает массив допустимых значений.
+     *
+     * @return array
+     */
+    public function getAllowed()
+    {
+        return $this->_allowed;
+    }
+
+    /**
+     * Задаёт имя параметра.
+     *
+     * @param string $name Имя параметра.
+     */
     public function setName($name)
     {
         if(!is_string($name))
-            Module::throwException(Exception::E_RUNTIME, 'Имя параметра должно быть строкой');
+            throw new Exception('Имя параметра должно быть строкой');
         $this->_name = $name;
     }
 
+    /**
+     * Задаёт тип параметра.
+     *
+     * @param \Wheels\Config\Schema\Option\Type $type Тип параметра.
+     */
+    public function setType(Type $type)
+    {
+        $this->_type = $type;
+        $this->setDefault($this->_default);
+    }
+
+    /**
+     * Задаёт значение параметра по умолчанию.
+     *
+     * @param mixed $value Значение параметра по умолчанию.
+     */
+    public function setDefault($value)
+    {
+        if(!$this->validate($value))
+            throw new Exception("Недопустимое значение по умолчанию параметра '" . $this->getName() . "'");
+
+        $this->_default = $value;
+    }
+
+    /**
+     * Задаёт текстовое описание параметра.
+     *
+     * @param string $desc Текстовое описание параметра.
+     */
+    public function setDesc($desc)
+    {
+        if(!is_string($desc))
+            throw new Exception("Текстовое описание параметра '" . $this->getName() . "' должно быть строкой");
+        $this->_desc = $desc;
+    }
+
+    /**
+     * Задаёт массив псевдонимов.
+     *
+     * @param array $aliases Ассоциативный массив псевдонимов
+     */
     public function setAliases(array $aliases)
     {
         $this->_aliases = $aliases;
     }
 
+    /**
+     * Задаёт массив допустимых значений.
+     *
+     * @param array $allowed Массив допустимых значений.
+     */
     public function setAllowed(array $allowed)
     {
-        $this->_allowed = $allowed;
+        $this->_allowed = array_values($allowed);
     }
 
-    public function setType($type)
+    /**
+     *
+     * @param type $value
+     * @return boolean
+     */
+    public function validate($value)
     {
-        $this->_type = (is_null($type) ? Type::create('mixed') : $type);
-        if(isset($this->_default))
-            $this->setDefault($this->_default);
-    }
+        if(array_key_exists($value, $this->_aliases, TRUE))
+            $value = $this->_aliases[$value];
 
-    public function setDefault($value)
-    {
-        if(isset($this->_type))
-        {
-            if(array_key_exists($value, $this->_aliases))
-                $value = $this->_aliases[$value];
+        // $value = $this->_type->convert($value);
+        if(!$this->_type->validate($value))
+            return FALSE;
 
-            $value = $this->_type->convert($value);
-            if(!$this->_type->validate($value))
-                Module::throwException(Exception::E_RUNTIME, "Значение параметра '{$this->_name}' имеет не верный тип");
+        if(!empty($this->_allowed) && array_search($value, $this->_allowed, TRUE) !== FALSE)
+            return FALSE;
 
-            if(!empty($this->_allowed) && array_search($value, $this->_allowed, TRUE) !== FALSE)
-                Module::throwException(Exception::E_RUNTIME, "Недопустимое значение параметра '{$this->_name}'");
-        }
-        $this->_default = $value;
-    }
-
-    public function getDefault()
-    {
-        return $this->_default;
+        return TRUE;
     }
 }

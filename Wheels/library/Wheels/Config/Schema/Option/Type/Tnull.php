@@ -9,16 +9,8 @@ use Wheels\Config\Schema\Option\Type;
  */
 class Tnull extends Type
 {
+    
     // --- Открытые методы ---
-
-    /**
-     * @see Wheels\Config\Schema\Option\Type::convert()
-     */
-    public function convert($var)
-    {
-        $var = NULL;
-        return $var;
-    }
 
     /**
      * @see Wheels\Config\Schema\Option\Type::validate()
