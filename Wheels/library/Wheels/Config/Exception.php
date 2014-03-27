@@ -1,6 +1,6 @@
 <?php
 
-namespace Wheels\Typo;
+namespace Wheels\Config;
 
 /**
  * @see \Wheels\Exception

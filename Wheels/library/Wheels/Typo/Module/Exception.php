@@ -1,0 +1,11 @@
+<?php
+
+namespace Wheels\Typo\Module;
+
+/**
+ * @see \Wheels\Typo\Exception
+ */
+class Exception extends \Wheels\Typo\Exception
+{
+
+}
