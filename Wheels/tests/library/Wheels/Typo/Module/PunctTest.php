@@ -1,6 +1,6 @@
 <?php
 namespace Module;
-use ModuleTest;
+use AbstractModule;
 
-class PunctTest extends ModuleTest {
+class PunctTest extends AbstractModule {
 }

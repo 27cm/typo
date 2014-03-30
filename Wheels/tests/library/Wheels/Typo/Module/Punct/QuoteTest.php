@@ -2,11 +2,11 @@
 
 namespace Module\Punct;
 
-use ModuleTest;
+use AbstractModule;
 use Wheels\Typo\Exception;
 use Wheels\Typo\Module\Punct\Quote;
 
-class QuoteTest extends ModuleTest
+class QuoteTest extends AbstractModule
 {
     /**
      * Использование неизвестных символов для кавычек.

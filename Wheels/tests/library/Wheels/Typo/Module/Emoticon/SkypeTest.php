@@ -2,9 +2,9 @@
 
 namespace Module\Emoticon;
 
-use ModuleTest;
+use AbstractModule;
 
-class SkypeTest extends ModuleTest
+class SkypeTest extends AbstractModule
 {
 
 }

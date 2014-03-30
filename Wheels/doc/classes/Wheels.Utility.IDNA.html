@@ -1,0 +1,2464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <meta charset="utf-8"/>
+    <title>API Documentation</title>
+    <meta name="author" content=""/>
+    <meta name="description" content=""/>
+
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/prism.css" rel="stylesheet" media="all"/>
+    <link href="../css/template.css" rel="stylesheet" media="all"/>
+    
+    <!--[if lt IE 9]>
+    <script src="https://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
+    <![endif]-->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
+    <script src="https://code.jquery.com/ui/1.10.3/jquery-ui.min.js" type="text/javascript"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    <script src="../js/jquery.smooth-scroll.js"></script>
+    <script src="../js/prism.min.js"></script>
+    <!-- TODO: Add http://jscrollpane.kelvinluck.com/ to style the scrollbars for browsers not using webkit-->
+    <script type="text/javascript">
+    function loadExternalCodeSnippets() {
+        Array.prototype.slice.call(document.querySelectorAll('pre[data-src]')).forEach(function (pre) {
+            var src = pre.getAttribute('data-src');
+            var extension = (src.match(/\.(\w+)$/) || [, ''])[1];
+            var language = 'php';
+
+            var code = document.createElement('code');
+            code.className = 'language-' + language;
+
+            pre.textContent = '';
+
+            code.textContent = 'Loading…';
+
+            pre.appendChild(code);
+
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('GET', src, true);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+
+                    if (xhr.status < 400 && xhr.responseText) {
+                        code.textContent = xhr.responseText;
+
+                        Prism.highlightElement(code);
+                    }
+                    else if (xhr.status >= 400) {
+                        code.textContent = '✖ Error ' + xhr.status + ' while fetching file: ' + xhr.statusText;
+                    }
+                    else {
+                        code.textContent = '✖ Error: File does not exist or is empty';
+                    }
+                }
+            };
+
+            xhr.send(null);
+        });
+    }
+
+    $(document).ready(function(){
+        loadExternalCodeSnippets();
+    });
+    $('#source-view').on('shown', function () {
+        loadExternalCodeSnippets();
+    })
+</script>
+
+    <link rel="shortcut icon" href="../images/favicon.ico"/>
+    <link rel="apple-touch-icon" href="../images/apple-touch-icon.png"/>
+    <link rel="apple-touch-icon" sizes="72x72" href="../images/apple-touch-icon-72x72.png"/>
+    <link rel="apple-touch-icon" sizes="114x114" href="../images/apple-touch-icon-114x114.png"/>
+</head>
+<body>
+
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <i class="icon-ellipsis-vertical"></i>
+            </a>
+            <a class="brand" href="../index.html">API Documentation</a>
+
+            <div class="nav-collapse">
+                <ul class="nav pull-right">
+                    <li class="dropdown">
+                        <a href="../index.html" class="dropdown-toggle" data-toggle="dropdown">
+                            API Documentation <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                                                        <li><a href="../namespaces/Wheels.html">\Wheels</a></li>
+                                                    </ul>
+                    </li>
+                    <li class="dropdown" id="charts-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Charts <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../graphs/class.html">
+                                    <i class="icon-list-alt"></i>&#160;Class hierarchy diagram
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown" id="reports-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Reports <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../reports/errors.html">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">306</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/markers.html">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">3</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--<div class="go_to_top">-->
+    <!--<a href="#___" style="color: inherit">Back to top&#160;&#160;<i class="icon-upload icon-white"></i></a>-->
+    <!--</div>-->
+</div>
+
+<div id="___" class="container-fluid">
+        <section class="row-fluid">
+        <div class="span2 sidebar">
+                                <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-2063359804"></a>
+                                <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
+            </div>
+            <div id="namespace-2063359804" class="accordion-body collapse in">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1164933583"></a>
+                                <a href="../namespaces/Wheels.html" style="margin-left: 30px; padding-left: 0">Wheels</a>
+            </div>
+            <div id="namespace-1164933583" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-521666038"></a>
+                                <a href="../namespaces/Wheels.Config.html" style="margin-left: 30px; padding-left: 0">Config</a>
+            </div>
+            <div id="namespace-521666038" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1878511939"></a>
+                                <a href="../namespaces/Wheels.Config.Schema.html" style="margin-left: 30px; padding-left: 0">Schema</a>
+            </div>
+            <div id="namespace-1878511939" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-2107718494"></a>
+                                <a href="../namespaces/Wheels.Config.Schema.Option.html" style="margin-left: 30px; padding-left: 0">Option</a>
+            </div>
+            <div id="namespace-2107718494" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1295102796"></a>
+                                <a href="../namespaces/Wheels.Config.Schema.Option.Type.html" style="margin-left: 30px; padding-left: 0">Type</a>
+            </div>
+            <div id="namespace-1295102796" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tarray.html">Tarray</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tbool.html">Tbool</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tboolean.html">Tboolean</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tdouble.html">Tdouble</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tfloat.html">Tfloat</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tint.html">Tint</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tinteger.html">Tinteger</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tmixed.html">Tmixed</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tnull.html">Tnull</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tnumber.html">Tnumber</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Treal.html">Treal</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tstring.html">Tstring</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Exception.html">Exception</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.html">Type</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Exception.html">Exception</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.html">Option</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Wheels.Config.Exception.html">Exception</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.html">Schema</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-798962307"></a>
+                                <a href="../namespaces/Wheels.Typo.html" style="margin-left: 30px; padding-left: 0">Typo</a>
+            </div>
+            <div id="namespace-798962307" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1053921877"></a>
+                                <a href="../namespaces/Wheels.Typo.Module.html" style="margin-left: 30px; padding-left: 0">Module</a>
+            </div>
+            <div id="namespace-1053921877" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-505663543"></a>
+                                <a href="../namespaces/Wheels.Typo.Module.Smile.html" style="margin-left: 30px; padding-left: 0">Smile</a>
+            </div>
+            <div id="namespace-505663543" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1714389472"></a>
+                                <a href="../namespaces/Wheels.Typo.Module.Smile.Kolobok.html" style="margin-left: 30px; padding-left: 0">Kolobok</a>
+            </div>
+            <div id="namespace-1714389472" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Smile.Kolobok.Standart.html">Standart</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Smile.Kolobok.html">Kolobok</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1611488887"></a>
+                                <a href="../namespaces/Wheels.Typo.Module.Emoticon.html" style="margin-left: 30px; padding-left: 0">Emoticon</a>
+            </div>
+            <div id="namespace-1611488887" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Emoticon.Skype.html">Skype</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1651333304"></a>
+                                <a href="../namespaces/Wheels.Typo.Module.Punct.html" style="margin-left: 30px; padding-left: 0">Punct</a>
+            </div>
+            <div id="namespace-1651333304" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Punct.Dash.html">Dash</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Punct.Quote.html">Quote</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1806393145"></a>
+                                <a href="../namespaces/Wheels.Typo.Module.Url.html" style="margin-left: 30px; padding-left: 0">Url</a>
+            </div>
+            <div id="namespace-1806393145" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Url.Ssh.html">Ssh</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Url.Twitter.html">Twitter</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Align.html">Align</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Code.html">Code</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Emoticon.html">Emoticon</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Exception.html">Exception</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Filepath.html">Filepath</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Html.html">Html</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Math.html">Math</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Nobr.html">Nobr</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Punct.html">Punct</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Space.html">Space</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Symbol.html">Symbol</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Url.html">Url</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Wheels.Typo.Exception.html">Exception</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.html">Module</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Typo.Text.html">Text</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Typo.Utility.html">Utility</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1470105386"></a>
+                                <a href="../namespaces/Wheels.Utility.html" style="margin-left: 30px; padding-left: 0">Utility</a>
+            </div>
+            <div id="namespace-1470105386" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Wheels.Utility.IDNA.html">IDNA</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Wheels.Config.html">Config</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Exception.html">Exception</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Loader.html">Loader</a></li>
+                                                    <li class="class"><a href="../classes/Wheels.Typo.html">Typo</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/FineDiffOp.html">FineDiffOp</a></li>
+                                                    <li class="class"><a href="../classes/FineDiffDeleteOp.html">FineDiffDeleteOp</a></li>
+                                                    <li class="class"><a href="../classes/FineDiffInsertOp.html">FineDiffInsertOp</a></li>
+                                                    <li class="class"><a href="../classes/FineDiffReplaceOp.html">FineDiffReplaceOp</a></li>
+                                                    <li class="class"><a href="../classes/FineDiffCopyOp.html">FineDiffCopyOp</a></li>
+                                                    <li class="class"><a href="../classes/FineDiffOps.html">FineDiffOps</a></li>
+                                                    <li class="class"><a href="../classes/FineDiff.html">FineDiff</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        </div>
+    </section>
+    <section class="row-fluid">
+        <div class="span10 offset2">
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <nav>
+                                                <a href="../namespaces/Wheels.Utility.html">\Wheels\Utility</a> <i class="icon-level-up"></i>
+                                            </nav>
+                    <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"><i class="icon-code"></i></a>
+
+                    <h1><small>\Wheels\Utility</small>IDNA</h1>
+                    <p><em>Кодирование/декодирование интернационализованных доменных имён (IDN).</em></p>
+                    <p>Класс позволяет преобразовывать интернационализированные доменные имена
+(см. RFC 3490) as they can be used with various registries worldwide
+to be translated between their original (localized) form and their encoded form
+as it will be used in the DNS (Domain Name System).</p>
+<p>Класс предоставляет два публичных метода: encode() и decode(), соотвественно
+для кодирования и декодирования доменных имён. You are allowed to use complete domain names,
+simple strings and complete email addresses as well. Это означает, что Вы можете
+использовать любой представление:</p>
+<ul>
+<li>www.nörgler.com</li>
+<li>xn--nrgler-wxa</li>
+<li>xn--brse-5qa.xn--knrz-1ra.info</li>
+</ul>
+<p>Unicode input might be given as either UTF-8 string, UCS-4 string or UCS-4 array.
+Unicode output is available in the same formats.
+You can select your preferred format via {@link set_paramter()}.</p>
+<p>ACE input and output is always expected to be ASCII.</p>
+
+                    <section id="summary">
+                        <h2>Summary</h2>
+                        <section class="row-fluid heading">
+                            <section class="span4">
+                                <a href="#methods">Methods</a>
+                            </section>
+                            <section class="span4">
+                                <a href="#properties">Properties</a>
+                            </section>
+                            <section class="span4">
+                                <a href="#constants">Constants</a>
+                            </section>
+                        </section>
+                        <section class="row-fluid public">
+                            <section class="span4">
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method___construct" class="">__construct()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method_set_parameter" class="">set_parameter()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method_decode" class="">decode()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method_encode" class="">encode()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method_encode_uri" class="">encode_uri()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method_get_last_error" class="">get_last_error()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method_getInstance" class="">getInstance()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method_singleton" class="">singleton()</a><br />
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No public properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No constants found</em>
+                                                            </section>
+                        </section>
+                        <section class="row-fluid protected">
+                            <section class="span4">
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method__decode" class="">_decode()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method__encode" class="">_encode()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method__adapt" class="">_adapt()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method__encode_digit" class="">_encode_digit()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method__decode_digit" class="">_decode_digit()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method__error" class="">_error()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method__nameprep" class="">_nameprep()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method__hangul_decompose" class="">_hangul_decompose()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method__hangul_compose" class="">_hangul_compose()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method__get_combining_class" class="">_get_combining_class()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method__apply_cannonical_ordering" class="">_apply_cannonical_ordering()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method__combine" class="">_combine()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method__utf8_to_ucs4" class="">_utf8_to_ucs4()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method__ucs4_to_utf8" class="">_ucs4_to_utf8()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method__ucs4_to_ucs4_string" class="">_ucs4_to_ucs4_string()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method__ucs4_string_to_ucs4" class="">_ucs4_string_to_ucs4()</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#method_byteLength" class="">byteLength()</a><br />
+                                                            </section>
+                            <section class="span4">
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__punycode_prefix" class="">$_punycode_prefix</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__invalid_ucs" class="">$_invalid_ucs</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__max_ucs" class="">$_max_ucs</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__base" class="">$_base</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__tmin" class="">$_tmin</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__tmax" class="">$_tmax</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__skew" class="">$_skew</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__damp" class="">$_damp</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__initial_bias" class="">$_initial_bias</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__initial_n" class="">$_initial_n</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__sbase" class="">$_sbase</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__lbase" class="">$_lbase</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__vbase" class="">$_vbase</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__tbase" class="">$_tbase</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__lcount" class="">$_lcount</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__vcount" class="">$_vcount</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__tcount" class="">$_tcount</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__error" class="">$_error</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__mb_string_overload" class="">$_mb_string_overload</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property_encoding" class="">$encoding</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__allow_overlong" class="">$_allow_overlong</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__strict_mode" class="">$_strict_mode</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property__idn_version" class="">$_idn_version</a><br />
+                                                                    <a href="../classes/Wheels.Utility.IDNA.html#property_NP" class="">$NP</a><br />
+                                                            </section>
+                            <section class="span4">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                        <section class="row-fluid private">
+                            <section class="span4">
+                                                                    <em>No private methods found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No private properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                    </section>
+                </div>
+                <aside class="span4 detailsbar">
+                                        
+                    
+                    <dl>
+                        <dt>File</dt>
+                            <dd><a href="../files/Wheels.Utility.IDNA.php.html"><div class="path-wrapper">Wheels\Utility\IDNA.php</div></a></dd>
+                                                <dt>Package</dt>
+                            <dd><div class="namespace-wrapper">\Default</div></dd>
+                                                <dt>Class hierarchy</dt>
+                            <dd class="hierarchy">
+                                                                                                                                                                    <div class="namespace-wrapper">\Wheels\Utility\IDNA</div>
+                            </dd>
+
+                        
+                        
+                        
+                        
+                                                                        </dl>
+                    <h2>Tags</h2>
+                    <table class="table table-condensed">
+                                            <tr>
+                            <th>
+                                author
+                            </th>
+                            <td>
+                                                                    <p>Matthias Sommerfeld <mso@phlylabs.de></p>
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                copyright
+                            </th>
+                            <td>
+                                                                    <p>2004-2011 phlyLabs Berlin, <a href="http://phlylabs.de">http://phlylabs.de</a></p>
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                version
+                            </th>
+                            <td>
+                                                                    <p>2011-12-19</p>
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                todo
+                            </th>
+                            <td>
+                                                            </td>
+                        </tr>
+                                        </table>
+                </aside>
+            </div>
+
+                        
+                                    <a id="properties" name="properties"></a>
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <h2>Properties</h2>
+                </div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__punycode_prefix" name="property__punycode_prefix" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_punycode_prefix</h3>
+                <pre class="signature">$_punycode_prefix</pre>
+                <p><em></em></p>
+                
+
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__invalid_ucs" name="property__invalid_ucs" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_invalid_ucs</h3>
+                <pre class="signature">$_invalid_ucs</pre>
+                <p><em></em></p>
+                
+
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__max_ucs" name="property__max_ucs" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_max_ucs</h3>
+                <pre class="signature">$_max_ucs</pre>
+                <p><em></em></p>
+                
+
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__base" name="property__base" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_base</h3>
+                <pre class="signature">$_base</pre>
+                <p><em></em></p>
+                
+
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__tmin" name="property__tmin" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_tmin</h3>
+                <pre class="signature">$_tmin</pre>
+                <p><em></em></p>
+                
+
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__tmax" name="property__tmax" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_tmax</h3>
+                <pre class="signature">$_tmax</pre>
+                <p><em></em></p>
+                
+
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__skew" name="property__skew" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_skew</h3>
+                <pre class="signature">$_skew</pre>
+                <p><em></em></p>
+                
+
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__damp" name="property__damp" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_damp</h3>
+                <pre class="signature">$_damp</pre>
+                <p><em></em></p>
+                
+
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__initial_bias" name="property__initial_bias" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_initial_bias</h3>
+                <pre class="signature">$_initial_bias</pre>
+                <p><em></em></p>
+                
+
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__initial_n" name="property__initial_n" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_initial_n</h3>
+                <pre class="signature">$_initial_n</pre>
+                <p><em></em></p>
+                
+
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__sbase" name="property__sbase" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_sbase</h3>
+                <pre class="signature">$_sbase</pre>
+                <p><em></em></p>
+                
+
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__lbase" name="property__lbase" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_lbase</h3>
+                <pre class="signature">$_lbase</pre>
+                <p><em></em></p>
+                
+
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__vbase" name="property__vbase" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_vbase</h3>
+                <pre class="signature">$_vbase</pre>
+                <p><em></em></p>
+                
+
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__tbase" name="property__tbase" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_tbase</h3>
+                <pre class="signature">$_tbase</pre>
+                <p><em></em></p>
+                
+
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__lcount" name="property__lcount" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_lcount</h3>
+                <pre class="signature">$_lcount</pre>
+                <p><em></em></p>
+                
+
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__vcount" name="property__vcount" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_vcount</h3>
+                <pre class="signature">$_vcount</pre>
+                <p><em></em></p>
+                
+
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__tcount" name="property__tcount" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_tcount</h3>
+                <pre class="signature">$_tcount</pre>
+                <p><em></em></p>
+                
+
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__error" name="property__error" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_error</h3>
+                <pre class="signature">$_error</pre>
+                <p><em></em></p>
+                
+
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__mb_string_overload" name="property__mb_string_overload" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_mb_string_overload</h3>
+                <pre class="signature">$_mb_string_overload</pre>
+                <p><em></em></p>
+                
+
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property_encoding" name="property_encoding" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$encoding</h3>
+                <pre class="signature">$encoding : string</pre>
+                <p><em>Кодировка.</em></p>
+                
+
+                                <h4>Type</h4>
+                string
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__allow_overlong" name="property__allow_overlong" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_allow_overlong</h3>
+                <pre class="signature">$_allow_overlong : bool</pre>
+                <p><em>Overlong UTF-8 encodings are forbidden.</em></p>
+                
+
+                                <h4>Type</h4>
+                bool
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__strict_mode" name="property__strict_mode" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_strict_mode</h3>
+                <pre class="signature">$_strict_mode : bool</pre>
+                <p><em>Behave strict or not.</em></p>
+                
+
+                                <h4>Type</h4>
+                bool
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__idn_version" name="property__idn_version" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$_idn_version</h3>
+                <pre class="signature">$_idn_version : int</pre>
+                <p><em>Версия IDN.</em></p>
+                
+
+                                <h4>Type</h4>
+                int
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property_NP" name="property_NP" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$NP</h3>
+                <pre class="signature">$NP</pre>
+                <p><em>Holds all relevant mapping tables
+See RFC3454 for details</em></p>
+                
+
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            private
+                        </th>
+                        <td>
+                                                            <p>array</p>
+                                                    </td>
+                    </tr>
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            
+                                                    </td>
+                    </tr>
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                            
+                                    <a id="methods" name="methods"></a>
+            <div class="row-fluid">
+                <div class="span8 content class"><h2>Methods</h2></div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method___construct" name="method___construct" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">__construct()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">__construct(array <span class="argument">$options</span>)</pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$options</td>
+                                <td><p>Параметры.</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_set_parameter" name="method_set_parameter" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">set_parameter()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">set_parameter( <span class="argument">$option</span>,  <span class="argument">$value</span>) : boolean</pre>
+                <p><em>Sets a new option value. Available options and values:
+[encoding - Use either UTF-8, UCS4 as array or UCS4 as string as input (&#039;utf8&#039; for UTF-8,
+        &#039;ucs4_string&#039; and &#039;ucs4_array&#039; respectively for UCS4); The output is always UTF-8]
+[overlong - Unicode does not allow unnecessarily long encodings of chars,
+            to allow this, set this parameter to true, else to false;
+            default is false.]
+[strict - true: strict mode, good for registration purposes - Causes errors
+          on failures; false: loose mode, ideal for &quot;wildlife&quot; applications
+          by silently ignoring errors and returning the original input instead</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$option</td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td></td>
+                                <td>$value</td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                            &mdash; <p>true on success, false otherwise</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_decode" name="method_decode" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">decode()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">decode( <span class="argument">$input</span>,  <span class="argument">$one_time_encoding</span>) : string</pre>
+                <p><em>Decode a given ACE domain name</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$input</td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td></td>
+                                <td>$one_time_encoding</td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>Decoded Domain name (UTF-8 or UCS-4)</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_encode" name="method_encode" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">encode()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">encode( <span class="argument">$decoded</span>,  <span class="argument">$one_time_encoding</span>) : string</pre>
+                <p><em>Encode a given UTF-8 domain name</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$decoded</td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td></td>
+                                <td>$one_time_encoding</td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>Encoded Domain name (ACE string)</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_encode_uri" name="method_encode_uri" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">encode_uri()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">encode_uri(string <span class="argument">$uri</span>) : string</pre>
+                <p><em>Removes a weakness of encode(), which cannot properly handle URIs but instead encodes their
+path or query components, too.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$uri</td>
+                                <td><p>Expects the URI as a UTF-8 (or ASCII) string</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The URI encoded to Punycode, everything but the host component is left alone</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            since
+                        </th>
+                        <td>
+                                                            0.6.4                                
+                                                    </td>
+                    </tr>
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_get_last_error" name="method_get_last_error" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">get_last_error()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">get_last_error() : string</pre>
+                <p><em>Use this method to get the last error ocurred</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The last error, that occured</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getInstance" name="method_getInstance" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getInstance()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getInstance(array <span class="argument">$params</span>) : self</pre>
+                <p><em>Attempts to return a concrete IDNA instance.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$params</td>
+                                <td><p>Set of paramaters</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    self
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                            <span class="label label-info">static</span>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_singleton" name="method_singleton" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">singleton()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">singleton(array <span class="argument">$params</span>) : object</pre>
+                <p><em>Attempts to return a concrete IDNA instance for either php4 or php5,
+only creating a new instance if no IDNA instance with the same
+parameters currently exists.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$params</td>
+                                <td><p>Set of paramaters</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    object
+                                            &mdash; <p>self</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                            <span class="label label-info">static</span>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method__decode" name="method__decode" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">_decode()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">_decode( <span class="argument">$encoded</span>) : mixed</pre>
+                <p><em>The actual decoding algorithm</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$encoded</td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    mixed
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method__encode" name="method__encode" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">_encode()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">_encode( <span class="argument">$decoded</span>) : mixed</pre>
+                <p><em>The actual encoding algorithm</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$decoded</td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    mixed
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method__adapt" name="method__adapt" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">_adapt()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">_adapt(int <span class="argument">$delta</span>, int <span class="argument">$npoints</span>, int <span class="argument">$is_first</span>) : int</pre>
+                <p><em>Adapt the bias according to the current code point and position</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>int</td>
+                                <td>$delta</td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>int</td>
+                                <td>$npoints</td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>int</td>
+                                <td>$is_first</td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    int
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method__encode_digit" name="method__encode_digit" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">_encode_digit()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">_encode_digit(int <span class="argument">$d</span>) : string</pre>
+                <p><em>Encoding a certain digit</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>int</td>
+                                <td>$d</td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method__decode_digit" name="method__decode_digit" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">_decode_digit()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">_decode_digit(int <span class="argument">$cp</span>) : int</pre>
+                <p><em>Decode a certain digit</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>int</td>
+                                <td>$cp</td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    int
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method__error" name="method__error" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">_error()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">_error(string <span class="argument">$error</span>)</pre>
+                <p><em>Internal error handling method</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$error</td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method__nameprep" name="method__nameprep" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">_nameprep()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">_nameprep( <span class="argument">$input</span>) : string</pre>
+                <p><em>Do Nameprep according to RFC3491 and RFC3454</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$input</td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>Unicode Characters, Nameprep'd</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method__hangul_decompose" name="method__hangul_decompose" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">_hangul_decompose()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">_hangul_decompose( <span class="argument">$char</span>) : array</pre>
+                <p><em>Decomposes a Hangul syllable
+(see http://www.unicode.org/unicode/reports/tr15/#Hangul</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$char</td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                            &mdash; <p>Either Hangul Syllable decomposed or original 32bit value as one value array</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method__hangul_compose" name="method__hangul_compose" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">_hangul_compose()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">_hangul_compose( <span class="argument">$input</span>) : array</pre>
+                <p><em>Ccomposes a Hangul syllable
+(see http://www.unicode.org/unicode/reports/tr15/#Hangul</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$input</td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                            &mdash; <p>UCS4 sequence with syllables composed</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method__get_combining_class" name="method__get_combining_class" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">_get_combining_class()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">_get_combining_class( <span class="argument">$char</span>) : integer</pre>
+                <p><em>Returns the combining class of a certain wide char</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$char</td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    integer
+                                            &mdash; <p>Combining class if found, else 0</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method__apply_cannonical_ordering" name="method__apply_cannonical_ordering" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">_apply_cannonical_ordering()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">_apply_cannonical_ordering( <span class="argument">$input</span>) : array</pre>
+                <p><em>Applies the cannonical ordering of a decomposed UCS4 sequence</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$input</td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                            &mdash; <p>Ordered USC4 sequence</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method__combine" name="method__combine" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">_combine()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">_combine( <span class="argument">$input</span>) : array</pre>
+                <p><em>Do composition of a sequence of starter and non-starter</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$input</td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                            &mdash; <p>Ordered USC4 sequence</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method__utf8_to_ucs4" name="method__utf8_to_ucs4" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">_utf8_to_ucs4()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">_utf8_to_ucs4(string <span class="argument">$input</span>) : string</pre>
+                <p><em>This converts an UTF-8 encoded string to its UCS-4 representation
+By talking about UCS-4 &quot;strings&quot; we mean arrays of 32bit integers representing
+each of the &quot;chars&quot;. This is due to PHP not being able to handle strings with
+bit depth different from 8. This apllies to the reverse method _ucs4_to_utf8(), too.</em></p>
+                <p>The following UTF-8 encodings are supported:
+bytes bits  representation
+1        7  0xxxxxxx
+2       11  110xxxxx 10xxxxxx
+3       16  1110xxxx 10xxxxxx 10xxxxxx
+4       21  11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+5       26  111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+6       31  1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+Each x represents a bit that can be used to store character data.
+The five and six byte sequences are part of Annex D of ISO/IEC 10646-1:2000</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$input</td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method__ucs4_to_utf8" name="method__ucs4_to_utf8" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">_ucs4_to_utf8()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">_ucs4_to_utf8(string <span class="argument">$input</span>) : string</pre>
+                <p><em>Convert UCS-4 string into UTF-8 string
+See _utf8_to_ucs4() for details</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$input</td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method__ucs4_to_ucs4_string" name="method__ucs4_to_ucs4_string" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">_ucs4_to_ucs4_string()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">_ucs4_to_ucs4_string(array <span class="argument">$input</span>) : string</pre>
+                <p><em>Convert UCS-4 array into UCS-4 string</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$input</td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method__ucs4_string_to_ucs4" name="method__ucs4_string_to_ucs4" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">_ucs4_string_to_ucs4()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">_ucs4_string_to_ucs4(string <span class="argument">$input</span>) : array</pre>
+                <p><em>Convert UCS-4 strin into UCS-4 garray</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$input</td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_byteLength" name="method_byteLength" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">byteLength()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">byteLength(string <span class="argument">$string</span>) : integer</pre>
+                <p><em>Gets the length of a string in bytes even if mbstring function
+overloading is turned on</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$string</td>
+                                <td><p>the string for which to get the length.</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    integer
+                                            &mdash; <p>the length of the string in bytes.</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                            <span class="label label-info">static</span>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                                    </div>
+    </section>
+
+    <div id="source-view" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="source-view-label" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="source-view-label">IDNA.php</h3>
+        </div>
+        <div class="modal-body">
+            <pre data-src="../files/Wheels\Utility\IDNA.php.txt" class="language-php line-numbers"></pre>
+        </div>
+    </div>
+
+    <footer class="row-fluid">
+        <section class="span10 offset2">
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <section class="row-fluid footer-sections">
+                        <section class="span4">
+                                                        <h1><i class="icon-code"></i></h1>
+                            <div>
+                                <ul>
+                                                                            <li><a href="../namespaces/Wheels.html">\Wheels</a></li>
+                                                                    </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-bar-chart"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../graphs/class.html">Class Hierarchy Diagram</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-pushpin"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../reports/errors.html">Errors</a></li>
+                                    <li><a href="../reports/markers.html">Markers</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                    </section>
+                </section>
+            </section>
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <hr />
+                    Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
+                    on March 30th, 2014 at 20:05.
+                </section>
+            </section>
+        </section>
+    </footer>
+</div>
+
+</body>
+</html>

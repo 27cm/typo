@@ -1,0 +1,282 @@
+<?php
+
+namespace Wheels\Config\Schema;
+
+use Wheels\Config\Schema\Option\Exception;
+use Wheels\Config\Schema\Option\Type;
+
+/**
+ * Класс описания параметра настроек.
+ */
+class Option
+{
+    /**
+     * Имя параметра.
+     *
+     * @var string
+     */
+    protected $_name;
+
+    /**
+     * Тип параметра.
+     *
+     * @var \Wheels\Config\Schema\Option\Type
+     */
+    protected $_type;
+
+    /**
+     * Значение параметра по умолчанию.
+     *
+     * @var mixed
+     */
+    protected $_default;
+
+    /**
+     * Текстовое описание параметра.
+     *
+     * @var string|NULL
+     */
+    protected $_desc = NULL;
+
+    /**
+     * Ассоциативный массив псевдонимов.
+     *
+     * @var array
+     */
+    protected $_aliases = array();
+
+    /**
+     * Массив допустимых значений.
+     *
+     * @var array
+     */
+    protected $_allowed = array();
+
+
+    // --- Конструктор ---
+
+    /**
+     *
+     * @param string $name    Имя параметра.
+     * @param string $default Значение параметра по умолчанию.
+     * @param mixed $type     Тип параметра (не может быть изменён после создания объекта). По умолчанию mixed.
+     *
+     * @uses \Wheels\Config\Schema\Option\Type::create()
+     */
+    public function __construct($name, $default, $type = NULL)
+    {
+        $this->setName($name);
+
+        if(is_null($type))
+            $this->_type = Type::create('mixed');
+        else
+            $this->_type = Type::create($type);
+
+        $this->setDefault($default);
+    }
+
+
+    // --- Открытые методы ---
+
+    /**
+     * Возвращает имя параметра.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->_name;
+    }
+
+    /**
+     * Возвращает имя параметра.
+     *
+     * @return \Wheels\Config\Schema\Option\Type
+     */
+    public function getType()
+    {
+        return $this->_type;
+    }
+
+    /**
+     * Возвращает значение параметра по умолчанию.
+     *
+     * @return mixed
+     */
+    public function getDefault()
+    {
+        return $this->_default;
+    }
+
+    /**
+     * Возвращает текстовое описание параметра.
+     *
+     * @return string|NULL
+     */
+    public function getDesc()
+    {
+        return $this->_desc;
+    }
+
+    /**
+     * Возвращает ассоциативный массив псевдонимов.
+     *
+     * @return array
+     */
+    public function getAliases()
+    {
+        return $this->_aliases;
+    }
+
+    /**
+     * Возвращает массив допустимых значений.
+     *
+     * @return array
+     */
+    public function getAllowed()
+    {
+        return $this->_allowed;
+    }
+
+    /**
+     * Задаёт имя параметра.
+     *
+     * @param string $name Имя параметра.
+     */
+    public function setName($name)
+    {
+        if(!is_string($name))
+            throw new Exception('Имя параметра должно быть строкой');
+
+        $this->_name = $name;
+    }
+
+    /**
+     * Задаёт значение параметра по умолчанию.
+     *
+     * @param mixed $value Значение параметра по умолчанию.
+     */
+    public function setDefault($value)
+    {
+        $value = $this->_filter($value);
+
+        if(!$this->validate($value))
+            throw new Exception("Недопустимое значение по умолчанию параметра '" . $this->getName() . "'");
+
+        $this->_default = $value;
+    }
+
+    /**
+     * Задаёт текстовое описание параметра.
+     *
+     * @param string $desc Текстовое описание параметра.
+     */
+    public function setDesc($desc)
+    {
+        if(!is_string($desc))
+            throw new Exception("Текстовое описание параметра '" . $this->getName() . "' должно быть строкой");
+
+        $this->_desc = $desc;
+    }
+
+    /**
+     * Задаёт массив псевдонимов.
+     *
+     * @param array $aliases Ассоциативный массив псевдонимов
+     */
+    public function setAliases(array $aliases)
+    {
+        foreach($aliases as $value)
+        {
+            if(!$this->getType()->validate($value) || !$this->isAllowed($value))
+                throw new Exception("Недопустимое значение в массиве псевдонимов параметра '" . $this->getName() . "'");
+        }
+
+        $save = $this->_aliases;
+        $this->_aliases = $aliases;
+
+        try
+        {
+            $this->setDefault($this->getDefault());
+        }
+        catch(\Exception $e)
+        {
+            $this->_aliases = $save;
+            throw $e;
+        }
+    }
+
+    public function isAllowed($value)
+    {
+        return (empty($this->_allowed) || array_search($value, $this->_allowed, TRUE) !== FALSE);
+    }
+
+    /**
+     * Задаёт массив допустимых значений.
+     *
+     * @param array $allowed Массив допустимых значений.
+     */
+    public function setAllowed(array $allowed)
+    {
+        $allowed = array_values($allowed);
+
+        foreach($allowed as $value)
+        {
+            if(!$this->getType()->validate($value))
+                throw new Exception("Недопустимое значение в массиве допустимых значений параметра '" . $this->getName() . "'");
+        }
+
+        $save = $this->_allowed;
+        $this->_allowed = $allowed;
+
+        try
+        {
+            foreach($this->getAliases() as $value)
+            {
+                if(!$this->isAllowed($value))
+                    throw new Exception("Недопустимое значение в массиве псевдонимов параметра '" . $this->getName() . "'");
+            }
+
+            $this->setDefault($this->getDefault());
+        }
+        catch(\Exception $e)
+        {
+            $this->_allowed = $save;
+            throw $e;
+        }
+    }
+
+    /**
+     * Проверяет значение параметра.
+     *
+     * @param mixed $value Значение параметра.
+     *
+     * @return bool Если значение параметра является допустимым, то метод возвращает TRUE, иначе - FALSE.
+     */
+    public function validate($value)
+    {
+        $value = $this->_filter($value);
+
+        // $value = $this->_type->convert($value);
+        return ($this->getType()->validate($value) && $this->isAllowed($value));
+    }
+
+
+    // --- Защищенные методы ---
+
+    /**
+     * Изменяет значение, если для него задан псевдоним.
+     *
+     * @param mixed $value Значение параметра.
+     *
+     * @return mixed Псевдоним для value, если таковой имеется, в противном случае просто value.
+     */
+    protected function _filter($value)
+    {
+        if(array_key_exists($value, $this->_aliases))
+            $value = $this->_aliases[$value];
+
+        return $value;
+    }
+}
+

@@ -1,6 +1,6 @@
 <?php
 namespace Module;
-use ModuleTest;
+use AbstractModule;
 
-class HtmlTest  extends ModuleTest {
+class HtmlTest  extends AbstractModule {
 }

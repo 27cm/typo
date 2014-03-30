@@ -1,6 +1,6 @@
 <?php
 namespace Module;
-use ModuleTest;
+use AbstractModule;
 
-class FilePathTest  extends ModuleTest {
+class FilePathTest  extends AbstractModule {
 }

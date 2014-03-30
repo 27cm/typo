@@ -1,6 +1,6 @@
 <?php
 namespace Module;
-use ModuleTest;
+use AbstractModule;
 
-class NobrTest  extends ModuleTest {
+class NobrTest  extends AbstractModule {
 }
