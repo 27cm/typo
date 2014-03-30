@@ -13,6 +13,11 @@ if(!defined('DS')) define('DS', DIRECTORY_SEPARATOR);
 if(!defined('PS')) define('PS', PATH_SEPARATOR);
 
 /**
+ * Минимальное целое число.
+ */
+if(!defined('PHP_INT_MIN')) define('PHP_INT_MIN', ~PHP_INT_MAX);
+
+/**
  * Каталог с библиотекой Wheels.
  */
 define('WHEELS_DIR', dirname(__FILE__));

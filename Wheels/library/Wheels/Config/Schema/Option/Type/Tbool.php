@@ -13,7 +13,7 @@ class Tbool extends Type
     // --- Открытые методы ---
 
     /**
-     * @see Wheels\Config\Schema\Option\Type::validate()
+     * {@inheritdoc}
      */
     public function validate($var)
     {

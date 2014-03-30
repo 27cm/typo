@@ -33,16 +33,23 @@ else
 TEXT;
 
 use Wheels\Typo;
+use Wheels\Config\Schema\Option;
 
 try
 {
     require_once $root . DS . 'Wheels' . DS . 'library' . DS . 'Wheels.php';
+
 
 //    setlocale(LC_ALL, 'ru_RU');
 //    for($i = 0; $i < 65000; $i++)
 //        if(preg_match('~[\x00-\xFF]~', Typo\Utility::chr($i)))
 //            echo $i . ' = ' . Typo\Utility::chr($i) . '<br>';
 //    die();
+
+    $option = new Option('name', 'default');
+
+    $type = $option->getType();
+    die(get_class($type));
 
     $typo = new Typo();
 //    $typo->setConfigDir($root . DS . 'Wheels' . DS . 'tests' . DS . 'config' . DS . 'Module' . DS . 'Punct' . DS . 'QuoteTest');

@@ -19,14 +19,18 @@ class OptionTest extends PHPUnit_Framework_TestCase
 
     public function testGetType()
     {
-        $option = new Option('name', 'default');
-
-        $actual = $option->getType();
-        $expected = 'Wheels\Config\Schema\Option\Type\Tmixed';
-        $this->assertInstanceOf($expected, $actual);
-
         $type = new Tstring();
         $option = new Option('name', 'default', $type);
+
+        $actual = $option->getType();
+        $expected = get_class($type);
+        $this->assertInstanceOf($expected, $actual);
+    }
+
+    public function testGetTypeDefault()
+    {
+        $type = new Tmixed();
+        $option = new Option('name', 'default');
 
         $actual = $option->getType();
         $expected = get_class($type);
@@ -80,30 +84,13 @@ class OptionTest extends PHPUnit_Framework_TestCase
 
     public function testSetNameException()
     {
-        $this->setExpectedException('\Wheels\Config\Schema\Option\Exception', 'Имя параметра должно быть строкой');
+        $this->setExpectedException(
+            '\Wheels\Config\Schema\Option\Exception',
+            'Имя параметра должно быть строкой'
+        );
 
         $option = new Option('name', 'default');
         $option->setName(1);
-    }
-
-    public function testSetType()
-    {
-        $option = new Option('name', 'default');
-        $type = new Tstring();
-        $option->setType($type);
-
-        $actual = $option->getType();
-        $expected = get_class($type);
-        $this->assertInstanceOf($expected, $actual);
-
-        $type = new Tstring();
-        $option = new Option('name', 'default', $type);
-        $type = new Tmixed();
-        $option->setType($type);
-
-        $actual = $option->getType();
-        $expected = get_class($type);
-        $this->assertInstanceOf($expected, $actual);
     }
 
     public function testSetDefault()
@@ -112,17 +99,18 @@ class OptionTest extends PHPUnit_Framework_TestCase
         $expected = 'defaultB';
         $option->setDefault($expected);
 
-
         $actual = $option->getDefault();
         $this->assertEquals($expected, $actual);
     }
 
-    public function testSetDefaultExceptionA()
+    public function testSetDefaultException()
     {
-        $this->setExpectedException('\Wheels\Config\Schema\Option\Exception', "Недопустимое значение по умолчанию параметра 'name'");
+        $this->setExpectedException(
+            '\Wheels\Config\Schema\Option\Exception',
+            "Недопустимое значение по умолчанию параметра 'name'"
+        );
 
-        $type = new Tstring();
-        $option = new Option('name', 'default', $type);
+        $option = new Option('name', 'default', 'string');
         $option->setDefault(1);
     }
 
@@ -138,7 +126,10 @@ class OptionTest extends PHPUnit_Framework_TestCase
 
     public function testSetDescException()
     {
-        $this->setExpectedException('\Wheels\Config\Schema\Option\Exception', "Текстовое описание параметра 'name' должно быть строкой");
+        $this->setExpectedException(
+            '\Wheels\Config\Schema\Option\Exception',
+            "Текстовое описание параметра 'name' должно быть строкой"
+        );
 
         $option = new Option('name', 'default');
         $option->setDesc(1);
@@ -147,25 +138,43 @@ class OptionTest extends PHPUnit_Framework_TestCase
     public function testSetAliases()
     {
         $option = new Option('name', 'default');
-        $expected = array(
-            'aliasA' => 'valueA',
-            'aliasB' => 'valueB',
-            'aliasC' => 'valueC',
-        );
+        $expected = array('aliasA' => 'valueA', 'aliasB' => 'valueB', 'aliasC' => 'valueC');
         $option->setAliases($expected);
 
         $actual = $option->getAliases();
         $this->assertEquals($expected, $actual);
     }
 
+    public function testSetAliasesExceptionA()
+    {
+        $this->setExpectedException(
+            '\Wheels\Config\Schema\Option\Exception',
+            "Недопустимое значение в массиве псевдонимов параметра 'name'"
+        );
+
+        $option = new Option('name', 'default', 'string');
+        $aliases = array('aliasA' => 'valueA', 'aliasB' => 1, 'aliasC' => 'valueC');
+        $option->setAliases($aliases);
+    }
+
+    public function testSetAliasesExceptionB()
+    {
+        $this->setExpectedException(
+            '\Wheels\Config\Schema\Option\Exception',
+            "Недопустимое значение в массиве псевдонимов параметра 'name'"
+        );
+
+        $option = new Option('name', 'default');
+        $allowed = array('valueA', 'valueC');
+        $option->setAllowed($allowed);
+        $aliases = array('aliasA' => 'valueA', 'aliasB' => 'valueB', 'aliasC' => 'valueC');
+        $option->setAliases($aliases);
+    }
+
     public function testSetAllowed()
     {
         $option = new Option('name', 'default');
-        $allowed = array(
-            'keyA' => 'valueA',
-            'keyB' => 'valueB',
-            'keyC' => 'valueC',
-        );
+        $allowed = array('keyA' => 'valueA', 'valueB', 8 => 'valueC');
         $option->setAllowed($allowed);
 
         $actual = $option->getAllowed();
@@ -173,20 +182,77 @@ class OptionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testAliases()
+    public function testSetAllowedExceptionA()
+    {
+        $this->setExpectedException(
+            '\Wheels\Config\Schema\Option\Exception',
+            "Недопустимое значение в массиве допустимых значений параметра 'name'"
+        );
+
+        $option = new Option('name', 'default', 'string');
+        $allowed = array('valueA', 'valueB', 1, 'valueC');
+        $option->setAllowed($allowed);
+    }
+
+    public function testSetAllowedExceptionB()
+    {
+        $this->setExpectedException(
+            '\Wheels\Config\Schema\Option\Exception',
+            "Недопустимое значение в массиве псевдонимов параметра 'name'"
+        );
+
+        $option = new Option('name', 'default');
+        $aliases = array('aliasA' => 'valueA', 'aliasB' => 'valueB', 'aliasC' => 'valueC');
+        $option->setAliases($aliases);
+        $allowed = array('valueA', 'valueC');
+        $option->setAllowed($allowed);
+    }
+
+    public function testValidate()
+    {
+        $option = new Option('name', 'defaultA', 'string');
+        $aliases = array('aliasA' => 'defaultA', 'aliasB' => 'defaultB', 'aliasC' => 'defaultC');
+        $allowed = array('defaultA', 'defaultB', 'defaultC');
+        $option->setAliases($aliases);
+        $option->setAllowed($allowed);
+
+        // Допустимое значение
+        $actual = $option->validate('defaultB');
+        $this->assertTrue($actual);
+
+        // Допустимое значение (псевдоним)
+        $actual = $option->validate('aliasB');
+        $this->assertTrue($actual);
+
+        // Неверный тип
+        $actual = $option->validate(array('defaultB'));
+        $this->assertFalse($actual);
+
+        // Значение отсутствует в списке допустимых значений
+        $actual = $option->validate('defaultD');
+        $this->assertFalse($actual);
+    }
+
+    public function testFilter()
     {
         $option = new Option('name', 'default');
+
         $alias = 'aliasB';
         $expected = 'valueB';
-        $aliases = array(
-            'aliasA' => 'valueA',
-            $alias   => $expected,
-            'aliasC' => 'valueC',
-        );
+        $aliases = array('aliasA' => 'valueA', $alias => $expected, 'aliasC' => 'valueC');
         $option->setAliases($aliases);
 
-        $option->setDefault($alias);
-        $actual = $option->getDefault();
+        $class = new ReflectionClass(get_class($option));
+        $method = $class->getMethod('_filter');
+        $method->setAccessible(true);
+
+        // Псевдоним есть
+        $actual = $method->invoke($option, $alias);
+        $this->assertEquals($expected, $actual);
+
+        // Псевдонима нет
+        $expected = 'aliasD';
+        $actual = $method->invoke($option, $expected);
         $this->assertEquals($expected, $actual);
     }
 }

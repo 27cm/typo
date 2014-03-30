@@ -57,18 +57,20 @@ class Option
 
     /**
      *
-     * @param string $name
-     * @param string $default
-     * @param \Wheels\Config\Schema\Option\Type $type
+     * @param string $name    Имя параметра.
+     * @param string $default Значение параметра по умолчанию.
+     * @param mixed $type     Тип параметра (не может быть изменён после создания объекта). По умолчанию mixed.
+     *
+     * @uses \Wheels\Config\Schema\Option\Type::create()
      */
-    public function __construct($name, $default, Type $type = NULL)
+    public function __construct($name, $default, $type = NULL)
     {
         $this->setName($name);
 
         if(is_null($type))
             $this->_type = Type::create('mixed');
         else
-            $this->_type = $type;
+            $this->_type = Type::create($type);
 
         $this->setDefault($default);
     }
@@ -145,18 +147,8 @@ class Option
     {
         if(!is_string($name))
             throw new Exception('Имя параметра должно быть строкой');
-        $this->_name = $name;
-    }
 
-    /**
-     * Задаёт тип параметра.
-     *
-     * @param \Wheels\Config\Schema\Option\Type $type Тип параметра.
-     */
-    public function setType(Type $type)
-    {
-        $this->_type = $type;
-        $this->setDefault($this->_default);
+        $this->_name = $name;
     }
 
     /**
@@ -166,6 +158,8 @@ class Option
      */
     public function setDefault($value)
     {
+        $value = $this->_filter($value);
+
         if(!$this->validate($value))
             throw new Exception("Недопустимое значение по умолчанию параметра '" . $this->getName() . "'");
 
@@ -181,6 +175,7 @@ class Option
     {
         if(!is_string($desc))
             throw new Exception("Текстовое описание параметра '" . $this->getName() . "' должно быть строкой");
+
         $this->_desc = $desc;
     }
 
@@ -191,7 +186,29 @@ class Option
      */
     public function setAliases(array $aliases)
     {
+        foreach($aliases as $value)
+        {
+            if(!$this->getType()->validate($value) || !$this->isAllowed($value))
+                throw new Exception("Недопустимое значение в массиве псевдонимов параметра '" . $this->getName() . "'");
+        }
+
+        $save = $this->_aliases;
         $this->_aliases = $aliases;
+
+        try
+        {
+            $this->setDefault($this->getDefault());
+        }
+        catch(\Exception $e)
+        {
+            $this->_aliases = $save;
+            throw $e;
+        }
+    }
+
+    public function isAllowed($value)
+    {
+        return (empty($this->_allowed) || array_search($value, $this->_allowed, TRUE) !== FALSE);
     }
 
     /**
@@ -201,26 +218,64 @@ class Option
      */
     public function setAllowed(array $allowed)
     {
-        $this->_allowed = array_values($allowed);
+        $allowed = array_values($allowed);
+
+        foreach($allowed as $value)
+        {
+            if(!$this->getType()->validate($value))
+                throw new Exception("Недопустимое значение в массиве допустимых значений параметра '" . $this->getName() . "'");
+        }
+
+        $save = $this->_allowed;
+        $this->_allowed = $allowed;
+
+        try
+        {
+            foreach($this->getAliases() as $value)
+            {
+                if(!$this->isAllowed($value))
+                    throw new Exception("Недопустимое значение в массиве псевдонимов параметра '" . $this->getName() . "'");
+            }
+
+            $this->setDefault($this->getDefault());
+        }
+        catch(\Exception $e)
+        {
+            $this->_allowed = $save;
+            throw $e;
+        }
     }
 
     /**
+     * Проверяет значение параметра.
      *
-     * @param type $value
-     * @return boolean
+     * @param mixed $value Значение параметра.
+     *
+     * @return bool Если значение параметра является допустимым, то метод возвращает TRUE, иначе - FALSE.
      */
     public function validate($value)
     {
-        if(array_key_exists($value, $this->_aliases, TRUE))
-            $value = $this->_aliases[$value];
+        $value = $this->_filter($value);
 
         // $value = $this->_type->convert($value);
-        if(!$this->_type->validate($value))
-            return FALSE;
+        return ($this->getType()->validate($value) && $this->isAllowed($value));
+    }
 
-        if(!empty($this->_allowed) && array_search($value, $this->_allowed, TRUE) !== FALSE)
-            return FALSE;
 
-        return TRUE;
+    // --- Защищенные методы ---
+
+    /**
+     * Изменяет значение, если для него задан псевдоним.
+     *
+     * @param mixed $value Значение параметра.
+     *
+     * @return mixed Псевдоним для value, если таковой имеется, в противном случае просто value.
+     */
+    protected function _filter($value)
+    {
+        if(array_key_exists($value, $this->_aliases))
+            $value = $this->_aliases[$value];
+
+        return $value;
     }
 }
