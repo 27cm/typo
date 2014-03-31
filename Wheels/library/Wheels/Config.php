@@ -1,11 +1,17 @@
 <?php
 
+/**
+ * Wheels Library
+ *
+ * @category   Wheels
+ * @package    Wheels\Config
+ */
+
 namespace Wheels;
 
 use Wheels\Config\Schema;
 
-use Wheels\Typo\Module;
-use Wheels\Typo\Exception;
+use Wheels\Config\Exception;
 
 /**
  * Класс для работы с параметрами настроек.
@@ -62,6 +68,11 @@ class Config
 
     // --- Конструктор ---
 
+    /**
+     * Конструктор объекта конфигурации в соответствии с данным описанием параметров настроек.
+     *
+     * @param array $schema Описание параметров настроек.
+     */
     public function __construct(array $schema = NULL)
     {
         if(!is_null($schema))
@@ -73,6 +84,11 @@ class Config
 
     // --- Открытые методы ---
 
+    /**
+     * Вовзращает массив настроек по умолчанию.
+     *
+     * @return array
+     */
     public function getDefaultOptions()
     {
         $options = array();
@@ -88,6 +104,15 @@ class Config
         return $options;
     }
 
+    /**
+     * Установливает значения параметров настроек.
+     *
+     * @param array $options Ассоциативный массив настроек с ключами в качестве названий параметров.
+     *
+     * @uses \Wheels\Config::setOption()
+     *
+     * @throws \Wheels\Config\Exception
+     */
     public function setOptions(array $options)
     {
         $exception = null;
@@ -111,6 +136,9 @@ class Config
             throw $exception;
     }
 
+    /**
+     * Установливает значения параметров настроек по умолчанию.
+     */
     public function setDefaultOptions()
     {
         $this->_options = array();
@@ -124,6 +152,14 @@ class Config
         $this->setOptions($options);
     }
 
+    /**
+     * Установливает значение параметра настроек.
+     *
+     * @param string $name  Название параметра.
+     * @param mixed  $value Значение параметра.
+     *
+     * @throws \Wheels\Config\Exception
+     */
     public function setOption($name, $value)
     {
         $name = $this->prepareOptionName($name);
@@ -134,11 +170,20 @@ class Config
         $this->_options[$name] = $value;
     }
 
+    /**
+     *
+     * @return type
+     */
     public function getOptions()
     {
         return $this->_options;
     }
 
+    /**
+     *
+     * @param type $name
+     * @return type
+     */
     public function getOption($name)
     {
         $name = $this->prepareOptionName($name);
@@ -149,6 +194,10 @@ class Config
         return $this->_options[$name];
     }
 
+    /**
+     *
+     * @return bool
+     */
     protected function _isSchema()
     {
         return (!is_null($this->_schema));
@@ -165,6 +214,11 @@ class Config
         }
     }
 
+    /**
+     *
+     * @param type $name
+     * @param type $value
+     */
     protected function _validateOptionValue($name, $value)
     {
         $name = $this->prepareOptionName($name);
@@ -174,12 +228,22 @@ class Config
 
         }
     }
-    
+
+    /**
+     *
+     * @param type $name
+     * @return type
+     */
     public function prepareOptionName($name)
     {
         return $this->_schema->prepareOptionName($name);
     }
 
+    /**
+     *
+     * @param type $key
+     * @param type $value
+     */
     public function validateKeyValue($key, $value)
     {
         // @todo: Конфигурационный файл может отсутствовать

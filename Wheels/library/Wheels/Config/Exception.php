@@ -1,9 +1,16 @@
 <?php
 
+/**
+ * Wheels Library
+ *
+ * @category   Wheels
+ * @package    Wheels\Config
+ */
+
 namespace Wheels\Config;
 
 /**
- * @see \Wheels\Exception
+ * {@inheritDoc}
  */
 class Exception extends \Wheels\Exception
 {

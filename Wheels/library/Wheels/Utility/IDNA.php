@@ -1,29 +1,13 @@
 <?php
 
+/**
+ * Wheels Library
+ *
+ * @category   Wheels
+ * @package    Wheels\Utility
+ */
+
 namespace Wheels\Utility;
-
-// {{{ license
-
-//
-// +----------------------------------------------------------------------+
-// | This library is free software; you can redistribute it and/or modify |
-// | it under the terms of the GNU Lesser General Public License as       |
-// | published by the Free Software Foundation; either version 2.1 of the |
-// | License, or (at your option) any later version.                      |
-// |                                                                      |
-// | This library is distributed in the hope that it will be useful, but  |
-// | WITHOUT ANY WARRANTY; without even the implied warranty of           |
-// | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU    |
-// | Lesser General Public License for more details.                      |
-// |                                                                      |
-// | You should have received a copy of the GNU Lesser General Public     |
-// | License along with this library; if not, write to the Free Software  |
-// | Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 |
-// | USA.                                                                 |
-// +----------------------------------------------------------------------+
-//
-
-// }}}
 
 /**
  * Кодирование/декодирование интернационализованных доменных имён (IDN).
@@ -56,8 +40,15 @@ namespace Wheels\Utility;
  */
 class IDNA
 {
+    /**
+     * Префикс.
+     *
+     * @var string
+     */
     protected $_punycode_prefix = 'xn--';
+
     protected $_invalid_ucs = 0x80000000;
+
     protected $_max_ucs = 0x10FFFF;
     protected $_base = 36;
     protected $_tmin = 1;
@@ -73,8 +64,18 @@ class IDNA
     protected $_lcount = 19;
     protected $_vcount = 21;
     protected $_tcount = 28;
+
+    /**
+     * Признак ошибки.
+     *
+     * @var bool
+     */
     protected $_error = false;
 
+    /**
+     *
+     * @var type
+     */
     protected static $_mb_string_overload = null;
 
     /**
@@ -1037,19 +1038,20 @@ class IDNA
      * Holds all relevant mapping tables
      * See RFC3454 for details
      *
-     * @private array
-     * @since 0.5.2
+     * @var array
      */
-    protected static $NP = array
-            ('map_nothing' => array(0xAD, 0x34F, 0x1806, 0x180B, 0x180C, 0x180D, 0x200B, 0x200C
-                    ,0x200D, 0x2060, 0xFE00, 0xFE01, 0xFE02, 0xFE03, 0xFE04, 0xFE05, 0xFE06, 0xFE07
-                    ,0xFE08, 0xFE09, 0xFE0A, 0xFE0B, 0xFE0C, 0xFE0D, 0xFE0E, 0xFE0F, 0xFEFF
-                    )
-            ,'general_prohibited' => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
-                    ,20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32 ,33, 34, 35, 36, 37, 38, 39, 40, 41, 42
-                    ,43, 44, 47, 59, 60, 61, 62, 63, 64, 91, 92, 93, 94, 95, 96, 123, 124, 125, 126, 127, 0x3002
-                    )
-            ,'prohibit' => array(0xA0, 0x340, 0x341, 0x6DD, 0x70F, 0x1680, 0x180E, 0x2000, 0x2001, 0x2002, 0x2003
+    protected static $NP = array(
+        'map_nothing' => array(
+            0xAD, 0x34F, 0x1806, 0x180B, 0x180C, 0x180D, 0x200B, 0x200C, 0x200D, 0x2060,
+            0xFE00, 0xFE01, 0xFE02, 0xFE03, 0xFE04, 0xFE05, 0xFE06, 0xFE07, 0xFE08,
+            0xFE09, 0xFE0A, 0xFE0B, 0xFE0C, 0xFE0D, 0xFE0E, 0xFE0F, 0xFEFF
+        ),
+        'general_prohibited' => array(
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+            20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32 ,33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
+            43, 44, 47, 59, 60, 61, 62, 63, 64, 91, 92, 93, 94, 95, 96, 123, 124, 125, 126, 127, 0x3002
+        ),
+        'prohibit' => array(0xA0, 0x340, 0x341, 0x6DD, 0x70F, 0x1680, 0x180E, 0x2000, 0x2001, 0x2002, 0x2003
                     ,0x2004, 0x2005, 0x2006, 0x2007, 0x2008, 0x2009, 0x200A, 0x200B, 0x200C, 0x200D, 0x200E, 0x200F
                     ,0x2028, 0x2029, 0x202A, 0x202B, 0x202C, 0x202D, 0x202E, 0x202F, 0x205F, 0x206A, 0x206B, 0x206C
                     ,0x206D, 0x206E, 0x206F, 0x3000, 0xFEFF, 0xFFF9, 0xFFFA, 0xFFFB, 0xFFFC, 0xFFFD, 0xFFFE, 0xFFFF
@@ -1626,4 +1628,3 @@ class IDNA
                     )
             );
 }
-?>

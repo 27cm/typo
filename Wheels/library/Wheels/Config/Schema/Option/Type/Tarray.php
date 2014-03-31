@@ -1,11 +1,19 @@
 <?php
 
+/**
+ * Wheels Library
+ *
+ * @category   Wheels
+ * @package    Wheels\Config
+ * @subpackage Wheels\Config\Schema\Option\Type
+ */
+
 namespace Wheels\Config\Schema\Option\Type;
 
 use Wheels\Config\Schema\Option\Type;
 
 /**
- * Массив.
+ * Массив элементов заданного типа.
  */
 class Tarray extends Type
 {
@@ -20,7 +28,9 @@ class Tarray extends Type
     // --- Конструктор ---
 
     /**
-     * @param \Wheels\Config\Schema\Option\Type|string $type
+     * Создание типа - массива элементов заданного типа.
+     *
+     * @param mixed $type Тип элементов массива. Если не задан, то используется тип {@link \Wheels\Config\Schema\Option\Type\Tmixed}.
      *
      * @uses \Wheels\Config\Schema\Option\Type::create()
      */
@@ -38,7 +48,7 @@ class Tarray extends Type
     // --- Открытые методы ---
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function validate($var)
     {
