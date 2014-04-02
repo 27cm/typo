@@ -72,7 +72,7 @@ if(function_exists('mb_substr_replace') === false)
  * array_merge_recursive_distinct(array('key' => 'org value'), array('key' => 'new value'));
  *     => array('key' => array('new value'));
  *
- * Parameters are passed by reference, though only for performance reasons. They're not
+ * Параметры are passed by reference, though only for performance reasons. They're not
  * altered by this function.
  *
  * @param array $array1

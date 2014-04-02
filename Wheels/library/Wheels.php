@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @version 1.0beta 
+ */
+
 use Wheels\Loader;
 
 /**
