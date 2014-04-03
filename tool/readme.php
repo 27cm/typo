@@ -1,9 +1,10 @@
 <?php
 
+// @link http://daringfireball.net/projects/markdown/
+
 error_reporting(~E_ALL);
 
 define('DS', DIRECTORY_SEPARATOR);
-define('PS', PATH_SEPARATOR);
 
 require_once 'PEAR.php';
 require_once 'File.php';
@@ -13,15 +14,14 @@ $root = realpath(dirname(__FILE__) . DS . '..');
 $filename = $root . DS . 'README.md';
 
 $version = '0.3';
-$title = 'Wheels\Typo &ndash; типограф (ver. ' . $version . ')';
-$underline = str_repeat('=', mb_strlen($title));
+$title = 'Wheels\\Typo &ndash; типограф (ver. ' . $version . ')';
+// $underline = str_repeat('=', mb_strlen($title));
 
 $data = <<<"README"
 $title
 $underline
 
-Возможности
------------
+## Возможности
 
 README;
 
@@ -38,7 +38,9 @@ function test($dir, &$data)
         if(!empty($matches['rule']))
             $data .= "\r\n{$entrie->name}:\r\n";
         foreach($matches['rule'] as $rule)
-            $data .= "- {$rule}\r\n";
+        {
+            $data .= '* ' . addcslashes($rule, '\\`*_{}[]()#+-.!') . "\r\n";
+        }
     }
 
     $entries = File_Util::listDir($dir, FILE_LIST_DIRS);

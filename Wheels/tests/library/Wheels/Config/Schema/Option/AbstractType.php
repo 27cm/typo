@@ -4,7 +4,9 @@ namespace Wheels\Config\Schema\Option;
 
 use Wheels\Config\Schema\Option\Type;
 
-class AbstractTypeTest extends PHPUnit_Framework_TestCase
+use PHPUnit_Framework_TestCase;
+
+class AbstractType extends PHPUnit_Framework_TestCase
 {
     /**
      * @var string
@@ -43,7 +45,7 @@ class AbstractTypeTest extends PHPUnit_Framework_TestCase
      */
     public function testValidate($var, $expected)
     {
-        $actual = $static::$_type->validate($var);
+        $actual = static::$_type->validate($var);
         if($expected)
             $this->assertTrue($actual);
         else

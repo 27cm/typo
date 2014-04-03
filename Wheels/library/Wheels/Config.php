@@ -11,7 +11,7 @@ namespace Wheels;
 
 use Wheels\Config\Schema;
 
-use Wheels\Config\Exception;
+// use Wheels\Config\Exception;
 
 /**
  * Класс для работы с параметрами настроек.

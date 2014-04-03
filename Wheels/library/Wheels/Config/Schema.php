@@ -30,6 +30,10 @@ class Schema
 
     // --- Конструктор ---
 
+    /**
+     *
+     * @param array $schema
+     */
     public function __construct(array $schema = NULL)
     {
         $diff = array_diff(array_keys($schema), array('options', 'case-sensitive'));

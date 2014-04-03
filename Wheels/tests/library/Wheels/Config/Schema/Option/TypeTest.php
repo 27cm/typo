@@ -4,6 +4,8 @@ namespace Wheels\Config\Schema\Option;
 
 use Wheels\Config\Schema\Option\Type;
 
+use PHPUnit_Framework_TestCase;
+
 class TypeTest extends PHPUnit_Framework_TestCase
 {
     public function testCreate()
@@ -21,21 +23,23 @@ class TypeTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeInstanceOf($classname, '_type', $actual);
     }
 
-    /**
-     * @expectedException        Wheels\Typo\Exception
-     * @expectedExceptionMessage Тип (класс) unknown не найден
-     */
-    public function testCreateUnknownException()
+    public function testCreateExceptionA()
     {
+        $this->setExpectedException(
+            '\Wheels\Config\Schema\Option\Type\Exception',
+            'Тип (класс) unknown не найден'
+        );
+        
         Type::create('unknown');
     }
 
-    /**
-     * @expectedException        Wheels\Typo\Exception
-     * @expectedExceptionMessage Класс Wheels\Config не является наследником Wheels\Config\Schema\Option\Type
-     */
-    public function testCreateWrongClassException()
+    public function testCreateExceptionB()
     {
-        Type::create('Wheels\Config');
+        $this->setExpectedException(
+            '\Wheels\Config\Schema\Option\Type\Exception',
+            'Класс Wheels\Config\Schema\Option\Type\Twrong не является наследником Wheels\Config\Schema\Option\Type'
+        );
+        
+        Type::create('wrong');
     }
 }

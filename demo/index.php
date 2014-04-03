@@ -34,6 +34,7 @@ TEXT;
 
 use Wheels\Typo;
 use Wheels\Config\Schema\Option;
+use Wheels\Diff;
 
 try
 {
@@ -45,6 +46,12 @@ try
 //        if(preg_match('~[\x00-\xFF]~', Typo\Utility::chr($i)))
 //            echo $i . ' = ' . Typo\Utility::chr($i) . '<br>';
 //    die();
+
+    $diff = new Diff('slovo', 'olovo');
+
+    echo $diff->renderDiffToHTML();
+
+    die();
 
     $option = new Option('name', 'default');
 

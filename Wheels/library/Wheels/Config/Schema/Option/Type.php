@@ -5,7 +5,7 @@ namespace Wheels\Config\Schema\Option;
 use Wheels\Config\Schema\Option\Type\Tarray;
 
 use Wheels\Typo\Module;
-use Wheels\Typo\Exception;
+use Wheels\Config\Schema\Option\Type\Exception;
 
 /**
  * Тип параметра настроек.
@@ -33,17 +33,17 @@ abstract class Type
 
         if(!class_exists($classname))
         {
-            $alt_classname = __CLASS__ . '\\T' . ucfirst(strtolower($classname));
+            $alt_classname = __CLASS__ . '\\T' . strtolower($classname);
             if(class_exists($alt_classname))
                 $classname = $alt_classname;
             else
-                Module::throwException(Exception::E_RUNTIME, "Тип (класс) $classname не найден");
+                throw new Exception("Тип (класс) $classname не найден");
         }
 
         if(is_subclass_of($classname, __CLASS__))
             return new $classname();
         else
-            Module::throwException(Exception::E_RUNTIME, "Класс $classname не является наследником " . __CLASS__);
+            throw new Exception("Класс $classname не является наследником " . __CLASS__);
     }
 
 

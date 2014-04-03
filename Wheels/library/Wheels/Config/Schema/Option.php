@@ -2,8 +2,8 @@
 
 namespace Wheels\Config\Schema;
 
-use Wheels\Config\Schema\Option\Exception;
 use Wheels\Config\Schema\Option\Type;
+use Wheels\Config\Schema\Option\Exception;
 
 /**
  * Класс описания параметра настроек.
@@ -67,11 +67,13 @@ class Option
     {
         $this->setName($name);
 
-        if(is_null($type))
-            $this->_type = Type::create('mixed');
-        else
+        if($type instanceof Type)
+            $this->_type = $type;
+        elseif(is_string($type))
             $this->_type = Type::create($type);
-
+        else
+            $this->_type = Type::create('mixed');
+            
         $this->setDefault($default);
     }
 
@@ -273,7 +275,7 @@ class Option
      */
     protected function _filter($value)
     {
-        if(array_key_exists($value, $this->_aliases))
+        if((is_integer($value) || is_string($value)) && array_key_exists($value, $this->_aliases))
             $value = $this->_aliases[$value];
 
         return $value;

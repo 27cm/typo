@@ -6,6 +6,9 @@ use Wheels\Config\Schema\Option;
 use Wheels\Config\Schema\Option\Type\Tmixed;
 use Wheels\Config\Schema\Option\Type\Tstring;
 
+use ReflectionClass;
+use PHPUnit_Framework_TestCase;
+
 class OptionTest extends PHPUnit_Framework_TestCase
 {
     public function testGetName()
@@ -164,7 +167,7 @@ class OptionTest extends PHPUnit_Framework_TestCase
             "Недопустимое значение в массиве псевдонимов параметра 'name'"
         );
 
-        $option = new Option('name', 'default');
+        $option = new Option('name', 'valueA');
         $allowed = array('valueA', 'valueC');
         $option->setAllowed($allowed);
         $aliases = array('aliasA' => 'valueA', 'aliasB' => 'valueB', 'aliasC' => 'valueC');
@@ -173,7 +176,7 @@ class OptionTest extends PHPUnit_Framework_TestCase
 
     public function testSetAllowed()
     {
-        $option = new Option('name', 'default');
+        $option = new Option('name', 'valueA');
         $allowed = array('keyA' => 'valueA', 'valueB', 8 => 'valueC');
         $option->setAllowed($allowed);
 
