@@ -211,6 +211,74 @@ class OptionTest extends PHPUnit_Framework_TestCase
         $option->setAllowed($allowed);
     }
 
+    public function testCreate()
+    {
+        $name    = 'name';
+        $default = 'default';
+        $type    = 'string';
+        $desc    = 'Description...';
+        $allowed = array('default', 'value');
+        $aliases = array('alias' => 'value');
+
+        $schema = array(
+            'name'    => $name,
+            'default' => $default,
+            'type'    => $type,
+            'desc'    => $desc,
+            'allowed' => $allowed,
+            'aliases' => $aliases,
+        );
+        $actual = Option::create($schema);
+
+        $expected = new Option($name, $default, $type);
+        $expected->setDesc($desc);
+        $expected->setAllowed($allowed);
+        $expected->setAliases($aliases);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testCreateExceptionA()
+    {
+        $this->setExpectedException(
+            '\Wheels\Config\Schema\Option\Exception',
+            'Неизвестные разделы описания параметра: unknown'
+        );
+
+        $schema = array(
+            'name'    => 'name',
+            'default' => 'default',
+            'unknown' => 1,
+        );
+        Option::create($schema);
+    }
+
+    public function testCreateExceptionB()
+    {
+        $this->setExpectedException(
+            '\Wheels\Config\Schema\Option\Exception',
+            'Не задано имя параметра'
+        );
+
+        $schema = array(
+            'default' => 'default',
+        );
+        Option::create($schema);
+    }
+
+    public function testCreateExceptionC()
+    {
+        $this->setExpectedException(
+            '\Wheels\Config\Schema\Option\Exception',
+            'Не задано значение параметра по умолчанию'
+        );
+
+        $schema = array(
+            'name' => 'name',
+        );
+        Option::create($schema);
+    }
+
     public function testValidate()
     {
         $option = new Option('name', 'defaultA', 'string');

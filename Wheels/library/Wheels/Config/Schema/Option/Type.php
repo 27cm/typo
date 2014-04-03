@@ -3,8 +3,6 @@
 namespace Wheels\Config\Schema\Option;
 
 use Wheels\Config\Schema\Option\Type\Tarray;
-
-use Wheels\Typo\Module;
 use Wheels\Config\Schema\Option\Type\Exception;
 
 /**

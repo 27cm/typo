@@ -18,18 +18,18 @@ class Option
     protected $_name;
 
     /**
-     * Тип параметра.
-     *
-     * @var \Wheels\Config\Schema\Option\Type
-     */
-    protected $_type;
-
-    /**
      * Значение параметра по умолчанию.
      *
      * @var mixed
      */
     protected $_default;
+
+    /**
+     * Тип параметра.
+     *
+     * @var \Wheels\Config\Schema\Option\Type
+     */
+    protected $_type;
 
     /**
      * Текстовое описание параметра.
@@ -73,7 +73,7 @@ class Option
             $this->_type = Type::create($type);
         else
             $this->_type = Type::create('mixed');
-            
+
         $this->setDefault($default);
     }
 
@@ -261,6 +261,60 @@ class Option
 
         // $value = $this->_type->convert($value);
         return ($this->getType()->validate($value) && $this->isAllowed($value));
+    }
+
+    /**
+     * Создаёт объект класса по его описанию.
+     *
+     * @param array $schema Ассоциативный массив с описанием создаваемого параметра.
+     *                      Обязательные ключи:
+     *                       * name    - имя параметра;
+     *                       * default - значение параметра по умолчанию.
+     *                      Дополнительные ключи:
+     *                       * type    - тип параметра;
+     *                       * desc    - текстовое описание параметра;
+     *                       * aliases - ассоциативный массив псевдонимов;
+     *                       * allowed - массив допустимых значений.
+     *
+     * @throws \Wheels\Config\Schema\Option\Exception
+     *
+     * @return \Wheels\Config\Schema\Option Объект, соответствующий заданному описанию.
+     */
+    static public function create(array $schema)
+    {
+        $diff = array_diff(array_keys($schema), array('name', 'default', 'type', 'desc', 'aliases', 'allowed'));
+        if(!empty($diff))
+            throw new Exception('Неизвестные разделы описания параметра: ' . implode(', ', $diff));
+
+        if(!array_key_exists('name', $schema))
+            throw new Exception('Не задано имя параметра');
+
+        if(!array_key_exists('default', $schema))
+            throw new Exception('Не задано значение параметра по умолчанию');
+
+        $name = $schema['name'];
+        $default = $schema['default'];
+
+        if(array_key_exists('type', $schema))
+        {
+            $type = $schema['type'];
+            $option = new self($name, $default, $type);
+        }
+        else
+        {
+            $option = new self($name, $default);
+        }
+
+        if(array_key_exists('desc', $schema))
+            $option->setDesc($schema['desc']);
+
+        if(array_key_exists('aliases', $schema))
+            $option->setAliases($schema['aliases']);
+
+        if(array_key_exists('allowed', $schema))
+            $option->setAllowed($schema['allowed']);
+
+        return $option;
     }
 
 
