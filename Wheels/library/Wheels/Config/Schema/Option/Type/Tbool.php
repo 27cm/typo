@@ -21,7 +21,7 @@ class Tbool extends Type
     // --- Открытые методы ---
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function validate($var)
     {

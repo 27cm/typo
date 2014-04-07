@@ -11,24 +11,29 @@ namespace Wheels\Config;
 
 use Wheels\Config\Schema\Option;
 use Wheels\Config\Schema\Exception;
+use Wheels\Config\Schema\Option\Collection;
 
 /**
  * Класс описаний параметров настроек.
  */
-class Schema implements Countable, Iterator
+class Schema
 {
     /**
-     * Whether in-memory modifications to configuration data are allowed
+     * Разрешение изменять массив описаний параметров.
      *
-     * @var boolean
+     * Содержит TRUE, если разрешено добавлять, изменять и удалять описания параметров, и FALSE - в противном случае.
+     * По умолчанию изменение массива описаний параметров разрешено.
+     *
+     * @var bool
      */
     protected $_allowModifications = TRUE;
 
     /**
-     * Used when unsetting values during iteration to ensure we do not skip
-     * the next element
+     * Используется при удалении описания параметра, чтобы быть уверенными, что не пропустим следующий элемент.
      *
-     * @var boolean
+     * @see \Wheels\Config\Schema::__unset()
+     *
+     * @var bool
      */
     protected $_skipNextIteration = FALSE;
 
@@ -40,16 +45,16 @@ class Schema implements Countable, Iterator
      *
      * @var bool
      */
-    protected $_case_sensitive;
+    protected $_caseSensitive;
 
     /**
      * Описания параметров настроек.
      *
      * Ассоциативный массив с именами параметров в качестве ключей.
      *
-     * @var \Wheels\Config\Schema\Option[]
+     * @var \Wheels\Config\Schema\Option\Collection
      */
-    protected $_options = array();
+    protected $_options;
 
     protected $_index = 0;
 
@@ -60,11 +65,20 @@ class Schema implements Countable, Iterator
 
     public function __construct(array $options = array(), $caseSensitive = TRUE)
     {
-        $this->_case_sensitive = $caseSensitive;
+        $this->_caseSensitive = $caseSensitive;
+        $this->_options = new Collection();
         $this->setOptions($options);
     }
 
+    public function setAllowModifications($value)
+    {
+        $this->_allowModifications = (bool) $value;
+    }
 
+    public function getAllowModifications()
+    {
+        return $this->_allowModifications;
+    }
 
     /**
      * Возвращает регистрозависимость имён параметров.
@@ -73,13 +87,13 @@ class Schema implements Countable, Iterator
      */
     public function getCaseSensitive()
     {
-        return $this->_case_sensitive;
+        return $this->_caseSensitive;
     }
 
     /**
      * Возвращает описания параметров настроек.
      *
-     * @return \Wheels\Config\Schema\Option[]
+     * @return \Wheels\Config\Schema\Option\ArrayOption
      */
     public function getOptions()
     {
@@ -90,10 +104,16 @@ class Schema implements Countable, Iterator
     {
         $name = $this->prepareOptionName($name);
 
-        if(!array_key_exists($name, $this->_options))
+        if(!isset($this->_options[$name]))
             throw new Exception("Неизвестный параметр '$name'");
 
         return $this->_options[$name];
+    }
+
+    protected function _ensureAllowModifications()
+    {
+        if(!$this->getAllowModifications())
+            throw new Exception('Изменение массива описаний параметров запрещено');
     }
 
     /**
@@ -103,8 +123,18 @@ class Schema implements Countable, Iterator
      */
     public function setOptions(array $options)
     {
-        $this->_options = array();
-        $this->addOptions($options);
+        $save = $this->_options;
+        try
+        {
+            $this->getOptions()->clear();
+
+            $this->addOptions($options);
+        }
+        catch(\Exception $e)
+        {
+            $this->_options = $save;
+            throw $e;
+        }
     }
 
     /**
@@ -114,31 +144,21 @@ class Schema implements Countable, Iterator
      */
     public function addOptions(array $options)
     {
+        $this->_ensureAllowModifications();
+
         foreach($options as $option)
             $this->addOption($option);
     }
 
-//    protected function _prepareOption(Option $option)
-//    {
-//        $name = $option->getName();
-//        $name = $this->prepareOptionName($name);
-//        $option->setName($name);
-//    }
-
     public function addOption(Option $option)
     {
-        // $this->prepareOption($option);
+        $this->_ensureAllowModifications();
+
         $name = $option->getName();
         $name = $this->prepareOptionName($name);
 
-        if(array_key_exists($name, $this->_options))
-        {
-            throw new Exception(
-                "Описание параметра '$name' уже задано и для него не может быть добавлено ещё одно описание"
-            );
-        }
-
         $this->_options[$name] = $option;
+        $this->_count = count($this->_data);
     }
 
     public function prepareOptionName($name)
@@ -163,38 +183,28 @@ class Schema implements Countable, Iterator
      * was set to true on construction. Otherwise, throw an exception.
      *
      * @param  string $name
-     * @param  mixed  $value
+     * @param  mixed  $option
      * @throws Zend_Config_Exception
      * @return void
      */
-    public function __set($name, $value)
+    public function __set($name, Option $option)
     {
-        if($this->_allowModifications)
-        {
-            $this->setOptions($name, $value);
+        $this->_ensureAllowModifications();
 
-            if(is_array($value))
-            {
-                $this->_data[$name] = new self($value, true);
-            }
-            else
-            {
-                $this->_data[$name] = $value;
-            }
-            $this->_count = count($this->_data);
-        }
-        else
-            throw new Zend_Config_Exception('Zend_Config is read only');
+        $option->setName($name);
+        $this->addOption($option);
     }
 
     /**
      * Support isset() overloading on PHP 5.1
      *
      * @param string $name
-     * @return boolean
+     * @return bool
      */
     public function __isset($name)
     {
+        $name = $this->prepareOptionName($name);
+
         return isset($this->_options[$name]);
     }
 
@@ -203,50 +213,16 @@ class Schema implements Countable, Iterator
      *
      * @param  string $name
      * @throws Zend_Config_Exception
-     * @return void
      */
     public function __unset($name)
     {
-        if ($this->_allowModifications)
-        {
-            unset($this->_options[$name]);
-            $this->_count = count($this->_options);
-            $this->_skipNextIteration = true;
-        }
-        else
-            throw new Exception('Zend_Config is read only');
-    }
+        $this->_ensureAllowModifications();
 
-    public function count()
-    {
-        return $this->_count;
-    }
+        $name = $this->prepareOptionName($name);
 
-    public function rewind()
-    {
-        reset($this->_options);
-        $this->_index = 0;
-    }
-
-    public function current()
-    {
-        return current($this->_options);
-    }
-
-    public function key()
-    {
-        return key($this->_options);
-    }
-
-    public function next()
-    {
-        next($this->_options);
-        $this->_index++;
-    }
-
-    public function valid()
-    {
-        return $this->_index < $this->_count;
+        unset($this->_options[$name]);
+        $this->_count = count($this->_options);
+        $this->_skipNextIteration = true;
     }
 
     static public function create(array $schema)

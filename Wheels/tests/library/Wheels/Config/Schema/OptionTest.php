@@ -85,7 +85,7 @@ class OptionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testSetNameException()
+    public function testSetNameExceptionA()
     {
         $this->setExpectedException(
             '\Wheels\Config\Schema\Option\Exception',

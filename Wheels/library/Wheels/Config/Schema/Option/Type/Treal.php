@@ -13,7 +13,7 @@ namespace Wheels\Config\Schema\Option\Type;
 use Wheels\Config\Schema\Option\Type\Tfloat;
 
 /**
- * {@inheritdoc}
+ * {@inheritDoc}
  */
 class Treal extends Tfloat
 {

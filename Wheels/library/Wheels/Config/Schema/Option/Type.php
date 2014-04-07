@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Wheels Library
+ *
+ * @category   Wheels
+ * @package    Wheels\Config
+ * @subpackage Wheels\Config\Schema\Option
+ */
+
 namespace Wheels\Config\Schema\Option;
 
 use Wheels\Config\Schema\Option\Type\Tarray;

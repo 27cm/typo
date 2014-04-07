@@ -21,7 +21,7 @@ class Tfloat extends Type
     // --- Открытые методы ---
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function validate($var)
     {

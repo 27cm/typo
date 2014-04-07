@@ -12,7 +12,7 @@ class TnumberTest extends AbstractType
         array(1e7, TRUE),
         array(PHP_INT_MAX, TRUE),
         array(PHP_INT_MIN, TRUE),
-        array(INF, FALSE),
+        array(INF, TRUE),
         array('23', FALSE),
         array('23.0', FALSE),
         array(TRUE, FALSE),

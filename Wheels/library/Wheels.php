@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version 1.0beta 
+ * @version 1.0beta
  */
 
 use Wheels\Loader;
@@ -26,6 +26,7 @@ if(!defined('PHP_INT_MIN')) define('PHP_INT_MIN', ~PHP_INT_MAX);
  */
 define('WHEELS_DIR', dirname(__FILE__));
 
-require_once WHEELS_DIR . DS . 'Wheels' . DS . 'Loader.php';
+require_once (WHEELS_DIR . DS . 'Wheels' . DS . 'Loader.php');
+
 $loader = new Loader('Wheels', WHEELS_DIR);
 $loader->register();

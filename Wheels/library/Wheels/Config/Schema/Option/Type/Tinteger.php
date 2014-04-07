@@ -13,7 +13,7 @@ namespace Wheels\Config\Schema\Option\Type;
 use Wheels\Config\Schema\Option\Type\Tint;
 
 /**
- * {@inheritdoc}
+ * {@inheritDoc}
  */
 class Tinteger extends Tint
 {

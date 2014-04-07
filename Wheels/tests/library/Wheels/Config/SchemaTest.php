@@ -94,6 +94,17 @@ class SchemaTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
     }
 
+    public function testPrepareOptionNameExceptionA()
+    {
+        $this->setExpectedException(
+            '\Wheels\Config\Schema\Exception',
+            'Имя параметра должно начинаться с буквы или символа подчеркивания и состоять из букв, цифр и символов подчеркивания'
+        );
+
+        $option = new Schema();
+        $option->prepareOptionName('new-name');
+    }
+
     public function testCreate()
     {
         $case    = FALSE;
@@ -146,5 +157,40 @@ class SchemaTest extends PHPUnit_Framework_TestCase
             'options' => 1,
         );
         Schema::create($schema);
+    }
+
+    public function test__get()
+    {
+        $schema = new Schema(array(
+            new Option('name', 'default')
+        ));
+
+        $actual = $schema->name;
+        $expected = $schema->getOption('name');
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function test__isset()
+    {
+        $schema = new Schema(array(
+            new Option('name', 'default')
+        ));
+
+        $actual = isset($schema->name);
+        $this->assertTrue($actual);
+
+        $actual = isset($schema->unknown);
+        $this->assertFalse($actual);
+    }
+
+    public function test__unset()
+    {
+        $schema = new Schema(array(
+            new Option('name', 'default')
+        ));
+        unset($this->name);
+
+        $actual = isset($schema->name);
+        $this->assertFalse($actual);
     }
 }
