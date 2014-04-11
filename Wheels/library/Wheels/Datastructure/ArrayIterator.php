@@ -9,6 +9,8 @@
 
 namespace Wheels\Datastructure;
 
+use Wheels\Datastructure\Exception;
+
 use Iterator;
 use ArrayAccess;
 use Countable;
@@ -37,6 +39,16 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
      */
     protected $_position;
 
+    /**
+     * Разрешение изменять массив.
+     *
+     * Содержит TRUE, если разрешено добавлять, изменять и удалять элементы массива, и FALSE - в противном случае.
+     * По умолчанию изменение массива разрешено.
+     *
+     * @var bool
+     */
+    protected $_allowModifications = TRUE;
+
 
     // --- Конструктор ---
 
@@ -64,6 +76,17 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
     }
 
     /**
+     * Возвращает разрешение изменять массив.
+     *
+     * @return bool Возвращает TRUE, если разрешено добавлять, изменять и удалять
+     *              элементы массива, и FALSE - в противном случае.
+     */
+    public function getAllowModifications()
+    {
+        return $this->_allowModifications;
+    }
+
+    /**
      * Устанавливает массив.
      *
      * @param array $array Новый массив.
@@ -74,8 +97,21 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
     {
         $this->clear();
         foreach($array as $key => $value)
-            $this->offsetSet($key, $value);
+           $this->offsetSet($key, $value);
         $this->rewind();
+    }
+
+    /**
+     * Устанавливает разрешение изменять массив.
+     *
+     * @param bool $value TRUE, если необходимо разрешить добавлять, изменять и удалять
+     *                    элементы массива, и FALSE - в противном случае.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function setAllowModifications($value)
+    {
+        $this->_allowModifications = (bool) $value;
     }
 
     /**
@@ -85,6 +121,8 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
      */
     public function clear()
     {
+        $this->_ensureAllowModification();
+
         $this->_array = array();
         $this->_count = 0;
         $this->rewind();
@@ -130,6 +168,8 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
      */
     public function offsetSet($offset, $value)
     {
+        $this->_ensureAllowModification();
+
         if(is_null($offset))
         {
             array_push($this->_array, $value);
@@ -152,6 +192,8 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
      */
     public function offsetUnset($offset)
     {
+        $this->_ensureAllowModification();
+
         if($this->offsetExists($offset))
         {
             unset($this->_array[$offset]);
@@ -250,5 +292,17 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
     public function unserialize($serialized)
     {
         $this->setArray(unserialize($serialized));
+    }
+
+
+    // --- Защищённые методы ---
+
+    /**
+     * @throws \Wheels\Datastructure\Exception
+     */
+    protected function _ensureAllowModification()
+    {
+        if(!$this->getAllowModifications())
+            throw new Exception('Изменение структуры данных запрещено');
     }
 }

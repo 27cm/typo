@@ -12,7 +12,7 @@ namespace Wheels\Datastructure;
 use Wheels\Datastructure\ArrayIterator;
 use Wheels\Datastructure\Exception;
 
-class Collection extends ArrayIterator
+class Collection extends ArrayIterator 
 {
     protected $_elemsClass;
 
@@ -38,9 +38,17 @@ class Collection extends ArrayIterator
      */
     public function offsetSet($offset, $value)
     {
-        if(!is_object($value) || !($value instanceof $this->_elemsClass))
+        if(!$this->_checkElemClass($value))
             throw new Exception("В коллекцию можно добавлять только объекты класса {$this->_elemsClass}");
         else
             parent::offsetSet($offset, $value);
+    }
+
+
+    // --- Защищенные методы ---
+
+    protected function _checkElemClass($value)
+    {
+        return (is_object($value) && ($value instanceof $this->_elemsClass));
     }
 }

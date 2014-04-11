@@ -26,6 +26,14 @@ class ArrayIteratorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
     }
 
+    public function testGetAllowModifications()
+    {
+        $iterator = new ArrayIterator();
+
+        $actual = $iterator->getAllowModifications();
+        $this->assertTrue($actual);
+    }
+
     public function testSetArray()
     {
         $iterator = new ArrayIterator();
@@ -34,6 +42,28 @@ class ArrayIteratorTest extends PHPUnit_Framework_TestCase
 
         $actual = $iterator->getArray();
         $this->assertEquals($expected, $actual);
+    }
+
+    public function testSetAllowModifications()
+    {
+        $iterator = new ArrayIterator();
+        $iterator->setAllowModifications(FALSE);
+
+        $actual = $iterator->getAllowModifications();
+        $this->assertFalse($actual);
+    }
+
+    public function testEnsureAllowModificationsException()
+    {
+        $this->setExpectedException(
+            '\Wheels\Datastructure\Exception',
+            'Изменение структуры данных запрещено'
+        );
+
+        $iterator = new ArrayIterator();
+        $iterator->setAllowModifications(FALSE);
+
+        $iterator->setArray(array(1, 2, 3));
     }
 
     public function testClear()

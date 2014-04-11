@@ -27,9 +27,9 @@ class Config
     /**
      * Описание конфигурации.
      *
-     * @var \Wheels\Config\Schema|NULL
+     * @var \Wheels\Config\Schema
      */
-    protected $_schema = NULL;
+    protected $_schema;
 
     /**
      * Значения параметров.
@@ -109,9 +109,10 @@ class Config
      *
      * @param array $options Ассоциативный массив настроек с ключами в качестве названий параметров.
      *
+     * @throws null
+     * @throws Exception
      * @uses \Wheels\Config::setOption()
      *
-     * @throws \Wheels\Config\Exception
      */
     public function setOptions(array $options)
     {

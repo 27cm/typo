@@ -4,35 +4,45 @@ namespace Wheels\Config;
 
 use Wheels\Config\Schema;
 use Wheels\Config\Schema\Option;
+use Wheels\Config\Schema\Option\Collection;
 
 use PHPUnit_Framework_TestCase;
 
 class SchemaTest extends PHPUnit_Framework_TestCase
 {
-    public function testGetCaseSensitive()
+    public function testConstruct()
     {
         $schema = new Schema();
 
-        $actual = $schema->getCaseSensitive();
-        $this->assertTrue($actual);
+        $expected = new Collection();
+        $actual = $schema->getOptions();
+        $this->assertEquals($expected, $actual);
     }
 
     public function testGetOptions()
     {
-        $schema = new Schema();
+        $a = new Option('nameA', 'defaultA');
+        $b = new Option('nameB', 'defaultB');
 
+        $options = array($a, $b);
+        $schema = new Schema($options);
+
+        $expected = new Collection($options);
         $actual = $schema->getOptions();
-        $expected = array();
         $this->assertEquals($expected, $actual);
     }
 
-    public function testSetCaseSensitive()
+    public function testGetOption()
     {
-        $schema = new Schema();
-        $schema->setCaseSensitive(FALSE);
+        $a = new Option('nameA', 'defaultA');
+        $b = new Option('nameB', 'defaultB');
 
-        $actual = $schema->getCaseSensitive();
-        $this->assertFalse($actual);
+        $options = array($a, $b);
+        $schema = new Schema($options);
+
+        $expected = $b;
+        $actual = $schema->getOption('nameB');
+        $this->assertEquals($expected, $actual);
     }
 
     public function testSetOptions()
@@ -40,23 +50,12 @@ class SchemaTest extends PHPUnit_Framework_TestCase
         $a = new Option('nameA', 'defaultA');
         $b = new Option('nameB', 'defaultB', 'string');
 
-        $options = array(
-            $a->getName() => array(
-                'default' => $a->getDefault(),
-            ),
-            $b->getName() => array(
-                'default' => $b->getDefault(),
-            ),
-        );
-
         $schema = new Schema();
+        $options = array($a, $b);
         $schema->setOptions($options);
 
+        $expected = new Collection($options);
         $actual = $schema->getOptions();
-        $expected = array(
-            $a->getName() => $a,
-            $b->getName() => $b,
-        );
         $this->assertEquals($expected, $actual);
     }
 
@@ -66,69 +65,66 @@ class SchemaTest extends PHPUnit_Framework_TestCase
         $b = new Option('nameB', 'defaultB', 'string');
         $c = new Option('nameC', 'defaultC');
 
+        $options = array($a);
+        $schema = new Schema($options);
+
+        $options = array($b, $c);
+        $schema->addOptions($options);
+
+        $options = array($a, $b, $c);
+        $expected = new Collection($options);
+        $actual = $schema->getOptions();
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testAddOption()
+    {
+        $a = new Option('nameA', 'defaultA');
+        $b = new Option('nameB', 'defaultB', 'string');
+        $c = new Option('nameC', 'defaultC');
+
+        $options = array($a);
+        $schema = new Schema($options);
+
+        $schema->addOption($b);
+        $schema->addOption($c);
+
+        $options = array($a, $b, $c);
+        $expected = new Collection($options);
+        $actual = $schema->getOptions();
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testCreate()
+    {
+        $a = new Option('nameA', 'defaultA');
+        $b = new Option('nameB', 'defaultB', 'string');
+        $c = new Option('nameC', 'defaultC');
+
+        $modifications = TRUE;
+        $case    = FALSE;
         $options = array(
             $a->getName() => array(
                 'default' => $a->getDefault(),
             ),
-        );
-
-        $schema = new Schema();
-        $schema->setOptions($options);
-
-        $options = array(
             $b->getName() => array(
                 'default' => $b->getDefault(),
+                'type'    => 'string',
             ),
             $c->getName() => array(
                 'default' => $c->getDefault(),
             ),
         );
-        $schema->addOptions($options);
-
-        $actual = $schema->getOptions();
-        $expected = array(
-            $a->getName() => $a,
-            $b->getName() => $b,
-            $c->getName() => $c,
-        );
-        $this->assertEquals($expected, $actual);
-    }
-
-    public function testPrepareOptionNameExceptionA()
-    {
-        $this->setExpectedException(
-            '\Wheels\Config\Schema\Exception',
-            'Имя параметра должно начинаться с буквы или символа подчеркивания и состоять из букв, цифр и символов подчеркивания'
-        );
-
-        $option = new Schema();
-        $option->prepareOptionName('new-name');
-    }
-
-    public function testCreate()
-    {
-        $case    = FALSE;
-        $options = array(
-            'optionA' => array(
-                'default' => 'defaultA',
-            ),
-            'optionB' => array(
-                'default' => 'defaultB',
-            ),
-            'optionC' => array(
-                'default' => 'defaultC',
-            ),
-        );
 
         $schema = array(
-            'case-sensitive' => $case,
-            'options'        => $options,
+            'allow-modifications' => $modifications,
+            'case-sensitive'      => $case,
+            'options'             => $options,
         );
         $actual = Schema::create($schema);
 
-        $expected = new Schema();
-        $expected->setCaseSensitive($case);
-        $expected->setOptions($options);
+        $options = array($a, $b, $c);
+        $expected = new Schema($options, $case);
 
         $this->assertEquals($expected, $actual);
     }
@@ -159,38 +155,16 @@ class SchemaTest extends PHPUnit_Framework_TestCase
         Schema::create($schema);
     }
 
-    public function test__get()
+    public function testCreateExceptionC()
     {
-        $schema = new Schema(array(
-            new Option('name', 'default')
-        ));
+        $this->setExpectedException(
+            '\Wheels\Config\Schema\Exception',
+            'Описание параметра настроек должно быть массивом'
+        );
 
-        $actual = $schema->name;
-        $expected = $schema->getOption('name');
-        $this->assertEquals($expected, $actual);
-    }
-
-    public function test__isset()
-    {
-        $schema = new Schema(array(
-            new Option('name', 'default')
-        ));
-
-        $actual = isset($schema->name);
-        $this->assertTrue($actual);
-
-        $actual = isset($schema->unknown);
-        $this->assertFalse($actual);
-    }
-
-    public function test__unset()
-    {
-        $schema = new Schema(array(
-            new Option('name', 'default')
-        ));
-        unset($this->name);
-
-        $actual = isset($schema->name);
-        $this->assertFalse($actual);
+        $schema = array(
+            'options' => array(1),
+        );
+        Schema::create($schema);
     }
 }

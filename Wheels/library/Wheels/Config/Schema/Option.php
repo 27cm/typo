@@ -18,6 +18,13 @@ class Option
     protected $_name;
 
     /**
+     * Значение параметра.
+     *
+     * @var string
+     */
+    protected $_value;
+
+    /**
      * Значение параметра по умолчанию.
      *
      * @var mixed
@@ -75,6 +82,7 @@ class Option
             $this->_type = Type::create('mixed');
 
         $this->setDefault($default);
+        $this->setValueDefault();
     }
 
 
@@ -91,13 +99,13 @@ class Option
     }
 
     /**
-     * Возвращает имя параметра.
+     * Возвращает значение параметра.
      *
-     * @return \Wheels\Config\Schema\Option\Type
+     * @return mixed
      */
-    public function getType()
+    public function getValue()
     {
-        return $this->_type;
+        return $this->_value;
     }
 
     /**
@@ -108,6 +116,16 @@ class Option
     public function getDefault()
     {
         return $this->_default;
+    }
+
+    /**
+     * Возвращает имя параметра.
+     *
+     * @return \Wheels\Config\Schema\Option\Type
+     */
+    public function getType()
+    {
+        return $this->_type;
     }
 
     /**
@@ -144,6 +162,8 @@ class Option
      * Задаёт имя параметра.
      *
      * @param string $name Имя параметра.
+     *
+     * @throws \Wheels\Config\Schema\Option\Exception
      */
     public function setName($name)
     {
@@ -154,9 +174,36 @@ class Option
     }
 
     /**
+     * Задаёт значение параметра.
+     *
+     * @param mixed $value Значение параметра.
+     *
+     * @throws \Wheels\Config\Schema\Option\Exception
+     */
+    public function setValue($value)
+    {
+        $value = $this->_filter($value);
+
+        if(!$this->validate($value))
+            throw new Exception("Недопустимое значение параметра '" . $this->getName() . "'");
+
+        $this->_value = $value;
+    }
+
+    /**
+     * Устанавливает значение параметра по умолчанию в качестве текущего значения параметра.
+     */
+    public function setValueDefault()
+    {
+        $this->setValue($this->getDefault());
+    }
+
+    /**
      * Задаёт значение параметра по умолчанию.
      *
      * @param mixed $value Значение параметра по умолчанию.
+     *
+     * @throws \Wheels\Config\Schema\Option\Exception
      */
     public function setDefault($value)
     {
@@ -172,6 +219,8 @@ class Option
      * Задаёт текстовое описание параметра.
      *
      * @param string $desc Текстовое описание параметра.
+     *
+     * @throws \Wheels\Config\Schema\Option\Exception
      */
     public function setDesc($desc)
     {
@@ -184,7 +233,9 @@ class Option
     /**
      * Задаёт массив псевдонимов.
      *
-     * @param array $aliases Ассоциативный массив псевдонимов
+     * @param array $aliases Ассоциативный массив псевдонимов.
+     *
+     * @throws \Wheels\Config\Schema\Option\Exception
      */
     public function setAliases(array $aliases)
     {
@@ -201,7 +252,7 @@ class Option
         {
             $this->setDefault($this->getDefault());
         }
-        catch(\Exception $e)
+        catch(Exception $e)
         {
             $this->_aliases = $save;
             throw $e;
@@ -217,6 +268,8 @@ class Option
      * Задаёт массив допустимых значений.
      *
      * @param array $allowed Массив допустимых значений.
+     *
+     * @throws \Wheels\Config\Schema\Option\Exception
      */
     public function setAllowed(array $allowed)
     {
@@ -241,7 +294,7 @@ class Option
 
             $this->setDefault($this->getDefault());
         }
-        catch(\Exception $e)
+        catch(Exception $e)
         {
             $this->_allowed = $save;
             throw $e;
@@ -315,6 +368,14 @@ class Option
             $option->setAllowed($schema['allowed']);
 
         return $option;
+    }
+
+    /**
+     *
+     */
+    public function __toString()
+    {
+       return $this->getValue();
     }
 
 
