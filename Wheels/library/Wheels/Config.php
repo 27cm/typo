@@ -9,9 +9,9 @@
 
 namespace Wheels;
 
-use Wheels\Config\Schema;
-
-// use Wheels\Config\Exception;
+use Wheels\Config\Option;
+use Wheels\Config\Exception;
+use Wheels\Config\Option\Collection;
 
 /**
  * Класс для работы с параметрами настроек.
@@ -25,32 +25,11 @@ use Wheels\Config\Schema;
 class Config
 {
     /**
-     * Описание конфигурации.
+     * Параметры настроек.
      *
-     * @var \Wheels\Config\Schema
+     * @var \Wheels\Config\Option\Collection|\Wheels\Config\Option[]
      */
-    protected $_schema;
-
-    /**
-     * Значения параметров.
-     *
-     * @var array
-     */
-    protected $_options = array();
-
-    /**
-     * Загруженные секции.
-     *
-     * @var array
-     */
-    protected $_sections = array();
-
-    /**
-     * Директория обрабатываемого файла.
-     *
-     * @var string
-     */
-    private $_directory;
+    protected $_options;
 
 
     // --- Константы ---
@@ -58,122 +37,31 @@ class Config
     /**
      * Разделитель ключей параметров.
      */
-    const INI_KEY_SEP = '.';
+    const KEY_SEP = '.';
 
     /**
      * Разделитель секций.
      */
-    const INI_SECTION_SEP = ':';
-
-
-    // --- Конструктор ---
-
-    /**
-     * Конструктор объекта конфигурации в соответствии с данным описанием параметров настроек.
-     *
-     * @param array $schema Описание параметров настроек.
-     */
-    public function __construct(array $schema = NULL)
-    {
-        if(!is_null($schema))
-            $this->_schema = new Schema($schema);
-
-        $this->setDefaultOptions();
-    }
+    const SECTION_SEP = ':';
 
 
     // --- Открытые методы ---
 
     /**
-     * Вовзращает массив настроек по умолчанию.
+     * Конструктор.
      *
-     * @return array
+     * @param \Wheels\Config\Option[] $options       Массив описаний параметров.
+     * @param bool                    $caseSensitive Регистрозависимость имён параметров.
      */
-    public function getDefaultOptions()
+    public function __construct(array $options = array(), $caseSensitive = true)
     {
-        $options = array();
-
-        if($this->_isSchema())
-        {
-            foreach($this->_schema->getOptions() as $name => $option)
-            {
-                $options[$name] = $option->getDefault();
-            }
-        }
-
-        return $options;
+        $this->_options = new Collection($options, $caseSensitive);
     }
 
     /**
-     * Установливает значения параметров настроек.
+     * Возвращает параметры настроек.
      *
-     * @param array $options Ассоциативный массив настроек с ключами в качестве названий параметров.
-     *
-     * @throws null
-     * @throws Exception
-     * @uses \Wheels\Config::setOption()
-     *
-     */
-    public function setOptions(array $options)
-    {
-        $exception = null;
-
-        foreach($options as $name => $value)
-        {
-            try
-            {
-                $this->setOption($name, $value);
-            }
-            catch(Exception $e)
-            {
-                if(isset($exception))
-                    $exception = new Exception($e->getMessage(), $e->getCode(), $exception);
-                else
-                    $exception = new Exception($e->getMessage(), $e->getCode());
-            }
-        }
-
-        if(isset($exception))
-            throw $exception;
-    }
-
-    /**
-     * Установливает значения параметров настроек по умолчанию.
-     */
-    public function setDefaultOptions()
-    {
-        $this->_options = array();
-        $this->setOptions($this->getDefaultOptions());
-    }
-
-    public function setOptionsFromFile($filename, $section = NULL)
-    {
-        $options = $this->_processIniFile($filename, $section);
-
-        $this->setOptions($options);
-    }
-
-    /**
-     * Установливает значение параметра настроек.
-     *
-     * @param string $name  Название параметра.
-     * @param mixed  $value Значение параметра.
-     *
-     * @throws \Wheels\Config\Exception
-     */
-    public function setOption($name, $value)
-    {
-        $name = $this->prepareOptionName($name);
-
-        $this->_validateOptionName($name);
-        $this->_validateOptionValue($name, $value);
-
-        $this->_options[$name] = $value;
-    }
-
-    /**
-     *
-     * @return type
+     * @return \Wheels\Config\Option\Collection|\Wheels\Config\Option[] Коллекция параметров настроек.
      */
     public function getOptions()
     {
@@ -181,231 +69,271 @@ class Config
     }
 
     /**
+     * Возвращает параметр с заданным именем.
      *
-     * @param type $name
-     * @return type
+     * @param string $name Имя параметра.
+     *
+     * @return \Wheels\Config\Option Параметр с заданным именем.
      */
     public function getOption($name)
     {
-        $name = $this->prepareOptionName($name);
-
-        if(!array_key_exists($name, $this->_options))
-            return Module::throwException(Exception::E_OPTION_NAME, "Неизвестный параметр '$name'");
-
         return $this->_options[$name];
     }
 
     /**
+     * Возвращает значения параметров настроек.
      *
-     * @return bool
+     * @return array Ассоциативный массив значений параметров.
      */
-    protected function _isSchema()
+    public function getOptionsValues()
     {
-        return (!is_null($this->_schema));
-    }
+        $optionsValues = array();
 
-    protected function _validateOptionName($name)
-    {
-        $name = $this->prepareOptionName($name);
+        foreach($this->getOptions() as $name => $option)
+            $optionsValues[$name] = $option->getValue();
 
-        if($this->_isSchema())
-        {
-            if(!array_key_exists($name, $this->_schema->getOptions()))
-                return Module::throwException(Exception::E_OPTION_NAME, "Неизвестный параметр '$name'");
-        }
+        return $optionsValues;
     }
 
     /**
+     * Возвращает значение параметра.
      *
-     * @param type $name
-     * @param type $value
+     * @param string $name Название параметра.
+     *
+     * @return mixed Значение параметра с заданным именем.
      */
-    protected function _validateOptionValue($name, $value)
+    public function getOptionValue($name)
     {
-        $name = $this->prepareOptionName($name);
-
-        if($this->_isSchema())
-        {
-
-        }
+        return $this->getOption($name)->getValue();
     }
 
     /**
+     * Задаёт параметры.
      *
-     * @param type $name
-     * @return type
+     * @param \Wheels\Config\Option[] $options Массив параметров.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
      */
-    public function prepareOptionName($name)
+    public function setOptions(array $options)
     {
-        return $this->_schema->prepareOptionName($name);
+        $this->getOptions()->clear();
+        $this->addOptions($options);
     }
 
     /**
+     * Добавляет параметр.
      *
-     * @param type $key
-     * @param type $value
+     * @param \Wheels\Config\Option $option Описание параметра.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
      */
-    public function validateKeyValue($key, $value)
+    public function addOption(Option $option)
     {
-        // @todo: Конфигурационный файл может отсутствовать
-        // @todo: Перенести в класс Wheel, Сделать Config\Exception
-        if(!array_key_exists($key, $this->_schema['options']))
-            Module::throwException(Exception::E_RUNTIME, "Неизвестный параметр '$key'");
+        $this->_options[] = $option;
+    }
 
-        $schema = $this->_schema['options'][$key];
+    /**
+     * Добавляет параметры.
+     *
+     * @param \Wheels\Config\Option[] $options Массив параметров.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function addOptions(array $options)
+    {
+        foreach($options as $option)
+            $this->addOption($option);
+    }
 
-        $type = $schema['type'];
-        if(in_array($type, array('dir', 'int', 'integer', 'bool', 'float', 'numeric', 'real'), TRUE))
+    /**
+     * Устанавливает значение параметра.
+     *
+     * @param string $name  Название параметра.
+     * @param mixed  $value Значение параметра.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function setOptionValue($name, $value)
+    {
+        $this->getOption($name)->setValue($value);
+    }
+
+    /**
+     * Устанавливает значения параметров.
+     *
+     * @param array $options Ассоциативный массив значений параметров.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function setOptionsValues(array $options)
+    {
+        foreach($options as $name => $value)
+            $this->setOptionValue($name, $value);
+    }
+
+    /**
+     * Устанавливает значения параметров из конфигурационного INI файла.
+     *
+     * @param string $filename Имя обрабатываемого ini-файла.
+     * @param string $section  Имя секции. По умолчанию значения параметров устанавливаются из секции 'default'.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     *
+     * @throws \Wheels\Config\Exception
+     */
+    public function setOptionsValuesFromFile($filename, $section = 'default')
+    {
+        static $optionsFromFiles = array();
+        
+        if(!array_key_exists($filename, $optionsFromFiles))
+            $optionsFromFiles[$filename] = $this->_processIniFile($filename);
+
+        if(!array_key_exists($section, $optionsFromFiles[$filename]) || !is_array($optionsFromFiles[$filename][$section]))
+            throw new Exception("Раздел настроек '$section' не найден в конфигурационном файле '$filename'");
+
+        $options = $optionsFromFiles[$filename][$section];
+        $this->setOptionsValues($options);
+    }
+
+    /**
+     * Создаёт объект класса по его описанию.
+     *
+     * @param array $schema Ассоциативный массив с описанием конфигурации.
+     *                       * allow-modifications - ассоциативный массив псевдонимов;
+     *                       * options             - массив описаний параметров;
+     *                       * case-sensitive      - регистрозависимость имён параметров.
+     *
+     * @return \Wheels\Config Конфигурация с заданным описанием.
+     *
+     * @throws \Wheels\Config\Exception
+     */
+    static public function create(array $schema)
+    {
+        $diff = array_diff(array_keys($schema), array('options', 'case-sensitive', 'allow-modifications'));
+        if(!empty($diff))
+            throw new Exception('Неизвестные разделы описания конфигурации: ' . implode(', ', $diff));
+
+        $options = array();
+        if(array_key_exists('options', $schema))
         {
-            $func = 'is_' . $type;
-            if(!$func($value))
+            if(!is_array($schema['options']))
+                throw new Exception("Раздел 'options' описания конфигурации должен быть массивом");
+
+            foreach($schema['options'] as $name => $option_schema)
             {
-                $types_expected = array(
-                    'dir'     => '',
-                    'int'     => 'целым числом',
-                    'integer' => '',
-                    'bool'    => '',
-                    'float'   => '',
-                    'numeric' => '',
-                    'real'    => '',
-                    'string'  => 'строкой',
-                );
-                $types_actual = array();
-                Module::throwException(Exception::E_RUNTIME, "Значение параметра '$key' должно быть {$types_expected[$type]}, a не " . $types_actual[gettype($value)]);
+                if(!is_array($option_schema))
+                    throw new Exception('Описание параметра настроек должно быть массивом');
+
+                if(!array_key_exists('name', $option_schema) && is_string($name))
+                    $option_schema['name'] = $name;
+
+                $options[] = Option::create($option_schema);
             }
         }
-        if(in_array($type, array('dir[]', 'int[]', 'integer[]', 'bool[]', 'float[]', 'numeric[]', 'real[]'), TRUE))
+
+        if(array_key_exists('case-sensitive', $schema))
         {
-            $func = 'is_' . $type;
-            if(!is_array($value))
-            {
-                $types_expected = array(
-                    'dir'     => '',
-                    'int'     => 'целых чисел',
-                    'integer' => '',
-                    'bool'    => '',
-                    'float'   => '',
-                    'numeric' => '',
-                    'real'    => '',
-                    'string'  => 'строк',
-                );
-                Module::throwException(Exception::E_RUNTIME, "Значение параметра '$key' должно быть массивом {$types_expected[$type]}, a не " . $types_expected[gettype($value)]);
-            }
+            $caseSensitive = $schema['case-sensitive'];
+            $obj = new self($options, $caseSensitive);
         }
-    }
-
-    public function sectionExists($section)
-    {
-        $section = $this->prepareOptionName($section);
-
-        return array_key_exists($section, $this->_sections);
-    }
-
-    public function getSection($section)
-    {
-        $section = $this->prepareOptionName($section);
-
-        if($this->sectionExists($section))
-            return $this->_sections[$section];
         else
-            Module::throwException(Exception::E_RUNTIME, "Раздел настроек '$section' не найден в конфигурационном файле '{$this->filename}'");
+            $obj = new self($options);
+
+        if(array_key_exists('allow-modifications', $schema))
+        {
+            $value = $schema['allow-modifications'];
+            $obj->getOptions()->setAllowModifications($value);
+        }
+
+        return $obj;
     }
 
+
+    // --- Защищённые методы ---
+
     /**
-     * Читает конфигурационный INI файл.
+     * Читает конфигурационный ini-файл.
      *
-     * @return array
+     * @param string $filename Имя обрабатываемого ini-файла.
      *
-     * @throws \Wheels\Typo\Exception
+     * @return array Ассоциативный массив значений параметров, загруженных из указанного файла.
+     *
+     * @throws \Wheels\Config\Exception
      */
-    protected function _processIniFile($filename, $section = NULL)
+    protected function _processIniFile($filename)
     {
         if(!is_file($filename))
-            Module::throwException(Exception::E_RUNTIME, "Файл '$filename' не найден");
+            throw new Exception("Файл '$filename' не найден");
         if(!is_readable($filename))
-            Module::throwException(Exception::E_RUNTIME, "Файл '$filename' закрыт для чтения");
+            throw new Exception("Файл '$filename' закрыт для чтения");
 
-        $this->_directory = realpath(dirname($filename));
+        $directory = realpath(dirname($filename));
 
-        $err_handler = function ($error, $message = '', $file = '', $line = 0) use ($filename) {
-            Module::throwException(Exception::E_RUNTIME, "Ошибка чтения файла '{$filename}': $message");
+        $err_handler = function ($errno, $message = '', $file = '', $line = 0) use ($filename) {
+            throw new Exception("Ошибка чтения файла '$filename': [$errno] $message ($file:$line)");
         };
         set_error_handler($err_handler, E_WARNING);
         $data = parse_ini_file($filename, true);
         restore_error_handler();
 
-        return $this->_processData($data, $section);
-    }
-
-    /**
-     * Обрабатывает данные INI файла.
-     *
-     * @param array $data   Массив данных INI файла, возвращаемый функцией parse_ini_file()
-     *
-     * @return array
-     */
-    protected function _processData(array $data, $section = NULL)
-    {
-        // @todo: если задана конкретная секция, то возвращаем только её
-        // @todo: все секции по умолчанию наследую параметры вне секции
-
-        $config = array();
-
+        $processedData = array();
         foreach($data as $key => $value)
         {
             if(is_array($value))
             {
-                if(strpos($key, self::INI_KEY_SEP) !== false)
+                if(strpos($key, self::KEY_SEP) !== false)
                 {
-                    $sections = explode(self::INI_KEY_SEP, $key);
-                    $config = array_merge_recursive($config, $this->buildNestedSection($sections, $value));
+                    $sections = explode(self::KEY_SEP, $key);
+                    $processedData = array_merge_recursive($processedData, $this->_buildNestedSection($sections, $value, $directory));
                 }
-                elseif(strpos($key, self::INI_SECTION_SEP) !== false)
+                elseif(strpos($key, self::SECTION_SEP) !== false)
                 {
-                    $sections = explode(self::INI_SECTION_SEP, $key, 2);
+                    $sections = explode(self::SECTION_SEP, $key, 2);
                     $sections = array_map('trim', $sections);
 
                     $key = $sections[0];
 
-                    $config[$key] = array();
+                    $processedData[$key] = array();
                     for($i = count($sections) - 1; $i > 0; $i--)
                     {
-                        $config[$key] = array_merge_recursive_distinct($config[$key], $config[$sections[$i]]);
+                        $processedData[$key] = array_merge_recursive_distinct($processedData[$key], $processedData[$sections[$i]]);
                     }
-                    $config[$key] = array_merge_recursive_distinct($config[$key], $this->processSection($value));
+                    $processedData[$key] = array_merge_recursive_distinct($processedData[$key], $this->_processSection($value, $directory));
                 }
                 else
                 {
-                    $config[$key] = $this->processSection($value);
+                    $processedData[$key] = $this->_processSection($value, $directory);
                 }
             }
             else
             {
-                $this->processKey($key, $value, $config);
+                $this->processKey($key, $value, $directory, $processedData);
             }
         }
 
-        return $config;
+        return $processedData;
     }
 
     /**
      * Process a nested section
      *
-     * @param array $sections
-     * @param mixed $value
+     * @param array  $sections
+     * @param mixed  $value
+     * @param string $directory Директория обрабатываемого ini-файла.
+     *
      * @return array
      */
-    protected function buildNestedSection($sections, $value)
+    protected function _buildNestedSection($sections, $value, $directory)
     {
         if(count($sections) == 0)
         {
-            return $this->processSection($value);
+            return $this->_processSection($value, $directory);
         }
 
         $nestedSection = array();
 
         $first = array_shift($sections);
-        $nestedSection[$first] = $this->buildNestedSection($sections, $value);
+        $nestedSection[$first] = $this->_buildNestedSection($sections, $value, $directory);
 
         return $nestedSection;
     }
@@ -413,113 +341,72 @@ class Config
     /**
      * Обрабатывает секцию.
      *
-     * @param array $section    Секция.
+     * @param array  $section   Секция.
+     * @param string $directory Директория обрабатываемого ini-файла.
      *
      * @return array
      */
-    protected function processSection(array $section)
+    protected function _processSection(array $section, $directory)
     {
-        $config = array();
+        $processedData = array();
 
         foreach ($section as $key => $value)
-            $this->processKey($key, $value, $config);
+            $this->processKey($key, $value, $directory, $processedData);
 
-        return $config;
+        return $processedData;
     }
 
     /**
      * Обрабатывает ключ.
      *
-     * @param string $key   Ключ.
-     * @param string $value Значение.
-     * @param array $config Обрабатываемый массив данных конфигурационного файла.
-
+     * @param string $key           Ключ.
+     * @param string $value         Значение.
+     * @param string $directory     Директория обрабатываемого ini-файла.
+     * @param array  $processedData Обрабатываемый массив данных конфигурационного файла.
+     *
      * @return array
-
-     * @throws \Wheels\Typo\Exception
+     *
+     * @throws \Wheels\Config\Exception
      */
-    protected function processKey($key, $value, array &$config)
+    protected function processKey($key, $value, $directory, array &$processedData)
     {
-        if(strpos($key, self::INI_KEY_SEP) !== false)
+        if(strpos($key, self::KEY_SEP) !== false)
         {
-            list($first, $second) = explode(self::INI_KEY_SEP, $key, 2);
+            list($first, $second) = explode(self::KEY_SEP, $key, 2);
 
             if (!strlen($first) || !strlen($second))
             {
-                Module::throwException(Exception::E_RUNTIME, "Некорректный ключ '$key'");
+                throw new Exception("Некорректный ключ '$key'");
             }
-            elseif (!isset($config[$first]))
+            elseif (!isset($processedData[$first]))
             {
-                if ($first === '0' && !empty($config))
+                if ($first === '0' && !empty($processedData))
                 {
-                    $config = array($first => $config);
+                    $processedData = array($first => $processedData);
                 }
                 else
                 {
-                    $config[$first] = array();
+                    $processedData[$first] = array();
                 }
             }
-            elseif (!is_array($config[$first]))
+            elseif (!is_array($processedData[$first]))
             {
-                Module::throwException(Exception::E_RUNTIME, "Невозможно создать вложенный ключ для '$first', т. к. этот ключ уже есть");
+                throw new Exception("Невозможно создать вложенный ключ для '$first', т. к. этот ключ уже есть");
             }
 
-            $this->processKey($second, $value, $config[$first]);
+            $this->processKey($second, $value, $directory, $processedData[$first]);
         }
         elseif ($key === '@include')
         {
-            if (is_null($this->_directory))
-                Module::throwException(Exception::E_RUNTIME, "Не удалось обработать выражение @include");
+            if (is_null($directory))
+                throw new Exception("Не удалось обработать выражение @include");
 
-            $reader = clone $this;
-            $include = $reader->_processIniFile($this->_directory . '/' . $value);
-            $config  = array_replace_recursive($config, $include);
+            $include = $this->_processIniFile($directory . '/' . $value);
+            $processedData = array_replace_recursive($processedData, $include);
         }
         else
         {
-            // @todo: Потенциальный баг
-            if(in_array($value, array(1, '1'), true))
-                $value = true;
-            elseif(in_array($value, array(0, '0', ''), true))
-                $value = false;
-
-            $config[$key] = $value;
+            $processedData[$key] = $value;
         }
-    }
-
-    static public function create(/* ... */)
-    {
-        if(func_num_args() == 2)
-        {
-            list($arg1, $arg2) = func_get_args();
-
-            if(is_array($arg1))
-                return static::createFromArray($arg1);
-            elseif(is_string($arg1))
-                return static::createFromFile($arg1);
-        }
-        elseif(func_num_args() == 3)
-        {
-            list($arg1, $arg2, $arg3) = func_get_args();
-
-            if(is_string($arg1) && is_string($arg2))
-                return static::createFromFile($arg1, $arg2);
-        }
-
-        return Module::throwException(Exception::E_UNKNOWN, 'Недопустимые параметры метода ' . __CLASS__ . '::' . __METHOD__ . ' ' . var_dump(func_get_args()));
-    }
-
-    static protected function createFromArray(array $options, array $schema = NULL)
-    {
-        $config = new Config($schema);
-        $config->setOptions($options);
-        return $config;
-    }
-
-    static protected function createFromFile($filename, $section = NULL, array $schema = NULL)
-    {
-        $config = new Config($schema);
-        $config->setOptionsFromFile($filename, $section);
-        return $config;
     }
 }

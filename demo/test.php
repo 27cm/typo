@@ -38,53 +38,31 @@ use Wheels\Diff;
 use Wheels\Config\Schema\Option\Collection;
 
 
-try
-{
     require_once $root . DS . 'Wheels' . DS . 'library' . DS . 'Wheels.php';
 
 
-//    setlocale(LC_ALL, 'ru_RU');
-//    for($i = 0; $i < 65000; $i++)
-//        if(preg_match('~[\x00-\xFF]~', Typo\Utility::chr($i)))
-//            echo $i . ' = ' . Typo\Utility::chr($i) . '<br>';
-//    die();
-    $option = new Option('name', 'default');
-    $collection = new Collection(array($option));
-    var_dump($collection);
-    die();
-
-    $diff = new Diff('slovo', 'olovo');
-
-    echo $diff->renderDiffToHTML();
-
-    die();
-
-    
-
-    $type = $option->getType();
-    die(get_class($type));
-
-    $typo = new Typo();
-//    $typo->setConfigDir($root . DS . 'Wheels' . DS . 'tests' . DS . 'config' . DS . 'Module' . DS . 'Punct' . DS . 'QuoteTest');
-//    $typo->setOptions('default');
-    $typo->addModule('emoticon/skype');
-    // var_dump($typo);
-    $output = $typo->process($input);
-}
-catch(Wheels\Typo\Exception $e)
-{
-    echo $e->getMessage() . '<br>';
-
-    while($e->hasPrevious())
+    setlocale(LC_ALL, 'ru_RU');
+    for($i = 0; $i < 65536; $i++)
     {
-        $e = $e->getPrevious();
-        echo $e->getMessage() . '<br>';
+        $chr = Typo\Utility::chr($i);
+        $r1 = preg_match('~^\h$~u', $chr);
+        $r2 = preg_match('~^\s$~u', $chr);
+        $r3 = preg_match('~^\t$~u', $chr);
+
+        if($r1 || $r2 || $r3)
+        {
+            echo $i;
+            if($r1)
+                echo '\h';
+            if($r2)
+                echo '\s';
+            if($r3)
+                echo '\t';
+            echo '<br>';
+        }
     }
-}
-catch(Exception $e)
-{
-    echo $e->getMessage() . '<br>';
-}
+    die();
+
 
 ?>
 <style>

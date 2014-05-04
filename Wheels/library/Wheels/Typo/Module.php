@@ -31,7 +31,7 @@ abstract class Module
      *
      * @var array
      */
-    protected $_options = array();
+//    protected $_options = array();
 
     /**
      * Описание конфигурации модуля.
@@ -59,7 +59,7 @@ abstract class Module
     /**
      * Используемые модули.
      *
-     * @var \Wheels\Typo\Module[]
+     * @var \Wheels\Typo\Module\Collection|\Wheels\Typo\Module[]
      */
     protected $_modules = array();
 
@@ -113,7 +113,7 @@ abstract class Module
             $this->typo = $typo;
             $this->text =& $typo->text;
             $this->config_section = $typo->config_section;
-            $this->setConfigDir($typo->_config->getDirectory());
+//            $this->setConfigDir($typo->_config->getDirectory());
         }
         else
         {
@@ -122,8 +122,10 @@ abstract class Module
         }
 
         $schema = static::getConfigSchema();
-        $this->_config = new Config($schema);
-        $this->setOptionsFromFile($section);
+        $this->_config = Config::create($schema);
+
+
+        $this->setOptionsFromFile('default');
 
         $this->setOptions($options);
         foreach($this->getDefaultOptions() as $name => $value)
@@ -197,15 +199,14 @@ abstract class Module
      */
     public function setOption($name, $value)
     {
-        $this->prepareOption($name, $value);
-        $this->_config->setOption($name, $value);
+        $this->_config->setOptionValue($name, $value);
         $this->onChangeOption($name, $value);
     }
 
-    public function setOptionsFromFile($section = NULL)
+    public function setOptionsFromConfigFile($section = 'default')
     {
-        $filename = $this->
-        $this->_config->setOptionsFromFile($filename, $section);
+        $filename = $this->configFilename;
+        $this->_config->setOptionsValuesFromFile($filename, $section);
 
         foreach($this->_modules as $module)
         {
@@ -220,37 +221,41 @@ abstract class Module
      *
      * @uses \Wheels\Typo\Module::setOption()
      *
-     * @throws \Wheels\Typo\Exception
-     *
      * @return void
+     *
+     * @throws \Wheels\Typo\Exception
      */
-    public function setOptions($options)
+    public function setOptions(array $options)
     {
-        if(is_string($options))
-        {
-            $this->config_section = $options;
-
-            if($this->_config->sectionExists($this->config_section))
-                $options = $this->_config->getSection($this->config_section);
-
-            // @todo: если в списке новых опций не изменились модули, но изменилась секция, то модули могут остаться без изменений секции
-        }
-
-        if(is_array($options))
-        {
-            $this->_config->setOptions($options);
-        }
+        $this->_config->setOptionsValues($options);
     }
 
     /**
-     * Установливает значения параметров настроек по умолчанию.
+     * @return \Wheels\Config
+     */
+    public function getConfig()
+    {
+        return $this->_config;
+    }
+
+    /**
+     * @return \Wheels\Typo\Module\Collection|\Wheels\Typo\Module[]
+     */
+    public function getModules()
+    {
+        return $this->_modules;
+    }
+
+    /**
+     * Устанавливает значения параметров по умолчанию.
      */
     public function setDefaultOptions()
     {
-        $this->_config->setDefaultOptions();
+        foreach($this->getConfig()->getOptions() as $option) {
+            $option->setValueDefault();
+        }
 
-        foreach($this->_modules as $module)
-        {
+        foreach($this->getModules() as $module) {
             $module->setDefaultOptions();
         }
     }
@@ -674,7 +679,9 @@ abstract class Module
                     static::$_config_schema['options'][$n]['inherit'] = FALSE;
             }
 
+            /** @var \Wheels\Typo $parent */
             $parent = get_parent_class(get_called_class());
+
             if($parent !== FALSE)
             {
                 $parent_schema = $parent::getConfigSchema();

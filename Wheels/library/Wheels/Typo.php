@@ -51,7 +51,7 @@ class Typo extends Module
     );
 
     /**
-     * @see \Wheels\Typo\Module::$_config_schema
+     * {@inheritDoc}
      */
     static protected $_config_schema = array(
         'options' => array(
@@ -63,13 +63,13 @@ class Typo extends Module
             'encoding' => array(
                 'desc'    => 'Режим кодирования спецсимволов',
                 'type'    => 'string',
-                'aliases'    => array(
+                'aliases' => array(
                     'none'     => self::MODE_NONE,
                     'names'    => self::MODE_NAMES,
                     'codes'    => self::MODE_CODES,
                     'hexcodes' => self::MODE_HEX_CODES,
                 ),
-                'allowed'    => array(
+                'allowed' => array(
                     self::MODE_NONE,
                     self::MODE_NAMES,
                     self::MODE_CODES,
@@ -90,74 +90,12 @@ class Typo extends Module
             'modules' => array(
                 'default' => array('html', 'nobr', 'punct', 'space', 'symbol', 'url'),
             ),
-            'html-in-enabled' => array(
+            'e-convert' => array(
                 'desc'    => "Замена буквы 'ё' на 'е'",
                 'type'    => 'bool',
                 'default' => false,
             ),
         ),
-    );
-
-    /**
-     * @see \Wheels\Typo\Module::$default_options
-     */
-    static protected $_default_options2 = array(
-        /**
-         * Кодировка текста.
-         *
-         * @var 'AUTO'|string
-         */
-        'charset' => 'UTF-8',
-
-        /**
-         * Режим кодирования спецсимволов.
-         *
-         * @var 'AUTO'|'MODE_NONE'|'MODE_NAMES'|'MODE_CODES'|'MODE_HEX_CODES'
-         */
-        'encoding' => self::MODE_NONE,
-
-        /**
-         * Включение HTML в тексте на входе.
-         *
-         * Пример:
-         * html-in-enabled = 0      "&lt;div&gt;текст site.com&lt;/div&gt;"
-         * html-in-enabled = 1      "<div>текст site.com</div>"
-         *
-         * @var bool
-         */
-        'html-in-enabled' => true,
-
-        /**
-         * Включение HTML в тексте на выходе.
-         *
-         * Пример:
-         * html-out-enabled = 0     "текст site.com"
-         * html-out-enabled = 1     "текст <a href="http://site.com">site.com</a>"
-         *
-         * @var bool
-         */
-        'html-out-enabled' => true,
-
-        /**
-         * Используемые модули.
-         *
-         * @var string[]
-         */
-        'modules' => array(
-            'html',
-            'nobr',
-            'punct',
-            'space',
-            'symbol',
-            'url',
-        ),
-
-        /**
-         * Замена буквы 'ё' на 'е'.
-         *
-         * @var bool
-         */
-        'e-convert' => false,
     );
 
     /**
@@ -207,12 +145,6 @@ class Typo extends Module
     const INVISIBLE = '{{{%s%u}}}';
 
 
-    // --- Прочие константы ---
-
-    /** Автоматическое определение значения настройки. */
-    const AUTO = 'AUTO';
-
-
     // --- Открытые методы класса ---
 
     /**
@@ -237,25 +169,16 @@ class Typo extends Module
      */
     public function validateOption($name, &$value)
     {
-        $name = $this->_config->prepareOptionName($name);
+        $name = $this->_config->getOptions()->prepareOffset($name);
 
         switch($name)
         {
             case 'charset' :
-                // @todo: избавляемся от AUTO
                 // @todo: ошибки кодировки перенести в момент вызова iconv
-                if($value != self::AUTO)
-                {
-                    $value = mb_strtoupper($value);
-                    $result = iconv($value, 'UTF-8', '');
-                    if($result === false)
-                        return self::throwException(Exception::E_OPTION_VALUE, "Неизвестная кодировка '$value'");
-                }
-            break;
-
-            case 'encoding' :
-                if(!Utility::validateConst(get_called_class(), $value, 'MODE'))
-                    return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный режим кодирования спецсимволов '$value'");
+                $value = mb_strtoupper($value);
+                $result = iconv($value, 'UTF-8', '');
+                if($result === false)
+                    return self::throwException(Exception::E_OPTION_VALUE, "Неизвестная кодировка '$value'");
             break;
 
             default : Module::validateOption($name, $value);
