@@ -25,10 +25,10 @@ class Tbool extends Type
      */
     public function convert($var)
     {
-        if(in_array($var, array(1, '1', 'on', 'ON'), true))
+        if(in_array($var, array(1, '1', 'on', 'ON', 'true', 'TRUE'), true))
             return true;
 
-        if(in_array($var, array(0, '0', 'off', 'OFF'), true))
+        if(in_array($var, array(0, '0', 'off', 'OFF', 'false', 'FALSE'), true))
             return false;
 
         return $var;

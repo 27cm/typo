@@ -53,50 +53,7 @@ class Typo extends Module
     /**
      * {@inheritDoc}
      */
-    static protected $_config_schema = array(
-        'options' => array(
-            'charset' => array(
-                'desc'    => 'Кодировка текста',
-                'type'    => 'string',
-                'default' => 'UTF-8',
-            ),
-            'encoding' => array(
-                'desc'    => 'Режим кодирования спецсимволов',
-                'type'    => 'string',
-                'aliases' => array(
-                    'none'     => self::MODE_NONE,
-                    'names'    => self::MODE_NAMES,
-                    'codes'    => self::MODE_CODES,
-                    'hexcodes' => self::MODE_HEX_CODES,
-                ),
-                'allowed' => array(
-                    self::MODE_NONE,
-                    self::MODE_NAMES,
-                    self::MODE_CODES,
-                    self::MODE_HEX_CODES,
-                ),
-                'default' => 'none',
-            ),
-            'html-in-enabled' => array(
-                'desc'    => 'Включение HTML в тексте на входе',
-                'type'    => 'bool',
-                'default' => true,
-            ),
-            'html-out-enabled' => array(
-                'desc'    => 'Включение HTML в тексте на выходе',
-                'type'    => 'bool',
-                'default' => true,
-            ),
-            'modules' => array(
-                'default' => array('html', 'nobr', 'punct', 'space', 'symbol', 'url'),
-            ),
-            'e-convert' => array(
-                'desc'    => "Замена буквы 'ё' на 'е'",
-                'type'    => 'bool',
-                'default' => false,
-            ),
-        ),
-    );
+    static protected $_config_schema;
 
     /**
      * @see \Wheels\Typo\Module::$order
@@ -169,20 +126,7 @@ class Typo extends Module
      */
     public function validateOption($name, &$value)
     {
-        $name = $this->_config->getOptions()->prepareOffset($name);
 
-        switch($name)
-        {
-            case 'charset' :
-                // @todo: ошибки кодировки перенести в момент вызова iconv
-                $value = mb_strtoupper($value);
-                $result = iconv($value, 'UTF-8', '');
-                if($result === false)
-                    return self::throwException(Exception::E_OPTION_VALUE, "Неизвестная кодировка '$value'");
-            break;
-
-            default : Module::validateOption($name, $value);
-        }
     }
 
     /**

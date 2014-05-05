@@ -50,6 +50,17 @@ class Tarray extends Type
     /**
      * {@inheritDoc}
      */
+    public function convert($var)
+    {
+        if(in_array($var, array(null, false, 'none', 'NONE'), true))
+            return array();
+
+        return $var;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function validate($var)
     {
         if(is_array($var))
@@ -57,11 +68,11 @@ class Tarray extends Type
             foreach($var as $value)
             {
                 if(!$this->_type->validate($value))
-                    return FALSE;
+                    return false;
             }
-            return TRUE;
+            return true;
         }
 
-        return FALSE;
+        return false;
     }
 }

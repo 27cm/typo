@@ -3,12 +3,11 @@
 namespace Wheels\Typo;
 
 use Wheels\Typo;
-use Wheels\Typo\Module;
 use Wheels\Config;
 use Wheels\Typo\Exception;
 
 /**
- * Модуль.
+ * Модуль типографа.
  */
 abstract class Module
 {
@@ -27,27 +26,11 @@ abstract class Module
     public $text;
 
     /**
-     * Настройки.
-     *
-     * @var array
-     */
-//    protected $_options = array();
-
-    /**
      * Описание конфигурации модуля.
      *
      * @var array
      */
-    static protected $_config_schema = array(
-        'options' => array(
-            'modules' => array(
-                'desc'    => 'Используемые модули',
-                'type'    => 'string[]',
-                'default' => array(),
-                'inherit' => true,
-            ),
-        ),
-    );
+    static protected $_config_schema;
 
     /**
      * Область работы модуля.
@@ -85,11 +68,12 @@ abstract class Module
     );
 
     /**
-     * Конфигурационный INI файл.
+     * Конфигурация.
      *
      * @var \Wheels\Config
      */
     protected $_config;
+
 
     public $config_section;
 
@@ -156,9 +140,6 @@ abstract class Module
      */
     public function validateOption($name, &$value)
     {
-        if(!$this->checkOptionExists($name))
-            return self::throwException(Exception::E_OPTION_NAME, "Несуществующий параметр '$name'");
-
         // $scheme = static::getConfigSchema($name);
 
         switch($name)
@@ -339,38 +320,38 @@ abstract class Module
      *
      * @throws \Wheels\Typo\Exception
      */
-    public function addModule($name, $options = 'default')
-    {
-        if(is_object($module = $name) && ($module instanceof Wheels\Typo\Module))
-        {
-            $classname = get_class($module);
-            if(!array_key_exists($classname, $this->_modules))
-            {
-                $module->setOptions($options);
-                $this->_modules[$classname] = $module;
-                // $module->setTypo(...)
-            }
-            return;
-        }
-
-        $classname = self::getModuleClassname($name);
-        if(!class_exists($classname))
-        {
-            return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный модуль '$name' (класс $classname не найден)");
-        }
-        elseif(!array_key_exists($classname, $this->_modules))
-        {
-            if(is_subclass_of($classname, __CLASS__))
-            {
-                $typo = ($this instanceof Typo) ? $this : $this->typo;
-                $this->_modules[$classname] = new $classname($options, $typo);
-            }
-            else
-                return self::throwException(Exception::E_OPTION_VALUE, "Класс $classname не является наследником класса " . __CLASS__);
-        }
-        else
-            return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный модуль '$name' (класс $classname не найден)");
-    }
+//    public function addModule($name, $options = 'default')
+//    {
+//        if(is_object($module = $name) && ($module instanceof Wheels\Typo\Module))
+//        {
+//            $classname = get_class($module);
+//            if(!array_key_exists($classname, $this->_modules))
+//            {
+//                $module->setOptions($options);
+//                $this->_modules[$classname] = $module;
+//                // $module->setTypo(...)
+//            }
+//            return;
+//        }
+//
+//        $classname = self::getModuleClassname($name);
+//        if(!class_exists($classname))
+//        {
+//            return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный модуль '$name' (класс $classname не найден)");
+//        }
+//        elseif(!array_key_exists($classname, $this->_modules))
+//        {
+//            if(is_subclass_of($classname, __CLASS__))
+//            {
+//                $typo = ($this instanceof Typo) ? $this : $this->typo;
+//                $this->_modules[$classname] = new $classname($options, $typo);
+//            }
+//            else
+//                return self::throwException(Exception::E_OPTION_VALUE, "Класс $classname не является наследником класса " . __CLASS__);
+//        }
+//        else
+//            return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный модуль '$name' (класс $classname не найден)");
+//    }
 
     /**
      * Удаляет модуль.
@@ -530,22 +511,61 @@ abstract class Module
 
     // --- Защищённые методы класса ---
 
-     /**
+    /**
+     * Задаёт модули.
+     *
+     * @param \Wheels\Typo\Module[] $modules Массив модулей.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function setModules(array $modules)
+    {
+        $this->getModules()->clear();
+        $this->addModules($modules);
+    }
+
+    /**
+     * Добавляет модуль.
+     *
+     * @param \Wheels\Typo\Module $module Модуль.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function addModule(Module $module)
+    {
+        $this->_modules[] = $module;
+    }
+
+    /**
+     * Добавляет модули.
+     *
+     * @param \Wheels\Typo\Module[] $modules Массив модулей.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function addModules(array $modules)
+    {
+        foreach($modules as $module)
+            $this->addModule($module);
+    }
+
+    /**
      * Обработчик события изменения значения параметра.
      *
-     * @param string $name      Название параметра.
-     * @param mixed  $value     Значение параметра.
+     * @param string $name Название параметра.
      */
-    protected function onChangeOption($name, &$value)
+    protected function onChangeOption($name)
     {
+        $name = $this->getConfig()->getOption($name)->getName();
+
         switch($name)
         {
             case 'modules' :
-                $this->_modules = array();
-                foreach($value as $module)
-                {
-                    $this->addModule($module, $this->config_section);
+                $modules = array();
+                foreach ($this->getConfig()->getOption('modules') as $name) {
+                    $modules[] = static::getModuleClassname($name);
                 }
+                $this->setModules($modules);
             break;
         }
     }
@@ -669,10 +689,17 @@ abstract class Module
         return $classname;
     }
 
+    /**
+     * Возвращает описание объекта конфигурации.
+     *
+     * @return array
+     */
     static public function getConfigSchema()
     {
-        if(!array_key_exists('extends', static::$_config_schema) || !static::$_config_schema['extends'])
-        {
+        if (!isset(static::$_config_schema)) {
+            $filename = WHEELS_DIR . DS . get_called_class() . DS . 'config' . DS . 'schema.php';
+            static::$_config_schema = include $filename;
+
             foreach(static::$_config_schema['options'] as $n => $schema)
             {
                 if(!array_key_exists('inherit', $schema))
@@ -695,8 +722,6 @@ abstract class Module
                     }
                 }
             }
-
-            static::$_config_schema['extends'] = true;
         }
 
         return static::$_config_schema;

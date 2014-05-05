@@ -31,6 +31,13 @@ class Config
      */
     protected $_options;
 
+    /**
+     * Группы настроек.
+     *
+     * @var array
+     */
+    protected $_groups = array();
+
 
     // --- Константы ---
 
@@ -171,6 +178,52 @@ class Config
             $this->setOptionValue($name, $value);
     }
 
+    public function getGroups()
+    {
+        return $this->_groups;
+    }
+
+    /**
+     * Устанавливает группы значений параметров.
+     *
+     * @param array $groups Группы значений настроек.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function setGroups(array $groups)
+    {
+        $this->_groups = array();
+        $this->addGroups($groups);
+    }
+
+
+
+    public function addGroups(array $groups)
+    {
+        foreach ($groups as $name => $group) {
+            $this->addGroup($name, $group);
+        }
+    }
+
+    public function addGroup($name, array $group)
+    {
+
+    }
+
+    public function getGroup($name)
+    {
+        if(!array_key_exists($name, $this->getGroups()))
+            throw new Exception("Не");
+
+        return $this->_groups[$name];
+    }
+
+    public function setOptionsValuesFromGroup($name)
+    {
+        $options = $this->getGroup($name);
+        $this->setOptionsValues($options);
+    }
+
     /**
      * Устанавливает значения параметров из конфигурационного INI файла.
      *
@@ -181,7 +234,7 @@ class Config
      *
      * @throws \Wheels\Config\Exception
      */
-    public function setOptionsValuesFromFile($filename, $section = 'default')
+    public function setSectionsFromFile($filename, $section = 'default')
     {
         static $optionsFromFiles = array();
         
@@ -201,6 +254,7 @@ class Config
      * @param array $schema Ассоциативный массив с описанием конфигурации.
      *                       * allow-modifications - ассоциативный массив псевдонимов;
      *                       * options             - массив описаний параметров;
+     *                       * groups              - массив групп значений параметров;
      *                       * case-sensitive      - регистрозависимость имён параметров.
      *
      * @return \Wheels\Config Конфигурация с заданным описанием.
@@ -209,17 +263,26 @@ class Config
      */
     static public function create(array $schema)
     {
-        $diff = array_diff(array_keys($schema), array('options', 'case-sensitive', 'allow-modifications'));
+        $diff = array_diff(array_keys($schema), array('options', 'case-sensitive', 'allow-modifications', 'groups'));
         if(!empty($diff))
             throw new Exception('Неизвестные разделы описания конфигурации: ' . implode(', ', $diff));
 
-        $options = array();
+        if(array_key_exists('case-sensitive', $schema))
+        {
+            $caseSensitive = $schema['case-sensitive'];
+            $obj = new self(array(), $caseSensitive);
+        }
+        else
+            $obj = new self(array());
+
         if(array_key_exists('options', $schema))
         {
-            if(!is_array($schema['options']))
+            $options = $schema['options'];
+
+            if(!is_array($options))
                 throw new Exception("Раздел 'options' описания конфигурации должен быть массивом");
 
-            foreach($schema['options'] as $name => $option_schema)
+            foreach($options as $name => $option_schema)
             {
                 if(!is_array($option_schema))
                     throw new Exception('Описание параметра настроек должно быть массивом');
@@ -227,22 +290,25 @@ class Config
                 if(!array_key_exists('name', $option_schema) && is_string($name))
                     $option_schema['name'] = $name;
 
-                $options[] = Option::create($option_schema);
+                $option = Option::create($option_schema);
+                $obj->addOption($option);
             }
         }
-
-        if(array_key_exists('case-sensitive', $schema))
-        {
-            $caseSensitive = $schema['case-sensitive'];
-            $obj = new self($options, $caseSensitive);
-        }
-        else
-            $obj = new self($options);
 
         if(array_key_exists('allow-modifications', $schema))
         {
             $value = $schema['allow-modifications'];
             $obj->getOptions()->setAllowModifications($value);
+        }
+
+        if(array_key_exists('groups', $schema))
+        {
+            $groups = $schema['groups'];
+
+            if(!is_array($groups))
+                throw new Exception("Раздел 'groups' описания конфигурации должен быть массивом");
+
+            $obj->setGroups($groups);
         }
 
         return $obj;
