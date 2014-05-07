@@ -3,7 +3,9 @@
 {% macro elementSummary(element, type) %}
     <div id="{{ element.name }}" class="element ajax clickable {{ type }}">
         <h1>{{ element.name }}<a href="{{ path(element) }}">¶</a></h1>
+
         <p class="short_description">{{ element.summary }}</p>
+
         <div class="details collapse">{{ element.description }}</div>
         <a href="{{ path(element) }}" class="more">« More »</a>
     </div>
@@ -76,14 +78,14 @@
     {% import _self as self %}
 
     {% for package in node.children %}
-    <li>
-        <a href="{{ path(package) }}" title="{{ package.name }}">
-            <i class="icon-th"></i> {{ package.name }}
-        </a>
-        <ul class="nav nav-list nav-packages">
-            {{ self.renderPackageSidebar(package) }}
-        </ul>
-    </li>
+        <li>
+            <a href="{{ path(package) }}" title="{{ package.name }}">
+                <i class="icon-th"></i> {{ package.name }}
+            </a>
+            <ul class="nav nav-list nav-packages">
+                {{ self.renderPackageSidebar(package) }}
+            </ul>
+        </li>
     {% endfor %}
 {% endmacro %}
 
@@ -99,7 +101,8 @@
         <div class="span4">
             <div class="btn-group view pull-right" data-toggle="buttons-radio">
                 <button class="btn details" title="Show descriptions and method names">
-                    <i class="icon-list"></i></button><button class="btn simple" title="Show only method names">
+                    <i class="icon-list"></i></button>
+                <button class="btn simple" title="Show only method names">
                     <i class="icon-align-justify"></i>
                 </button>
             </div>

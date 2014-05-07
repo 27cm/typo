@@ -1,6 +1,8 @@
 <?php
 namespace Module;
+
 use AbstractModule;
 
-class UrlTest  extends AbstractModule {
+class UrlTest extends AbstractModule
+{
 }

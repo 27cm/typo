@@ -12,7 +12,7 @@ namespace Wheels\Datastructure;
 use Wheels\Datastructure\ArrayIterator;
 use Wheels\Datastructure\Exception;
 
-class Collection extends ArrayIterator 
+class Collection extends ArrayIterator
 {
     protected $_elemsClass;
 
@@ -38,10 +38,28 @@ class Collection extends ArrayIterator
      */
     public function offsetSet($offset, $value)
     {
-        if(!$this->_checkElemClass($value))
+        if (!$this->_checkElemClass($value)) {
             throw new Exception("В коллекцию можно добавлять только объекты класса {$this->_elemsClass}");
-        else
+        } else {
             parent::offsetSet($offset, $value);
+        }
+    }
+
+    /**
+     * Обрабатывает вызов недоступных методов.
+     *
+     * @param string $name      Имя вызываемого метода.
+     * @param array  $arguments Массив параметров, переданных в вызываемый метод.
+     *
+     * @return self
+     */
+    public function __call($name, $arguments)
+    {
+        foreach ($this->_array as $obj) {
+            call_user_func_array(array($obj, $name), $arguments);
+        }
+
+        return $this;
     }
 
 

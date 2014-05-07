@@ -28,7 +28,7 @@ class CollectionTest extends PHPUnit_Framework_TestCase
         $expected = array($a, 'c' => $c);
         $iterator = new Collection($elemsClass);
 
-        $iterator->offsetSet(NULL, $a);
+        $iterator->offsetSet(null, $a);
         $iterator->offsetSet('c', $c);
 
         $actual = $iterator->getArray();
@@ -47,6 +47,6 @@ class CollectionTest extends PHPUnit_Framework_TestCase
         );
 
         $iterator = new Collection($elemsClass);
-        $iterator->offsetSet(NULL, $b);
+        $iterator->offsetSet(null, $b);
     }
 }

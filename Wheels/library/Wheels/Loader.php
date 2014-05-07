@@ -38,8 +38,8 @@ class Loader
     /**
      * Создаёт новый <tt>Loader</tt> для загрузки классов указанного пространства имён.
      *
-     * @param string $namespace     Пространство имён.
-     * @param string $includePath   Путь к дирректории с файлами.
+     * @param string $namespace   Пространство имён.
+     * @param string $includePath Путь к дирректории с файлами.
      */
     public function __construct($namespace = null, $includePath = null)
     {
@@ -82,7 +82,8 @@ class Loader
     public function autoload($classname)
     {
         if (null === $this->namespace
-        || $this->namespace.$this->sep === substr($classname, 0, strlen($this->namespace.$this->sep))) {
+            || $this->namespace . $this->sep === substr($classname, 0, strlen($this->namespace . $this->sep))
+        ) {
             $fileName = '';
             $namespace = '';
             if (false !== ($lastNsPos = strripos($classname, $this->sep))) {
@@ -93,9 +94,10 @@ class Loader
             $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $classname) . '.' . $this->fileExt;
 
             $fileName = ($this->includePath !== null ? $this->includePath . DIRECTORY_SEPARATOR : '') . $fileName;
-            
-            if(file_exists($fileName))
+
+            if (file_exists($fileName)) {
                 require $fileName;
+            }
         }
     }
 }

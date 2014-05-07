@@ -2,8 +2,10 @@
 <tests>
     <group desc="Обработка тега code">
         <test>
-            <input><![CDATA[Неразрывный пробел в HTML может быть записан с помощью мнемоники <code>&nbsp;</code>]]></input>
-            <expected><![CDATA[Неразрывный пробел в HTML может быть записан с помощью мнемоники <code>&amp;nbsp;</code>]]></expected>
+            <input>
+                <![CDATA[Неразрывный пробел в HTML может быть записан с помощью мнемоники <code>&nbsp;</code>]]></input>
+            <expected>
+                <![CDATA[Неразрывный пробел в HTML может быть записан с помощью мнемоники <code>&amp;nbsp;</code>]]></expected>
         </test>
         <test>
             <input><![CDATA[Пример строки <code class="code code-example">"Text string"</code>]]></input>
@@ -18,7 +20,7 @@
 <code>    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);</code>
 <code>}</code></pre>]]></expected>
         </test>
-                <test desc="#A2 Удаление концевых пробелов">
+        <test desc="#A2 Удаление концевых пробелов">
             <input><![CDATA[<code>function fib($n) {
     return ($n < 3) ? 1 : fib($n-1) + fib($n-2);
 }        </code>]]></input>

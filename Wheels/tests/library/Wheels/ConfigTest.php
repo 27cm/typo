@@ -36,11 +36,11 @@ class ConfigTest extends PHPUnit_Framework_TestCase
                     'default' => 'default',
                     'type'    => 'string',
                 ),
-                'param' => array(
+                'param'  => array(
                     'default' => array(),
                     'type'    => 'mixed[]',
                 ),
-                'array' => array(
+                'array'  => array(
                     'default' => array(),
                     'type'    => 'string[]',
                 ),
@@ -175,8 +175,8 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $b = new Option('nameB', 'defaultB', 'string');
         $c = new Option('nameC', 'defaultC');
 
-        $modifications = TRUE;
-        $case    = FALSE;
+        $modifications = true;
+        $case = false;
         $options = array(
             $a->getName() => array(
                 'default' => $a->getDefault(),
@@ -248,50 +248,51 @@ class ConfigTest extends PHPUnit_Framework_TestCase
             'default' => array(
                 'simple' => 'simpleA',
                 'string' => 'stringA',
-                'param' => array(
+                'param'  => array(
                     'string' => 'stringA',
-                    'bool' => array(
+                    'bool'   => array(
                         'enabled'  => true,
                         'disabled' => false,
                     ),
                 ),
-                'array' => array('A1', 'A2', 'A3'),
+                'array'  => array('A1', 'A2', 'A3'),
             ),
-            'A' => array(
+            'A'       => array(
                 'simple' => 'simpleA',
                 'string' => 'stringB',
-                'param' => array(
+                'param'  => array(
                     'string' => 'stringB',
-                    'bool' => array(
+                    'bool'   => array(
                         'enabled'  => false,
                         'disabled' => false,
                     ),
                 ),
-                'array' => array('A1', 'A2', 'A3', 'B1', 'B2'),
+                'array'  => array('A1', 'A2', 'A3', 'B1', 'B2'),
             ),
-            'B' => array(
+            'B'       => array(
                 'simple' => 'simpleC',
                 'string' => 'default',
-                'param' => array(
+                'param'  => array(
                     'string' => 'stringC',
                 ),
-                'array' => array(),
+                'array'  => array(),
             ),
         );
 
         $filename = static::$configDir . DS . 'config.ini';
         chmod($filename, 0777);
 
-        foreach(array_keys($sections) as $section)
-        {
-            foreach(static::$config->getOptions() as $option)
+        foreach (array_keys($sections) as $section) {
+            foreach (static::$config->getOptions() as $option) {
                 $option->setValueDefault();
-            
-            if($section === 'default')
+            }
+
+            if ($section === 'default') {
                 static::$config->setOptionsValuesFromFile($filename);
-            else
+            } else {
                 static::$config->setOptionsValuesFromFile($filename, $section);
-            
+            }
+
             $actual = static::$config->getOptionsValues();
             $expected = $sections[$section];
             $this->assertEquals($expected, $actual, $section);
@@ -314,8 +315,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     {
         $filename = static::$configDir . DS . 'config.ini';
 
-        if(strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN')
-        {
+        if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
             $this->setExpectedException(
                 '\Wheels\Config\Exception',
                 "Файл '$filename' закрыт для чтения"

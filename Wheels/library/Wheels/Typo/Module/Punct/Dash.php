@@ -20,42 +20,44 @@ class Dash extends Module
     /**
      * @see \Wheels\Typo\Module::$default_options
      */
-    static protected $_default_options = array(
-        /**
-         * Принудительная замена.
-         *
-         * @var bool
-         */
-        'nessesary' => true,
+    static protected $_default_options
+        = array(
+            /**
+             * Принудительная замена.
+             *
+             * @var bool
+             */
+            'nessesary'   => true,
 
-        /**
-         * Автоматическая расстановка дефисов.
-         *
-         * @var bool
-         */
-        'auto' => true,
+            /**
+             * Автоматическая расстановка дефисов.
+             *
+             * @var bool
+             */
+            'auto'        => true,
 
-        /**
-         * Расстановка мягких переносов (мест возможного переноса) в словах.
-         *
-         * @link http://shy.dklab.ru/new/js/Autohyphen.htc
-         *
-         * @var HYPEN_NONE|HYPEN_SHY|HYPEN_WBR
-         */
-        'hyphenation' => self::HYPEN_NONE,
-    );
+            /**
+             * Расстановка мягких переносов (мест возможного переноса) в словах.
+             *
+             * @link http://shy.dklab.ru/new/js/Autohyphen.htc
+             *
+             * @var HYPEN_NONE|HYPEN_SHY|HYPEN_WBR
+             */
+            'hyphenation' => self::HYPEN_NONE,
+        );
 
     /**
      * @see \Wheels\Typo\Module::$order
      */
-    static protected $_order = array(
-        'A' => 0,
-        'B' => 20,
-        'C' => 5,
-        'D' => 0,
-        'E' => 0,
-        'F' => 0,
-    );
+    static protected $_order
+        = array(
+            'A' => 0,
+            'B' => 20,
+            'C' => 5,
+            'D' => 0,
+            'E' => 0,
+            'F' => 0,
+        );
 
     const HYPEN_NONE = 'HYPEN_NONE';
     const HYPEN_SHY = 'HYPEN_SHY';
@@ -74,18 +76,18 @@ class Dash extends Module
 
         $rules = array(
             # Принудительная замена.
-            'nessesary' => array(
+            'nessesary'                                         => array(
                 // Длинное тире
-                $c['mdash'] => '-',
+                $c['mdash']        => '-',
 
                 // Среднее тире
-                $c['ndash'] => '-',
+                $c['ndash']        => '-',
 
                 // Минус
-                $c['minus'] => '-',
+                $c['minus']        => '-',
 
                 // Дефис-минус
-                Utility::chr(45) => '-',
+                Utility::chr(45)   => '-',
 
                 // Неразрывный дефис
                 Utility::chr(8209) => '-',
@@ -95,27 +97,27 @@ class Dash extends Module
             ),
 
             #B1 Замена дефиса, окруженного пробелами, на тире
-            '~({a}{t}*\h)\-{1,3}(?=\h)~u' => '$1' . $c['ndash'],
+            '~({a}{t}*\h)\-{1,3}(?=\h)~u'                       => '$1' . $c['ndash'],
 
             #B2 Тире после кавычек, скобок и пунктуации
-            '~([:)",]{t}*\h?)\-{1,3}(?=\h)~u' => '$1' . $c['ndash'],
+            '~([:)",]{t}*\h?)\-{1,3}(?=\h)~u'                   => '$1' . $c['ndash'],
 
             #B3 Тире после переноса строки
-			'~((?:[\n\r]|^)(?:{t}|\h)*)\-{1,3}(?=\h)~u' => '$1' . $c['mdash'],
+            '~((?:[\n\r]|^)(?:{t}|\h)*)\-{1,3}(?=\h)~u'         => '$1' . $c['mdash'],
 
             #B4 Тире после точки, троеточия, восклицательного и вопросительного знаков
-			'~((?:[?!.]|' . $c['hellip'] . ')\h)-{1,3}(?=\h)~u' => '$1' . $c['ndash'],
+            '~((?:[?!.]|' . $c['hellip'] . ')\h)-{1,3}(?=\h)~u' => '$1' . $c['ndash'],
 
             // Автоматическая расстановка дефисов.
-            'auto' => array(
+            'auto'                                              => array(
                 #B6 Расстановка дефисов в предлогах "из-за", "из-под"
-				'~(?<=\b)(из)\h?(за|под)(?=\b)~iu' => '$1-$2',
+                '~(?<=\b)(из)\h?(за|под)(?=\b)~iu'                                                                           => '$1-$2',
 
                 #B7 Автоматическая простановка дефисов в неопределённых местоимениях
                 '~(?<=\b)(кто|кем|когда|зачем|почему|как|что|чем|где|чего|кого|куда|кому|какой)\h?(то|либо|нибудь)(?=\b)~iu' => '$1-$2',
-                '~(?<=\b)(ко[ей])\h?(кто|кем|когда|зачем|почему|как|что|чем|где|чего|кого|куда|кому|какой)(?=\b)~iu' => '$1-$2',
-                '~(?<=\b)(вс[её])\h?(таки)(?=\b)~iu' => '$1-$2',
-                '~(?<=\b)([а-яё]+)\h(ка|де|тка|кась|тка|тко|ткась)(?=\b)~iu' => '$1-$2',
+                '~(?<=\b)(ко[ей])\h?(кто|кем|когда|зачем|почему|как|что|чем|где|чего|кого|куда|кому|какой)(?=\b)~iu'         => '$1-$2',
+                '~(?<=\b)(вс[её])\h?(таки)(?=\b)~iu'                                                                         => '$1-$2',
+                '~(?<=\b)([а-яё]+)\h(ка|де|тка|кась|тка|тко|ткась)(?=\b)~iu'                                                 => '$1-$2',
             ),
         );
 
@@ -132,14 +134,14 @@ class Dash extends Module
      */
     protected function stageC()
     {
-        if($this->_options['hyphenation'] !== self::HYPEN_NONE)
-        {
+        if ($this->_options['hyphenation'] !== self::HYPEN_NONE) {
             $c = Typo::getChars('chr');
 
-            if($this->_options['hyphenation'] === self::HYPEN_SHY)
+            if ($this->_options['hyphenation'] === self::HYPEN_SHY)
                 $hyphen = $c['shy'];
-            else
+            else {
                 $hyphen = $this->text->pushStorage('<wbr>', Typo::REPLACER, Typo::INVISIBLE);
+            }
 
             $helpers = array(
                 // Гласные
@@ -157,13 +159,13 @@ class Dash extends Module
                 #C1 Расстановка мягких переносов (мест возможного переноса) в словах.
                 'hyphenation' => array(
                     '~(?<!\{\{\{|\[\[\[)(?<=\b){a}+(?=\b)(?!\}\}\}|\]\]\])~iu' => array(
-                        '~({a}*{x})({a}{2,})~iu' => '$1' . $hyphen . '$2',
+                        '~({a}*{x})({a}{2,})~iu'             => '$1' . $hyphen . '$2',
                         '~({a}*{g}{s}{2})({s}{2}{g}{a}*)~iu' => '$1' . $hyphen . '$2',
-                        '~({a}*{g}{s}{2})({s}{g}{a}*)~iu' => '$1' . $hyphen . '$2',
-                        '~({a}*{s}{g})({s}{g}{a}*)~iu' => '$1' . $hyphen . '$2',
-                        '~({a}*{g}{s})({s}{g}{a}*)~iu' => '$1' . $hyphen . '$2',
-                        '~({a}*{s}{g})({g}{2}{a}*)~iu' => '$1' . $hyphen . '$2',
-                        '~({a}*{s}{g})({g}{a}{1,})~iu' => '$1' . $hyphen . '$2',
+                        '~({a}*{g}{s}{2})({s}{g}{a}*)~iu'    => '$1' . $hyphen . '$2',
+                        '~({a}*{s}{g})({s}{g}{a}*)~iu'       => '$1' . $hyphen . '$2',
+                        '~({a}*{g}{s})({s}{g}{a}*)~iu'       => '$1' . $hyphen . '$2',
+                        '~({a}*{s}{g})({g}{2}{a}*)~iu'       => '$1' . $hyphen . '$2',
+                        '~({a}*{s}{g})({g}{a}{1,})~iu'       => '$1' . $hyphen . '$2',
                     ),
                 ),
             );

@@ -16,13 +16,14 @@ abstract class AbstractModule extends PHPUnit_Framework_TestCase
      */
     static protected $typo;
 
-    static public $providerGetModule = array(
-        array('\\Wheels\\Typo\\Module\\Html', '\\Wheels\\Typo\\Module\\Html'),
-        array('\\Wheels\\Typo\\Module\\Html', '/Typo/Module/Html'),
-        array('\\Wheels\\Typo\\Module\\Html', 'Module/Html'),
-        array('\\Wheels\\Typo\\Module\\Html', 'module\\html'),
-        array('\\Wheels\\Typo\\Module\\Html', ' html '),
-    );
+    static public $providerGetModule
+        = array(
+            array('\\Wheels\\Typo\\Module\\Html', '\\Wheels\\Typo\\Module\\Html'),
+            array('\\Wheels\\Typo\\Module\\Html', '/Typo/Module/Html'),
+            array('\\Wheels\\Typo\\Module\\Html', 'Module/Html'),
+            array('\\Wheels\\Typo\\Module\\Html', 'module\\html'),
+            array('\\Wheels\\Typo\\Module\\Html', ' html '),
+        );
 
     static public function setUpBeforeClass()
     {

@@ -6,11 +6,12 @@ use Wheels\Config\Option\AbstractType;
 
 class TboolTest extends AbstractType
 {
-    static protected $_testValidateData = array(
-        array(TRUE, TRUE),
-        array(FALSE, TRUE),
-        array(1, FALSE),
-        array('on', FALSE),
-        array(NULL, FALSE),
-    );
+    static protected $_testValidateData
+        = array(
+            array(true, true),
+            array(false, true),
+            array(1, false),
+            array('on', false),
+            array(null, false),
+        );
 }

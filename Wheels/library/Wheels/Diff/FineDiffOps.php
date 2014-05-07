@@ -17,17 +17,16 @@ class FineDiffOps
 
     public function appendOpcode($opcode, $from, $from_offset, $from_len)
     {
-        switch($opcode)
-        {
+        switch ($opcode) {
             case 'c' :
                 $edits[] = new Copy($from_len);
-            break;
+                break;
             case 'd' :
                 $edits[] = new Delete($from_len);
-            break;
+                break;
             case 'i' :
                 $edits[] = new Insert(substr($from, $from_offset, $from_len));
-            break;
+                break;
         }
     }
 }

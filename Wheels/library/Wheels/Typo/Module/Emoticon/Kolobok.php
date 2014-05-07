@@ -16,16 +16,17 @@ class Kolobok extends Emoticon
      *
      * @var array
      */
-    static protected $_default_options = array(
-        /**
-         * Используемые модули.
-         *
-         * @var string[]
-         */
-        'modules' => array(
-            'emoticon/kolobok/standart',
-        ),
-    );
+    static protected $_default_options
+        = array(
+            /**
+             * Используемые модули.
+             *
+             * @var string[]
+             */
+            'modules' => array(
+                'emoticon/kolobok/standart',
+            ),
+        );
 
     /**
      * Расширение файлов изображений.

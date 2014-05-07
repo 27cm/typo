@@ -47,7 +47,7 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
      *
      * @var bool
      */
-    protected $_allowModifications = TRUE;
+    protected $_allowModifications = true;
 
 
     // --- Конструктор ---
@@ -96,8 +96,9 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
     public function setArray(array $array)
     {
         $this->clear();
-        foreach($array as $key => $value)
-           $this->offsetSet($key, $value);
+        foreach ($array as $key => $value) {
+            $this->offsetSet($key, $value);
+        }
         $this->rewind();
     }
 
@@ -111,7 +112,7 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
      */
     public function setAllowModifications($value)
     {
-        $this->_allowModifications = (bool) $value;
+        $this->_allowModifications = (bool)$value;
     }
 
     /**
@@ -155,14 +156,14 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
      */
     public function offsetGet($offset)
     {
-        return $this->offsetExists($offset) ? $this->_array[$offset] : NULL;
+        return $this->offsetExists($offset) ? $this->_array[$offset] : null;
     }
 
     /**
      * Присваивает значение указанному смещению (ключу).
      *
      * @param mixed $offset Смещение (ключ), которому будет присваиваться значение.
-     * @param mixed $value Значение для присвоения.
+     * @param mixed $value  Значение для присвоения.
      *
      * @return void Этот метод не возвращает значения после выполнения.
      */
@@ -170,15 +171,13 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
     {
         $this->_ensureAllowModification();
 
-        if(is_null($offset))
-        {
+        if (is_null($offset)) {
             array_push($this->_array, $value);
             $this->_count++;
-        }
-        else
-        {
-            if(!$this->offsetExists($offset))
+        } else {
+            if (!$this->offsetExists($offset)) {
                 $this->_count++;
+            }
             $this->_array[$offset] = $value;
         }
     }
@@ -194,8 +193,7 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
     {
         $this->_ensureAllowModification();
 
-        if($this->offsetExists($offset))
-        {
+        if ($this->offsetExists($offset)) {
             unset($this->_array[$offset]);
             $this->_count--;
         }
@@ -302,7 +300,8 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
      */
     protected function _ensureAllowModification()
     {
-        if(!$this->getAllowModifications())
+        if (!$this->getAllowModifications()) {
             throw new Exception('Изменение структуры данных запрещено');
+        }
     }
 }

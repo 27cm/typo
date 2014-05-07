@@ -7,14 +7,15 @@ use Wheels\Typo\Text;
 use Wheels\Typo\Utility;
 use Wheels\Typo\Exception;
 
-if(version_compare(PHP_VERSION, '5.3.0', '<'))
+if (version_compare(PHP_VERSION, '5.3.0', '<')) {
     trigger_error('Для работы типограф требуется версия php 5.3.0 или выше', E_USER_ERROR);
+}
 
-if(!extension_loaded('mbstring'))
-{
-	$ext = ((substr(PHP_OS, 0, 3) == 'WIN') ? 'dll' : 'so');
-	if(!ini_get('enable_dl') || !dl('mbstring' . $ext))
+if (!extension_loaded('mbstring')) {
+    $ext = ((substr(PHP_OS, 0, 3) == 'WIN') ? 'dll' : 'so');
+    if (!ini_get('enable_dl') || !dl('mbstring' . $ext)) {
         trigger_error('Для работы типографа требуется расширение mbstring', E_USER_ERROR);
+    }
 }
 
 /**
@@ -25,9 +26,10 @@ define('TYPO_DIR', dirname(__FILE__));
 /**
  * Директория с файлами конфигурации.
  */
-define('TYPO_CONFIG_DIR', realpath(TYPO_DIR . DS . '..' . DS . '..' . DS . 'config'));
-if(!TYPO_CONFIG_DIR)
+define('TYPO_CONFIG_DIR', realpath(TYPO_DIR . DS . 'config'));
+if (!TYPO_CONFIG_DIR) {
     trigger_error('Директория с файлами конфигурации типографа не найдена', E_USER_ERROR);
+}
 
 require_once TYPO_DIR . DS . 'Typo' . DS . 'functions.php';
 
@@ -45,10 +47,11 @@ class Typo extends Module
      *
      * @var array
      */
-    static protected $_chars = array(
-        'chr' => array(),
-        'ord' => array(),
-    );
+    static protected $_chars
+        = array(
+            'chr' => array(),
+            'ord' => array(),
+        );
 
     /**
      * {@inheritDoc}
@@ -58,14 +61,15 @@ class Typo extends Module
     /**
      * @see \Wheels\Typo\Module::$order
      */
-    static protected $_order = array(
-        'A' => 5,
-        'B' => 40,
-        'C' => 0,
-        'D' => 35,
-        'E' => 0,
-        'F' => 0,
-    );
+    static protected $_order
+        = array(
+            'A' => 5,
+            'B' => 40,
+            'C' => 0,
+            'D' => 35,
+            'E' => 0,
+            'F' => 0,
+        );
 
     /**
      * Версия типографа.
@@ -78,7 +82,7 @@ class Typo extends Module
     // --- Режимы кодирования спецсимволов ---
 
     /** Не кодировать. */
-    const MODE_NONE  = 'MODE_NONE';
+    const MODE_NONE = 'MODE_NONE';
 
     /** В виде имён. */
     const MODE_NAMES = 'MODE_NAMES';
@@ -137,25 +141,27 @@ class Typo extends Module
      * echo $typo->process('Какой-то текст...');
      * </code>
      *
-     * @param \Wheels\Typo\Text|string $text  Исходный текст.
+     * @param \Wheels\Typo\Text|string $text Исходный текст.
      *
      * @return string Оттипографированный текст.
      */
     public function process($text, $options = null)
     {
-        if(isset($options))
-            $this->setOptions($options);
+        // @todo: Перед началом выполнения необходимо заблокировать все конфиги
+        // @todo: Все модули должны быть только в классе типографа, а сам типограф не должен являться модулем
+        // @todo: Модули должны определять порядок выполнения путём проверки условий, а не с помощью номеров
 
-        if($text instanceof Text)
-            // @todo нельзя переопределять
-            $this->text = $text;
-        elseif($this->_options['charset'] == self::AUTO)
+        if (isset($options)) {
+            $this->setOptions($options);
+        }
+
+        if ($text instanceof Text) // @todo нельзя переопределять
         {
+            $this->text = $text;
+        } elseif ($this->_options['charset'] == self::AUTO) {
             $this->text->setText($text);
             $this->setOption('charset', $this->text->getEncoding());
-        }
-        else
-        {
+        } else {
             $this->text->setText($text, $this->_options['charset']);
         }
 
@@ -168,20 +174,20 @@ class Typo extends Module
 
         // Меняем кодировку текста
         mb_internal_encoding($default_charset);
-        if($charset != $default_charset)
+        if ($charset != $default_charset) {
             $this->text->iconv($charset, $default_charset);
+        }
 
         // Выполнение всех стадий
         $this->resetStage();
-        do
-        {
+        do {
             $this->processStage();
-        }
-        while($this->setNextStage());
+        } while ($this->setNextStage());
 
         // Восстанавливаем кодировку текста
-        if($charset != $default_charset)
+        if ($charset != $default_charset) {
             $this->text->iconv($default_charset, $charset);
+        }
         mb_internal_encoding($int_encoding);
 
         return $this->text->getText();
@@ -208,12 +214,12 @@ class Typo extends Module
             '~(&(#\d+|[\da-z]+|#x[\da-f]+))\h+(?=\;)~iu' => '$1',
 
             #A2 Добавляем недостающие точки с запятой в кодах символов
-            '~(&#\d+)(?![\;\d])~' => '$1;',
-            '~(&[\da-z]+)(?![\;\da-z])~i' => '$1;',
-            '~(&#x[\da-f]+)(?![\;\da-f])~i' => '$1;',
+            '~(&#\d+)(?![\;\d])~'                        => '$1;',
+            '~(&[\da-z]+)(?![\;\da-z])~i'                => '$1;',
+            '~(&#x[\da-f]+)(?![\;\da-f])~i'              => '$1;',
 
             #A3 Замена буквы 'ё' на 'е'
-            'e-convert' => array(
+            'e-convert'                                  => array(
                 'ё' => 'е',
                 'Ё' => 'Е',
             ),
@@ -239,23 +245,24 @@ class Typo extends Module
      */
     protected function stageB()
     {
-        if($this->_options['encoding'] !== self::MODE_NONE)
-        {
+        if ($this->_options['encoding'] !== self::MODE_NONE) {
             $replace = array();
-            switch($this->_options['encoding'])
-            {
+            switch ($this->_options['encoding']) {
                 case self::MODE_CODES :
-                    foreach(self::getChars('ord') as $ent => $ord)
+                    foreach (self::getChars('ord') as $ent => $ord) {
                         $replace[$ent] = sprintf('&#%u;', $ord);
-                break;
+                    }
+                    break;
                 case self::MODE_HEX_CODES :
-                    foreach(self::getChars('ord') as $ent => $ord)
+                    foreach (self::getChars('ord') as $ent => $ord) {
                         $replace[$ent] = sprintf('&#x%x;', $ord);
-                break;
+                    }
+                    break;
                 case self::MODE_NAMES :
-                    foreach(array_keys(self::getChars('chr')) as $ent)
-                        $replace[$ent] = sprintf('&%s;', $ent);;
-                break;
+                    foreach (array_keys(self::getChars('chr')) as $ent) {
+                        $replace[$ent] = sprintf('&%s;', $ent);
+                    };
+                    break;
             }
 
             // @todo: Заменить все символы, не поддерживаемый выходной кодировкой на HTML-сущности
@@ -286,13 +293,13 @@ class Typo extends Module
      */
     protected function onChangeOption($name, &$value)
     {
-        switch($name)
-        {
+        switch ($name) {
             case 'encoding' :
                 // ...
-            break;
+                break;
 
-            default : Module::onChangeOption($name, $value);
+            default :
+                Module::onChangeOption($name, $value);
         }
     }
 
@@ -305,14 +312,13 @@ class Typo extends Module
      */
     protected function chr($c)
     {
-        switch($this->_options['encoding'])
-        {
+        switch ($this->_options['encoding']) {
             case self::MODE_NONE :
                 return Utility::chr($c);
-            break;
+                break;
             case self::MODE_CODES :
                 return sprintf('&#%u;', $c);
-            break;
+                break;
             default :
                 return sprintf('&#x%x;', $c);
         }
@@ -336,8 +342,8 @@ class Typo extends Module
      * затем установливает заданные значения параметров настроек
      * и типографирует заданный текст.
      *
-     * @param string $text      Исходный текст.
-     * @param array  $options   Ассоциативный массив ('название параметра' => 'значение').
+     * @param string $text    Исходный текст.
+     * @param array  $options Ассоциативный массив ('название параметра' => 'значение').
      *
      * @uses \Wheels\Typo::process()
      *
@@ -353,22 +359,19 @@ class Typo extends Module
     /**
      *
      */
-    static public function getChars($mode = NULL)
+    static public function getChars($mode = null)
     {
-        static $fl = TRUE;
-        if($fl)
-        {
+        static $fl = true;
+        if ($fl) {
             $chars = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES /*ENT_HTML401*/, 'UTF-8');
-            foreach($chars as $chr => $entitie)
-            {
-                if(preg_match('/&\w+;/', $entitie))
-                {
+            foreach ($chars as $chr => $entitie) {
+                if (preg_match('/&\w+;/', $entitie)) {
                     $name = substr($entitie, 1, strlen($entitie) - 2);
                     Typo::$_chars['ord'][$name] = Utility::ord($chr);
                     Typo::$_chars['chr'][$name] = $chr;
                 }
             }
-            $fl = FALSE;
+            $fl = false;
         }
 
         return (isset($mode) ? self::$_chars[$mode] : self::$_chars);

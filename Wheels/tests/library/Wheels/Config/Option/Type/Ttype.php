@@ -8,6 +8,6 @@ class Ttype extends Type
 {
     public function validate($var)
     {
-        return TRUE;
+        return true;
     }
 }

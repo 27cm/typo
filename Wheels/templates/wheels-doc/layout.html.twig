@@ -32,7 +32,7 @@
 </head>
 <body>
 
-    {% block header %}
+{% block header %}
     <div class="navbar navbar-fixed-top">
         <div class="navbar-inner">
             <div class="container">
@@ -51,7 +51,7 @@
                                 {% if (project.namespace.children|length > 0) %}
                                     <li><a>Namespaces</a></li>
                                     {% for namespace in project.namespace.children %}
-                                    <li><a href="{{ path(namespace) }}">{{ namespace.name }}</a></li>
+                                        <li><a href="{{ path(namespace) }}">{{ namespace.name }}</a></li>
                                     {% endfor %}
                                 {% endif %}
                                 {% if (project.index.packages|length > 0) %}
@@ -101,27 +101,28 @@
             <a href="#___" style="color: inherit">Back to top&#160;&#160;<i class="icon-upload icon-white"></i></a>
         </div>
     </div>
-    {% endblock header %}
+{% endblock header %}
 
-    <div id="___" class="container">
-        <noscript>
-            <div class="alert alert-warning">
-                Javascript is disabled; several features are only available if Javascript is enabled.
-            </div>
-        </noscript>
+<div id="___" class="container">
+    <noscript>
+        <div class="alert alert-warning">
+            Javascript is disabled; several features are only available if Javascript is enabled.
+        </div>
+    </noscript>
 
-        {% block heroUnit %}{% endblock %}
+    {% block heroUnit %}{% endblock %}
 
-        {% block content %}{% endblock %}
-    </div>
+    {% block content %}{% endblock %}
+</div>
 
-    {% block footer %}
+{% block footer %}
     <footer class="span12">
-            Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by
-            <a href="http://glyphicons.com/">Glyphicons</a>.<br/>
-            Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor {{ version }}</a> and<br/>
-            generated on {{ now|date("r") }}.<br/>
+        Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons
+        provided by
+        <a href="http://glyphicons.com/">Glyphicons</a>.<br/>
+        Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor {{ version }}</a> and<br/>
+        generated on {{ now|date("r") }}.<br/>
     </footer>
-    {% endblock %}
+{% endblock %}
 </body>
 </html>

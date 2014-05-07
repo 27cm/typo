@@ -20,40 +20,42 @@ class Nobr extends Module
     /**
      * @see \Wheels\Typo\Module::$default_options
      */
-    static protected $_default_options = array(
-        /**
-         * Открывающий тег для неразрывных конструкций.
-         *
-         * @example <span style="word-spacing:nowrap;">
-         * @example <span class="nowrap">
-         * @example <nobr> (тег отсутствует в стандартах HTML)
-         *
-         * @var string
-         */
-        'open' => '<span style="word-spacing:nowrap;">',
+    static protected $_default_options
+        = array(
+            /**
+             * Открывающий тег для неразрывных конструкций.
+             *
+             * @example <span style="word-spacing:nowrap;">
+             * @example <span class="nowrap">
+             * @example <nobr> (тег отсутствует в стандартах HTML)
+             *
+             * @var string
+             */
+            'open'  => '<span style="word-spacing:nowrap;">',
 
-        /**
-         * Закрывающий тег для неразрывных конструкций.
-         *
-         * @example </span>
-         * @example </nobr>
-         *
-         * @var string
-         */
-        'close' => '</span>',
-    );
+            /**
+             * Закрывающий тег для неразрывных конструкций.
+             *
+             * @example </span>
+             * @example </nobr>
+             *
+             * @var string
+             */
+            'close' => '</span>',
+        );
 
     /**
      * @see \Wheels\Typo\Module::$order
      */
-    static protected $_order = array(
-        'A' => 0,
-        'B' => 40,
-        'C' => 0,
-        'D' => 0,
-        'E' => 0,
-        'F' => 0,
-    );
+    static protected $_order
+        = array(
+            'A' => 0,
+            'B' => 40,
+            'C' => 0,
+            'D' => 0,
+            'E' => 0,
+            'F' => 0,
+        );
 
     /**
      * Тег для неразрывных конструкций.
@@ -70,18 +72,22 @@ class Nobr extends Module
      */
     public function validateOption($name, &$value)
     {
-        switch($name)
-        {
+        switch ($name) {
             // Тег для неразрывных конструкций
             case 'open' :
             case 'close' :
-                if(!is_string($value))
-                    return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть строкой, а не " . gettype($value));
+                if (!is_string($value)) {
+                    return self::throwException(
+                        Exception::E_OPTION_VALUE,
+                        "Значение параметра '$name' должно быть строкой, а не " . gettype($value)
+                    );
+                }
 
                 $this->tag[$name] = $this->text->pushStorage($value, Typo::REPLACER, Typo::INVISIBLE);
-            break;
+                break;
 
-            default : Module::validateOption($name, $value);
+            default :
+                Module::validateOption($name, $value);
         }
     }
 
@@ -98,19 +104,18 @@ class Nobr extends Module
         $_this = $this;
 
         #A1 Объединение в неразрывные конструкции номеров телефонов
-        $callback = function($matches) use($_this) {
-            if(preg_match('~[^\d]~', $matches[0]))
-            {
+        $callback = function ($matches) use ($_this) {
+            if (preg_match('~[^\d]~', $matches[0])) {
                 $text = $_this->text->pushStorage($matches[0], Typo::REPLACER, Typo::VISIBLE);
                 return $_this->nowrap($text);
-            }
-            else
+            } else
                 return $matches[0];
         };
 
         // @todo: сделать модуль Phone, и придумать способ их взаимодействия, чтобы регулярное выражение было только в одном месте использовано
         // Module\Phone::getRegex('phone');
-        $pattern = '~(?<=\b)(?:\+?[1-9]\d{,3}(?:\h|\-)?)(?:(\d{3}|\(\d{3}\))(\h|\-)?\d{3}(\h|\-)?\d{2}(\h|\-)?\d{2}(\h?(?:доб\.?|x|ext\.?|добавочный|extension)\h?\d+)?)(?=\b)~iu';
+        $pattern
+            = '~(?<=\b)(?:\+?[1-9]\d{,3}(?:\h|\-)?)(?:(\d{3}|\(\d{3}\))(\h|\-)?\d{3}(\h|\-)?\d{2}(\h|\-)?\d{2}(\h?(?:доб\.?|x|ext\.?|добавочный|extension)\h?\d+)?)(?=\b)~iu';
         $this->text->preg_replace_callback($pattern, $callback);
     }
 
@@ -129,33 +134,51 @@ class Nobr extends Module
 
         $rules = array(
             #B1 Объединение в неразрывные конструкции коротких слов разделенных дефисом
-            '~(?<=\b){a}{1,4}\-{a}{1,4}(?=\b)~iu' => $this->nowrap('$0'),
+            '~(?<=\b){a}{1,4}\-{a}{1,4}(?=\b)~iu'                                                                                    => $this->nowrap(
+                    '$0'
+                ),
 
             #B2 Объединение в неразрывные конструкции процентов
-            '~(?<=\b)\d+\h?%~u' => $this->nowrap('$0'),
+            '~(?<=\b)\d+\h?%~u'                                                                                                      => $this->nowrap(
+                    '$0'
+                ),
 
             #B3 Объединение в неразрывные конструкции номеров и параграфов
-            '~(?:№|' . $c['sect'] . ')\h?\d+(?=\b)~u' => $this->nowrap('$0'),
+            '~(?:№|' . $c['sect']
+            . ')\h?\d+(?=\b)~u'                                                                                                      => $this->nowrap(
+                    '$0'
+                ),
 
             #B4 Объединение в неразрывные конструкции чисел
             // @todo вырезать телефоны
-            '~(?<=\b)\d{1,3}(\h\d{3})+(?=\b)~u' => $this->nowrap('$0'),
+            '~(?<=\b)\d{1,3}(\h\d{3})+(?=\b)~u'                                                                                      => $this->nowrap(
+                    '$0'
+                ),
 
             #B5 Полупробел между числом и единицами измерения
-            '~(?<=\b)(\d+)\h({m}|гр?|кг|ц|т|[кмгтпэзи]?(б(ит)?|флопс))(?=\b)~iu' => $this->nowrap('$0'),
+            '~(?<=\b)(\d+)\h({m}|гр?|кг|ц|т|[кмгтпэзи]?(б(ит)?|флопс))(?=\b)~iu'                                                     => $this->nowrap(
+                    '$0'
+                ),
 
             #B Объединение сокращений P.S., P.P.S.
-            '~(?<=\b)p\.\h?((p\.\h?)?)s\.~iu' => function($m) use($_this) {
-                return $_this->nowrap(mb_strtoupper($m[0]));
-            },
+            '~(?<=\b)p\.\h?((p\.\h?)?)s\.~iu'                                                                                        => function (
+                    $m
+                ) use ($_this) {
+                    return $_this->nowrap(mb_strtoupper($m[0]));
+                },
 
             #B Объединение сокращений "и т. д.", "и т. п.", "в т. ч.", "т. к.", "т. е.", "и др.", "до н. э.", "ч. т. д.", "ю. ш.", ...
-			'~(?<=\b)(и\hт\.\h?[пд]\.|в\hт\.\h?ч\.|т\.\h?[ке]\.|и\hдр\.|до\hн\.\h?э\.|ч\.\h?т\.\h?д\.|[юс]\.\h?ш\.|[зв]\.\h?д\.)~iu' => $this->nowrap('$0'),
+            '~(?<=\b)(и\hт\.\h?[пд]\.|в\hт\.\h?ч\.|т\.\h?[ке]\.|и\hдр\.|до\hн\.\h?э\.|ч\.\h?т\.\h?д\.|[юс]\.\h?ш\.|[зв]\.\h?д\.)~iu' => $this->nowrap(
+                    '$0'
+                ),
 
             # Привязка сокращения ГОСТ к номеру
-			'~(?<=\b)гост\h?(\d+)(\-|' . $c['minus'] . '|' . $c['mdash'] . ')(\d+)~iu' => function($m) use($_this) {
-                return $_this->nowrap(mb_strtoupper($m[0]));
-            },
+            '~(?<=\b)гост\h?(\d+)(\-|' . $c['minus'] . '|' . $c['mdash']
+            . ')(\d+)~iu'                                                                                                            => function (
+                    $m
+                ) use ($_this) {
+                    return $_this->nowrap(mb_strtoupper($m[0]));
+                },
         );
 
         $this->applyRules($rules);
@@ -169,7 +192,7 @@ class Nobr extends Module
     /**
      * Оборачивает текст в теги неразрывной конструкции.
      *
-     * @param string $text  Текст неразрывной конструкции.
+     * @param string $text Текст неразрывной конструкции.
      *
      * @return string
      */

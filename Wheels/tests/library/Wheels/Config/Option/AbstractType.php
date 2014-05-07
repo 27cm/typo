@@ -46,10 +46,11 @@ class AbstractType extends PHPUnit_Framework_TestCase
     public function testValidate($var, $expected)
     {
         $actual = static::$_type->validate($var);
-        if($expected)
+        if ($expected) {
             $this->assertTrue($actual);
-        else
+        } else {
             $this->assertFalse($actual);
+        }
     }
 
     public function testValidateDataProvider()

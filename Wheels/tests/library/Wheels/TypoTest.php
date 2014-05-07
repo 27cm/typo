@@ -24,7 +24,7 @@ class TypoTest extends PHPUnit_Framework_TestCase
      */
     public function testDefaultOptions()
     {
-        $this->assertEquals($this->typo->getOption('charset'), 'utf-8',  '', 0, 10, false, true);
+        $this->assertEquals($this->typo->getOption('charset'), 'utf-8', '', 0, 10, false, true);
         $this->assertEquals($this->typo->getOption('encoding'), Typo::MODE_NONE);
         $this->assertEquals($this->typo->getOption('html-in-enabled'), true);
         $this->assertEquals($this->typo->getOption('html-out-enabled'), true);
@@ -75,7 +75,9 @@ class TypoTest extends PHPUnit_Framework_TestCase
      */
     public function testSetUnknownEncoding()
     {
-        $this->setExpectedException('Wheels\Typo\Exception', 'Неизвестный режим кодирования спецсимволов', Exception::E_OPTION_VALUE);
+        $this->setExpectedException(
+            'Wheels\Typo\Exception', 'Неизвестный режим кодирования спецсимволов', Exception::E_OPTION_VALUE
+        );
         $this->typo->setOption('encoding', 'MODE_UNKNOWN');
     }
 
@@ -85,16 +87,23 @@ class TypoTest extends PHPUnit_Framework_TestCase
      */
     public function testSetNotStringModules()
     {
-        $this->setExpectedException('Wheels\Typo\Exception', "Значение параметра 'modules' должно быть строкой или массивом строк", Exception::E_OPTION_VALUE);
-        $this->typo->setOption('modules',  true);
+        $this->setExpectedException(
+            'Wheels\Typo\Exception', "Значение параметра 'modules' должно быть строкой или массивом строк",
+            Exception::E_OPTION_VALUE
+        );
+        $this->typo->setOption('modules', true);
     }
+
     /**
      * Установка неправильного значения параметра modules.
      * Пытаемся установить массив нестроковых значений.
      */
     public function testSetNotArrayModules()
     {
-        $this->setExpectedException('Wheels\Typo\Exception', "Значение параметра 'modules' должно быть строкой или массивом строк", Exception::E_OPTION_VALUE);
+        $this->setExpectedException(
+            'Wheels\Typo\Exception', "Значение параметра 'modules' должно быть строкой или массивом строк",
+            Exception::E_OPTION_VALUE
+        );
         $this->typo->setOption('modules', array('url', array()));;
     }
 
@@ -103,9 +112,9 @@ class TypoTest extends PHPUnit_Framework_TestCase
      */
     public function testSetModules()
     {
-        $this->typo->setOption('modules',  'html');
+        $this->typo->setOption('modules', 'html');
         $this->typo->setOption('modules', array('html', 'url'));
-        $this->typo->setOption('modules', array('html','url','punct/quote'));
+        $this->typo->setOption('modules', array('html', 'url', 'punct/quote'));
     }
 
     /**
@@ -120,8 +129,9 @@ class TypoTest extends PHPUnit_Framework_TestCase
 
         $after = $this->typo->getOption('modules');
 
-        $this->assertNotEquals($before,$after);
+        $this->assertNotEquals($before, $after);
     }
+
     /**
      * Добавление модуля
      */
@@ -132,6 +142,7 @@ class TypoTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('Wheels\Typo\Module\Filepath', $modules);
         $this->assertInstanceOf('Wheels\Typo\Module\Filepath', $modules['Wheels\Typo\Module\Filepath']);
     }
+
     /**
      * Удаление модуля
      */

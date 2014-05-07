@@ -15,656 +15,658 @@ class Skype extends Emoticon
     /**
      * @see \Wheels\Typo\Module::$default_options
      */
-    static protected $_default_options = array(
-        /**
-         * HTML тег для изображений.
-         *
-         * @var string
-         */
-        'tag' => 'img',
-        // @todo: путь к файлу для WINDOWS и UNIX
+    static protected $_default_options
+        = array(
+            /**
+             * HTML тег для изображений.
+             *
+             * @var string
+             */
+            'tag'    => 'img',
+            // @todo: путь к файлу для WINDOWS и UNIX
 
-        /**
-         * Ширина изображений смайликов.
-         *
-         * @var int
-         */
-        'width' => 20,
+            /**
+             * Ширина изображений смайликов.
+             *
+             * @var int
+             */
+            'width'  => 20,
 
-        /**
-         * Высота изображений смайликов.
-         *
-         * @var int
-         */
-        'height' => 20,
+            /**
+             * Высота изображений смайликов.
+             *
+             * @var int
+             */
+            'height' => 20,
 
-        /**
-         * Атрибуты.
-         *
-         * {id}       - номер;
-         * {name}     - имя;
-         * {title}    - название;
-         * {emoticon} - эмотикон;
-         * {width}    - ширина;
-         * {height}   - высота.
-         *
-         * @var array
-         */
-        'attrs' => array(
-            'src' => array(
-                'value' => '/img/emoticons/skype/{id}.gif',
+            /**
+             * Атрибуты.
+             *
+             * {id}       - номер;
+             * {name}     - имя;
+             * {title}    - название;
+             * {emoticon} - эмотикон;
+             * {width}    - ширина;
+             * {height}   - высота.
+             *
+             * @var array
+             */
+            'attrs'  => array(
+                'src'    => array(
+                    'value' => '/img/emoticons/skype/{id}.gif',
+                ),
+                'width'  => array(
+                    'value' => '\Wheels\Typo\Module\Emoticon::attrWidth',
+                ),
+                'height' => array(
+                    'value' => '\Wheels\Typo\Module\Emoticon::attrHeight',
+                ),
+                'title'  => array(
+                    'value' => '\Wheels\Typo\Module\Emoticon::attrTitle',
+                ),
+                'alt'    => array(
+                    'name'  => 'alt',
+                    'value' => '\Wheels\Typo\Module\Emoticon::attrAlt',
+                ),
             ),
-            'width' => array(
-                'value' => '\Wheels\Typo\Module\Emoticon::attrWidth',
-            ),
-            'height' => array(
-                'value' => '\Wheels\Typo\Module\Emoticon::attrHeight',
-            ),
-            'title' => array(
-                'value' => '\Wheels\Typo\Module\Emoticon::attrTitle',
-            ),
-            'alt' => array(
-                'name' => 'alt',
-                'value' => '\Wheels\Typo\Module\Emoticon::attrAlt',
-            ),
-        ),
-    );
+        );
 
     /**
      * @see \Typo\Module\Emoticon::$smiles
      */
     // http://smiles.spb.su/skype-all-smiles.php
-    static public $smiles = array(
-        array(
-            'id'       => 1,
-            'name'     => 'smile',
-            'title'    => 'Улыбаюсь',
-            'replaces' => array('(smile)', ':)', ':=)', ':-)'),
-        ),
-        array(
-            'id'       => 2,
-            'name'     => 'sad',
-            'title'    => 'Грущу',
-            'replaces' => array('(sad)', ':(', ':=(', ':-('),
-        ),
-        array(
-            'id'       => 3,
-            'name'     => 'laugh',
-            'title'    => 'Смеюсь',
-            'replaces' => array('(laugh)', '(lol)', '(LOL)', ':D', ':-D', ':=D', ':d', ':-d', ':=d', ':>', ':->'),
-        ),
-        array(
-            'id'       => 4,
-            'name'     => 'cool',
-            'title'    => 'Крутой',
-            'replaces' => array('(cool)', '8=)', '8-)', 'B=)', 'B-)'),
-        ),
-        array(
-            'id'       => 5,
-            'name'     => 'surprised',
-            'title'    => 'Удивляюсь',
-            'replaces' => array('(surprised)', ':o', ':=o', ':-o', ':O', ':=O', ':-O'),
-        ),
-        array(
-            'id'       => 6,
-            'name'     => 'wink',
-            'title'    => 'Wink',
-            'replaces' => array('(wink)', ';)', ';-)', ';=)'),
-        ),
-        array(
-            'id'       => 7,
-            'name'     => 'cry',
-            'title'    => '',
-            'replaces' => array('(cry)', ';(', ';-(', ';=(', ':\'('),
-        ),
-        array(
-            'id'       => 8,
-            'name'     => 'sweat',
-            'title'    => '',
-            'replaces' => array('(sweat)', '(:|'),
-        ),
-        array(
-            'id'       => 9,
-            'name'     => 'speechless',
-            'title'    => '',
-            'replaces' => array('(speechless)', ':|', ':=|', ':-|'),
-        ),
-        array(
-            'id'       => 10,
-            'name'     => 'kiss',
-            'title'    => '',
-            'replaces' => array('(kiss)', '(xo)', ':*', ':=*', ':-*'),
-        ),
-        array(
-            'id'       => 11,
-            'name'     => 'tongueout',
-            'title'    => '',
-            'replaces' => array('(tongueout)', ':P', ':=P', ':-P', ':p', ':=p', ':-p'),
-        ),
-        array(
-            'id'       => 12,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(blush)', ':$', ':-$', ':=$', ':">'),
-        ),
-        array(
-            'id'       => 13,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(wonder)', ':^)'),
-        ),
-        array(
-            'id'       => 14,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(snooze)', '|-)', 'I-)', 'I=)'),
-        ),
-        array(
-            'id'       => 15,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(dull)', '|(', '|-(', '|=('),
-        ),
-        array(
-            'id'       => 16,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(inlove)', '(love)', ':]', ':-]'),
-        ),
-        array(
-            'id'       => 17,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(grin)', ']:)', '>:)'),
-        ),
-        array(
-            'id'       => 18,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(fingers)', '(yn)', '(fingerscrossed)', '(crossedfingers)'),
-        ),
-        array(
-            'id'       => 19,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(yawn)'),
-        ),
-        array(
-            'id'       => 20,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(puke)', ':&', ':-&', ':=&'),
-        ),
-        array(
-            'id'       => 21,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(doh)'),
-        ),
-        array(
-            'id'       => 22,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(angry)', ':@', ':-@', ':=@', 'x(', 'x-(', 'X(', 'X-(', 'x=(', 'X=(', ';@', ';-@'),
-        ),
-        array(
-            'id'       => 23,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(wasntme)', '(wm)'),
-        ),
-        array(
-            'id'       => 24,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(party)', '<O)', '<o)'),
-        ),
-        array(
-            'id'       => 25,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(worry)', ':S', ':-S', ':=S', ':s', ':-s', ':=s'),
-        ),
-        array(
-            'id'       => 26,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(mm)', '(mmm)', '(mmmm)'),
-        ),
-        array(
-            'id'       => 27,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(nerd)', '8-|', 'B-|', '8|', 'B|', '8=|', 'B=|'),
-        ),
-        array(
-            'id'       => 28,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array(':x', ':-x', ':X', ':-X', ':#', ':-#', ':=x', ':=X', ':=#'),
-        ),
-        array(
-            'id'       => 29,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(hi)', '(wave)', '(bye)'),
-        ),
-        array(
-            'id'       => 30,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(facepalm)', '(fail)'),
-        ),
-        array(
-            'id'       => 31,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(devil)', '(6)'),
-        ),
-        array(
-            'id'       => 32,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(angel)', '(a)', '(A)'),
-        ),
-        array(
-            'id'       => 33,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(envy)', '(v)', '(V)'),
-        ),
-        array(
-            'id'       => 34,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(wait)'),
-        ),
-        array(
-            'id'       => 35,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(bear)', '(hug)'),
-        ),
-        array(
-            'id'       => 36,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(makeup)', '(kate)'),
-        ),
-        array(
-            'id'       => 37,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(giggle)', '(chuckle)'),
-        ),
-        array(
-            'id'       => 38,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(clap)'),
-        ),
-        array(
-            'id'       => 39,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(think)', ':?', ':-?', ':=?'),
-        ),
-        array(
-            'id'       => 40,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(bow)'),
-        ),
-        array(
-            'id'       => 41,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(rofl)', '(rotfl)'),
-        ),
-        array(
-            'id'       => 42,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(whew)'),
-        ),
-        array(
-            'id'       => 43,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(happy)'),
-        ),
-        array(
-            'id'       => 44,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(smirk)'),
-        ),
-        array(
-            'id'       => 45,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(nod)'),
-        ),
-        array(
-            'id'       => 46,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(shake)'),
-        ),
-        array(
-            'id'       => 47,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(waiting)', '(forever)', '(impatience)'),
-        ),
-        array(
-            'id'       => 48,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(emo)'),
-        ),
-        array(
-            'id'       => 49,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(yes)', '(ok)', '(y)', '(Y)'),
-        ),
-        array(
-            'id'       => 50,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(no)', '(n)', '(N)'),
-        ),
-        array(
-            'id'       => 51,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(handshake)'),
-        ),
-        array(
-            'id'       => 52,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(highfive)', '(hifive)', '(h5)'),
-        ),
-        array(
-            'id'       => 53,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(heart)', '(h)', '(H)', '(l)', '(L)'),
-        ),
-        array(
-            'id'       => 54,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(lala)', '(lalala)', '(lalalala)', '(notlistening)'),
-        ),
-        array(
-            'id'       => 55,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(heidy)', '(squirrel)'),
-        ),
-        array(
-            'id'       => 56,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(flower)', '(f)', '(F)'),
-        ),
-        array(
-            'id'       => 57,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(rain)', '(london)', '(st)'),
-        ),
-        array(
-            'id'       => 58,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(sun)', '(#)'),
-        ),
-        array(
-            'id'       => 59,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(tumbleweed)'),
-        ),
-        array(
-            'id'       => 60,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(music)', '(8)'),
-        ),
-        array(
-            'id'       => 61,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(bandit)'),
-        ),
-        array(
-            'id'       => 62,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(tmi)'),
-        ),
-        array(
-            'id'       => 63,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(coffee)', '(c)', '(C)'),
-        ),
-        array(
-            'id'       => 64,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(pizza)', '(pi)'),
-        ),
-        array(
-            'id'       => 65,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(cash)', '(mo)', '($)'),
-        ),
-        array(
-            'id'       => 66,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(muscle)', '(flex)'),
-        ),
-        array(
-            'id'       => 67,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(cake)', '(^)'),
-        ),
-        array(
-            'id'       => 68,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(beer)', '(bricklayers)', '(B)', '(b)'),
-        ),
-        array(
-            'id'       => 69,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(drink)', '(d)', '(D)'),
-        ),
-        array(
-            'id'       => 70,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(dance)', '\\o/', '\\:D/', '\\:d/'),
-        ),
-        array(
-            'id'       => 71,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(ninja)', '(j)', '(J)'),
-        ),
-        array(
-            'id'       => 72,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(star)', '(*)'),
-        ),
-        array(
-            'id'       => 73,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(banghead)', '(headbang)'),
-        ),
-        array(
-            'id'       => 74,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(swear)'),
-        ),
-        array(
-            'id'       => 75,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(drunk)'),
-        ),
-        array(
-            'id'       => 76,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(fubar)'),
-        ),
-        array(
-            'id'       => 77,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(finger)'),
-        ),
-        array(
-            'id'       => 78,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(hrv)', '(poolparty)'),
-        ),
-        array(
-            'id'       => 79,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(rock)'),
-        ),
-        array(
-            'id'       => 80,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(smoking)', '(smoke)', '(ci)'),
-        ),
-        array(
-            'id'       => 81,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(wtf)'),
-        ),
-        array(
-            'id'       => 82,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(bug)'),
-        ),
-        array(
-            'id'       => 83,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(toivo)'),
-        ),
-        array(
-            'id'       => 84,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(wfh)'),
-        ),
-        array(
-            'id'       => 85,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(hollest)'),
-        ),
-        array(
-            'id'       => 86,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(zilmer)'),
-        ),
-        array(
-            'id'       => 87,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(mail)', '(m)', '(e)', '(E)'),
-        ),
-        array(
-            'id'       => 88,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(clock)', '(time)', '(o)', '(O)'),
-        ),
-        array(
-            'id'       => 89,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(film)', '(~)', '(movie)'),
-        ),
-        array(
-            'id'       => 90,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(mp)', '(ph)', '(phone)'),
-        ),
-        array(
-            'id'       => 91,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(talk)'),
-        ),
-        array(
-            'id'       => 92,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(call)', '(t)', '(T)'),
-        ),
-        array(
-            'id'       => 93,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(punch)'),
-        ),
-        array(
-            'id'       => 94,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(u)', '(U)'),
-        ),
-        array(
-            'id'       => 95,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(mooning)'),
-        ),
-        array(
-            'id'       => 96,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(oliver)'),
-        ),
-        array(
-            'id'       => 97,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(football)', '(soccer)', '(so)', '(bartlett)'),
-        ),
-        // 98 => array(),
-        array(
-            'id'       => 99,
-            'name'     => '',
-            'title'    => '',
-            'replaces' => array('(skype)', '(ss)'),
-        ),
-    );
+    static public $smiles
+        = array(
+            array(
+                'id'       => 1,
+                'name'     => 'smile',
+                'title'    => 'Улыбаюсь',
+                'replaces' => array('(smile)', ':)', ':=)', ':-)'),
+            ),
+            array(
+                'id'       => 2,
+                'name'     => 'sad',
+                'title'    => 'Грущу',
+                'replaces' => array('(sad)', ':(', ':=(', ':-('),
+            ),
+            array(
+                'id'       => 3,
+                'name'     => 'laugh',
+                'title'    => 'Смеюсь',
+                'replaces' => array('(laugh)', '(lol)', '(LOL)', ':D', ':-D', ':=D', ':d', ':-d', ':=d', ':>', ':->'),
+            ),
+            array(
+                'id'       => 4,
+                'name'     => 'cool',
+                'title'    => 'Крутой',
+                'replaces' => array('(cool)', '8=)', '8-)', 'B=)', 'B-)'),
+            ),
+            array(
+                'id'       => 5,
+                'name'     => 'surprised',
+                'title'    => 'Удивляюсь',
+                'replaces' => array('(surprised)', ':o', ':=o', ':-o', ':O', ':=O', ':-O'),
+            ),
+            array(
+                'id'       => 6,
+                'name'     => 'wink',
+                'title'    => 'Wink',
+                'replaces' => array('(wink)', ';)', ';-)', ';=)'),
+            ),
+            array(
+                'id'       => 7,
+                'name'     => 'cry',
+                'title'    => '',
+                'replaces' => array('(cry)', ';(', ';-(', ';=(', ':\'('),
+            ),
+            array(
+                'id'       => 8,
+                'name'     => 'sweat',
+                'title'    => '',
+                'replaces' => array('(sweat)', '(:|'),
+            ),
+            array(
+                'id'       => 9,
+                'name'     => 'speechless',
+                'title'    => '',
+                'replaces' => array('(speechless)', ':|', ':=|', ':-|'),
+            ),
+            array(
+                'id'       => 10,
+                'name'     => 'kiss',
+                'title'    => '',
+                'replaces' => array('(kiss)', '(xo)', ':*', ':=*', ':-*'),
+            ),
+            array(
+                'id'       => 11,
+                'name'     => 'tongueout',
+                'title'    => '',
+                'replaces' => array('(tongueout)', ':P', ':=P', ':-P', ':p', ':=p', ':-p'),
+            ),
+            array(
+                'id'       => 12,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(blush)', ':$', ':-$', ':=$', ':">'),
+            ),
+            array(
+                'id'       => 13,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(wonder)', ':^)'),
+            ),
+            array(
+                'id'       => 14,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(snooze)', '|-)', 'I-)', 'I=)'),
+            ),
+            array(
+                'id'       => 15,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(dull)', '|(', '|-(', '|=('),
+            ),
+            array(
+                'id'       => 16,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(inlove)', '(love)', ':]', ':-]'),
+            ),
+            array(
+                'id'       => 17,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(grin)', ']:)', '>:)'),
+            ),
+            array(
+                'id'       => 18,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(fingers)', '(yn)', '(fingerscrossed)', '(crossedfingers)'),
+            ),
+            array(
+                'id'       => 19,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(yawn)'),
+            ),
+            array(
+                'id'       => 20,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(puke)', ':&', ':-&', ':=&'),
+            ),
+            array(
+                'id'       => 21,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(doh)'),
+            ),
+            array(
+                'id'       => 22,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(angry)', ':@', ':-@', ':=@', 'x(', 'x-(', 'X(', 'X-(', 'x=(', 'X=(', ';@', ';-@'),
+            ),
+            array(
+                'id'       => 23,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(wasntme)', '(wm)'),
+            ),
+            array(
+                'id'       => 24,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(party)', '<O)', '<o)'),
+            ),
+            array(
+                'id'       => 25,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(worry)', ':S', ':-S', ':=S', ':s', ':-s', ':=s'),
+            ),
+            array(
+                'id'       => 26,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(mm)', '(mmm)', '(mmmm)'),
+            ),
+            array(
+                'id'       => 27,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(nerd)', '8-|', 'B-|', '8|', 'B|', '8=|', 'B=|'),
+            ),
+            array(
+                'id'       => 28,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array(':x', ':-x', ':X', ':-X', ':#', ':-#', ':=x', ':=X', ':=#'),
+            ),
+            array(
+                'id'       => 29,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(hi)', '(wave)', '(bye)'),
+            ),
+            array(
+                'id'       => 30,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(facepalm)', '(fail)'),
+            ),
+            array(
+                'id'       => 31,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(devil)', '(6)'),
+            ),
+            array(
+                'id'       => 32,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(angel)', '(a)', '(A)'),
+            ),
+            array(
+                'id'       => 33,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(envy)', '(v)', '(V)'),
+            ),
+            array(
+                'id'       => 34,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(wait)'),
+            ),
+            array(
+                'id'       => 35,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(bear)', '(hug)'),
+            ),
+            array(
+                'id'       => 36,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(makeup)', '(kate)'),
+            ),
+            array(
+                'id'       => 37,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(giggle)', '(chuckle)'),
+            ),
+            array(
+                'id'       => 38,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(clap)'),
+            ),
+            array(
+                'id'       => 39,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(think)', ':?', ':-?', ':=?'),
+            ),
+            array(
+                'id'       => 40,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(bow)'),
+            ),
+            array(
+                'id'       => 41,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(rofl)', '(rotfl)'),
+            ),
+            array(
+                'id'       => 42,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(whew)'),
+            ),
+            array(
+                'id'       => 43,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(happy)'),
+            ),
+            array(
+                'id'       => 44,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(smirk)'),
+            ),
+            array(
+                'id'       => 45,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(nod)'),
+            ),
+            array(
+                'id'       => 46,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(shake)'),
+            ),
+            array(
+                'id'       => 47,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(waiting)', '(forever)', '(impatience)'),
+            ),
+            array(
+                'id'       => 48,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(emo)'),
+            ),
+            array(
+                'id'       => 49,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(yes)', '(ok)', '(y)', '(Y)'),
+            ),
+            array(
+                'id'       => 50,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(no)', '(n)', '(N)'),
+            ),
+            array(
+                'id'       => 51,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(handshake)'),
+            ),
+            array(
+                'id'       => 52,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(highfive)', '(hifive)', '(h5)'),
+            ),
+            array(
+                'id'       => 53,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(heart)', '(h)', '(H)', '(l)', '(L)'),
+            ),
+            array(
+                'id'       => 54,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(lala)', '(lalala)', '(lalalala)', '(notlistening)'),
+            ),
+            array(
+                'id'       => 55,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(heidy)', '(squirrel)'),
+            ),
+            array(
+                'id'       => 56,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(flower)', '(f)', '(F)'),
+            ),
+            array(
+                'id'       => 57,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(rain)', '(london)', '(st)'),
+            ),
+            array(
+                'id'       => 58,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(sun)', '(#)'),
+            ),
+            array(
+                'id'       => 59,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(tumbleweed)'),
+            ),
+            array(
+                'id'       => 60,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(music)', '(8)'),
+            ),
+            array(
+                'id'       => 61,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(bandit)'),
+            ),
+            array(
+                'id'       => 62,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(tmi)'),
+            ),
+            array(
+                'id'       => 63,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(coffee)', '(c)', '(C)'),
+            ),
+            array(
+                'id'       => 64,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(pizza)', '(pi)'),
+            ),
+            array(
+                'id'       => 65,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(cash)', '(mo)', '($)'),
+            ),
+            array(
+                'id'       => 66,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(muscle)', '(flex)'),
+            ),
+            array(
+                'id'       => 67,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(cake)', '(^)'),
+            ),
+            array(
+                'id'       => 68,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(beer)', '(bricklayers)', '(B)', '(b)'),
+            ),
+            array(
+                'id'       => 69,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(drink)', '(d)', '(D)'),
+            ),
+            array(
+                'id'       => 70,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(dance)', '\\o/', '\\:D/', '\\:d/'),
+            ),
+            array(
+                'id'       => 71,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(ninja)', '(j)', '(J)'),
+            ),
+            array(
+                'id'       => 72,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(star)', '(*)'),
+            ),
+            array(
+                'id'       => 73,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(banghead)', '(headbang)'),
+            ),
+            array(
+                'id'       => 74,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(swear)'),
+            ),
+            array(
+                'id'       => 75,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(drunk)'),
+            ),
+            array(
+                'id'       => 76,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(fubar)'),
+            ),
+            array(
+                'id'       => 77,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(finger)'),
+            ),
+            array(
+                'id'       => 78,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(hrv)', '(poolparty)'),
+            ),
+            array(
+                'id'       => 79,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(rock)'),
+            ),
+            array(
+                'id'       => 80,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(smoking)', '(smoke)', '(ci)'),
+            ),
+            array(
+                'id'       => 81,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(wtf)'),
+            ),
+            array(
+                'id'       => 82,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(bug)'),
+            ),
+            array(
+                'id'       => 83,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(toivo)'),
+            ),
+            array(
+                'id'       => 84,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(wfh)'),
+            ),
+            array(
+                'id'       => 85,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(hollest)'),
+            ),
+            array(
+                'id'       => 86,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(zilmer)'),
+            ),
+            array(
+                'id'       => 87,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(mail)', '(m)', '(e)', '(E)'),
+            ),
+            array(
+                'id'       => 88,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(clock)', '(time)', '(o)', '(O)'),
+            ),
+            array(
+                'id'       => 89,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(film)', '(~)', '(movie)'),
+            ),
+            array(
+                'id'       => 90,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(mp)', '(ph)', '(phone)'),
+            ),
+            array(
+                'id'       => 91,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(talk)'),
+            ),
+            array(
+                'id'       => 92,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(call)', '(t)', '(T)'),
+            ),
+            array(
+                'id'       => 93,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(punch)'),
+            ),
+            array(
+                'id'       => 94,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(u)', '(U)'),
+            ),
+            array(
+                'id'       => 95,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(mooning)'),
+            ),
+            array(
+                'id'       => 96,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(oliver)'),
+            ),
+            array(
+                'id'       => 97,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(football)', '(soccer)', '(so)', '(bartlett)'),
+            ),
+            // 98 => array(),
+            array(
+                'id'       => 99,
+                'name'     => '',
+                'title'    => '',
+                'replaces' => array('(skype)', '(ss)'),
+            ),
+        );
 
     /*
     public $text3 = array(

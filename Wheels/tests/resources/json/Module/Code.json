@@ -1,38 +1,38 @@
 {
-    "tests" : [
+    "tests": [
         {
-            "desc"    : "Обработка тега code",
-            "group"   : [
+            "desc": "Обработка тега code",
+            "group": [
                 {
-                    "input"    : "Неразрывный пробел в HTML может быть записан с помощью мнемоники <code>&nbsp;</code>",
-                    "expected" : "Неразрывный пробел в HTML может быть записан с помощью мнемоники <code>&amp;nbsp;</code>"
+                    "input": "Неразрывный пробел в HTML может быть записан с помощью мнемоники <code>&nbsp;</code>",
+                    "expected": "Неразрывный пробел в HTML может быть записан с помощью мнемоники <code>&amp;nbsp;</code>"
                 },
                 {
-                    "input"    : "Пример строки <code class=\"code code-example\">\"Text string\"</code>",
-                    "expected" : "Пример строки <code class=\"code code-example\">\"Text string\"</code>"
-                }    
+                    "input": "Пример строки <code class=\"code code-example\">\"Text string\"</code>",
+                    "expected": "Пример строки <code class=\"code code-example\">\"Text string\"</code>"
+                }
             ]
         },
         {
-            "desc"    : "Обработка многострочного участка кода",
-            "group"   : [
+            "desc": "Обработка многострочного участка кода",
+            "group": [
                 {
-                    "input"    : "<code>function fib($n) {<br />    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);\r\n}</code>",
-                    "expected" : "<pre><code>function fib($n) {</code>\r\n<code>    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);</code>\r\n<code>}</code></pre>"
+                    "input": "<code>function fib($n) {<br />    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);\r\n}</code>",
+                    "expected": "<pre><code>function fib($n) {</code>\r\n<code>    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);</code>\r\n<code>}</code></pre>"
                 },
                 {
-                    "input"    : "<code>function fib($n) {\r\n    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);\r\n}        </code>",
-                    "expected" : "<pre><code>function fib($n) {</code>\r\n<code>    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);</code>\r\n<code>}</code></pre>"
+                    "input": "<code>function fib($n) {\r\n    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);\r\n}        </code>",
+                    "expected": "<pre><code>function fib($n) {</code>\r\n<code>    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);</code>\r\n<code>}</code></pre>"
                 },
                 {
-                    "input"    : "<code>function fib($n) {\r\n\treturn ($n < 3) ? 1 : fib($n-1) + fib($n-2);\r\n}</code>",
-                    "expected" : "<pre><code>function fib($n) {</code>\r\n<code>    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);</code>\r\n<code>}</code></pre>"
+                    "input": "<code>function fib($n) {\r\n\treturn ($n < 3) ? 1 : fib($n-1) + fib($n-2);\r\n}</code>",
+                    "expected": "<pre><code>function fib($n) {</code>\r\n<code>    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);</code>\r\n<code>}</code></pre>"
                 },
                 {
-                    "input"    : "<code id=\"example\" class=\"code code-example\">function fib($n) {\r\n    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);\r\n}</code>",
-                    "expected" : "<pre id=\"example\" class=\"code code-example\"><code>function fib($n) {</code>\r\n<code>    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);</code>\r\n<code>}</code></pre>"
-                }    
+                    "input": "<code id=\"example\" class=\"code code-example\">function fib($n) {\r\n    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);\r\n}</code>",
+                    "expected": "<pre id=\"example\" class=\"code code-example\"><code>function fib($n) {</code>\r\n<code>    return ($n < 3) ? 1 : fib($n-1) + fib($n-2);</code>\r\n<code>}</code></pre>"
+                }
             ]
-        }    
+        }
     ]
 }

@@ -32,9 +32,9 @@ class Config
     protected $_options;
 
     /**
-     * Группы настроек.
+     * Группы значений параметров.
      *
-     * @var array
+     * @var array[]
      */
     protected $_groups = array();
 
@@ -96,8 +96,9 @@ class Config
     {
         $optionsValues = array();
 
-        foreach($this->getOptions() as $name => $option)
+        foreach ($this->getOptions() as $name => $option) {
             $optionsValues[$name] = $option->getValue();
+        }
 
         return $optionsValues;
     }
@@ -112,6 +113,34 @@ class Config
     public function getOptionValue($name)
     {
         return $this->getOption($name)->getValue();
+    }
+
+    /**
+     * Возвращает группы значений параметров.
+     *
+     * @return array Ассоциативный массив групп значений параметров.
+     */
+    public function getGroups()
+    {
+        return $this->_groups;
+    }
+
+    /**
+     * Возвращает группу значений параметров.
+     *
+     * @param int|float|string|bool $name Название группы значений параметров.
+     *
+     * @return array Ассоциативный массив группы значений параметров с заданным именем.
+     *
+     * @throws \Wheels\Config\Exception
+     */
+    public function getGroup($name)
+    {
+        if (!array_key_exists($name, $this->_groups)) {
+            throw new Exception("Группа настроек '$name' не найдена");
+        }
+
+        return $this->_groups[$name];
     }
 
     /**
@@ -148,8 +177,9 @@ class Config
      */
     public function addOptions(array $options)
     {
-        foreach($options as $option)
+        foreach ($options as $option) {
             $this->addOption($option);
+        }
     }
 
     /**
@@ -174,19 +204,15 @@ class Config
      */
     public function setOptionsValues(array $options)
     {
-        foreach($options as $name => $value)
+        foreach ($options as $name => $value) {
             $this->setOptionValue($name, $value);
-    }
-
-    public function getGroups()
-    {
-        return $this->_groups;
+        }
     }
 
     /**
      * Устанавливает группы значений параметров.
      *
-     * @param array $groups Группы значений настроек.
+     * @param array $groups Ассоциативный массив групп значений параметров.
      *
      * @return void Этот метод не возвращает значения после выполнения.
      */
@@ -196,8 +222,13 @@ class Config
         $this->addGroups($groups);
     }
 
-
-
+    /**
+     * Добавляет группы значений параметров.
+     *
+     * @param array $groups Ассоциативный массив групп значений параметров.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
     public function addGroups(array $groups)
     {
         foreach ($groups as $name => $group) {
@@ -205,19 +236,81 @@ class Config
         }
     }
 
+    /**
+     * Устанавливает группы значений параметров из ini-файла.
+     *
+     * @param string $filename Имя ini-файла.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function setGroupsFromFile($filename)
+    {
+        $this->_groups = array();
+        $this->addGroupsFromFile($filename);
+    }
+
+    /**
+     * Добавляет группы значений параметров из ini-файла.
+     *
+     * @param string $filename Имя ini-файла.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function addGroupsFromFile($filename)
+    {
+        $groups = $this->_processIniFile($filename);
+
+        foreach ($groups as $name => $group) {
+            if (is_array($group)) {
+                $this->addGroup($name, $group);
+            }
+        }
+    }
+
+    /**
+     * Добавляет группу значений параметров.
+     *
+     * @param int|float|string|bool $name  Название группы значений параметров.
+     * @param array                 $group Ассоциативный массив значений параметров.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     *
+     * @throws \Wheels\Config\Exception
+     */
     public function addGroup($name, array $group)
     {
+        if (!is_scalar($name)) {
+            throw new Exception('Название группы настроек должно быть скалярным значением');
+        }
 
+        if (array_key_exists($name, $this->getGroups())) {
+            throw new Exception("Группа настроек '$name' уже задана");
+        }
+
+        $this->_groups[$name] = $group;
     }
 
-    public function getGroup($name)
+    /**
+     * Устанавливает значения параметров из заданных групп значений параметров.
+     *
+     * @param array $names Массив названий групп.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function setOptionsValuesFromGroups(array $names)
     {
-        if(!array_key_exists($name, $this->getGroups()))
-            throw new Exception("Не");
-
-        return $this->_groups[$name];
+        foreach ($names as $name) {
+            $this->setOptionsValuesFromGroup($name);
+        }
     }
 
+    /**
+     * Устанавливает значения параметров из заданной группы значений параметров.
+     *
+     * @param int|float|string|bool $name Название группы значений параметров.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
     public function setOptionsValuesFromGroup($name)
     {
         $options = $this->getGroup($name);
@@ -225,33 +318,9 @@ class Config
     }
 
     /**
-     * Устанавливает значения параметров из конфигурационного INI файла.
-     *
-     * @param string $filename Имя обрабатываемого ini-файла.
-     * @param string $section  Имя секции. По умолчанию значения параметров устанавливаются из секции 'default'.
-     *
-     * @return void Этот метод не возвращает значения после выполнения.
-     *
-     * @throws \Wheels\Config\Exception
-     */
-    public function setSectionsFromFile($filename, $section = 'default')
-    {
-        static $optionsFromFiles = array();
-        
-        if(!array_key_exists($filename, $optionsFromFiles))
-            $optionsFromFiles[$filename] = $this->_processIniFile($filename);
-
-        if(!array_key_exists($section, $optionsFromFiles[$filename]) || !is_array($optionsFromFiles[$filename][$section]))
-            throw new Exception("Раздел настроек '$section' не найден в конфигурационном файле '$filename'");
-
-        $options = $optionsFromFiles[$filename][$section];
-        $this->setOptionsValues($options);
-    }
-
-    /**
      * Создаёт объект класса по его описанию.
      *
-     * @param array $schema Ассоциативный массив с описанием конфигурации.
+     * @param array $schema  Ассоциативный массив с описанием конфигурации.
      *                       * allow-modifications - ассоциативный массив псевдонимов;
      *                       * options             - массив описаний параметров;
      *                       * groups              - массив групп значений параметров;
@@ -263,51 +332,44 @@ class Config
      */
     static public function create(array $schema)
     {
-        $diff = array_diff(array_keys($schema), array('options', 'case-sensitive', 'allow-modifications', 'groups'));
-        if(!empty($diff))
-            throw new Exception('Неизвестные разделы описания конфигурации: ' . implode(', ', $diff));
+        $sections = array('options', 'case-sensitive', 'allow-modifications', 'groups');
 
-        if(array_key_exists('case-sensitive', $schema))
-        {
+        $diff = array_diff(array_keys($schema), $sections);
+        if (!empty($diff)) {
+            throw new Exception('Неизвестные разделы описания конфигурации: ' . implode(', ', $diff));
+        }
+
+        if (array_key_exists('case-sensitive', $schema)) {
             $caseSensitive = $schema['case-sensitive'];
             $obj = new self(array(), $caseSensitive);
-        }
-        else
+        } else {
             $obj = new self(array());
+        }
 
-        if(array_key_exists('options', $schema))
-        {
+        if (array_key_exists('options', $schema)) {
             $options = $schema['options'];
 
-            if(!is_array($options))
+            if (!is_array($options)) {
                 throw new Exception("Раздел 'options' описания конфигурации должен быть массивом");
+            }
 
-            foreach($options as $name => $option_schema)
-            {
-                if(!is_array($option_schema))
-                    throw new Exception('Описание параметра настроек должно быть массивом');
-
-                if(!array_key_exists('name', $option_schema) && is_string($name))
+            foreach ($options as $name => $option_schema) {
+                if (is_array($option_schema) && !array_key_exists('name', $option_schema)) {
                     $option_schema['name'] = $name;
+                }
 
                 $option = Option::create($option_schema);
                 $obj->addOption($option);
             }
         }
 
-        if(array_key_exists('allow-modifications', $schema))
-        {
+        if (array_key_exists('allow-modifications', $schema)) {
             $value = $schema['allow-modifications'];
             $obj->getOptions()->setAllowModifications($value);
         }
 
-        if(array_key_exists('groups', $schema))
-        {
+        if (array_key_exists('groups', $schema)) {
             $groups = $schema['groups'];
-
-            if(!is_array($groups))
-                throw new Exception("Раздел 'groups' описания конфигурации должен быть массивом");
-
             $obj->setGroups($groups);
         }
 
@@ -328,10 +390,12 @@ class Config
      */
     protected function _processIniFile($filename)
     {
-        if(!is_file($filename))
+        if (!is_file($filename)) {
             throw new Exception("Файл '$filename' не найден");
-        if(!is_readable($filename))
+        }
+        if (!is_readable($filename)) {
             throw new Exception("Файл '$filename' закрыт для чтения");
+        }
 
         $directory = realpath(dirname($filename));
 
@@ -343,36 +407,32 @@ class Config
         restore_error_handler();
 
         $processedData = array();
-        foreach($data as $key => $value)
-        {
-            if(is_array($value))
-            {
-                if(strpos($key, self::KEY_SEP) !== false)
-                {
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                if (strpos($key, self::KEY_SEP) !== false) {
                     $sections = explode(self::KEY_SEP, $key);
-                    $processedData = array_merge_recursive($processedData, $this->_buildNestedSection($sections, $value, $directory));
-                }
-                elseif(strpos($key, self::SECTION_SEP) !== false)
-                {
+                    $processedData = array_merge_recursive(
+                        $processedData, $this->_buildNestedSection($sections, $value, $directory)
+                    );
+                } elseif (strpos($key, self::SECTION_SEP) !== false) {
                     $sections = explode(self::SECTION_SEP, $key, 2);
                     $sections = array_map('trim', $sections);
 
                     $key = $sections[0];
 
                     $processedData[$key] = array();
-                    for($i = count($sections) - 1; $i > 0; $i--)
-                    {
-                        $processedData[$key] = array_merge_recursive_distinct($processedData[$key], $processedData[$sections[$i]]);
+                    for ($i = count($sections) - 1; $i > 0; $i--) {
+                        $processedData[$key] = array_merge_recursive_distinct(
+                            $processedData[$key], $processedData[$sections[$i]]
+                        );
                     }
-                    $processedData[$key] = array_merge_recursive_distinct($processedData[$key], $this->_processSection($value, $directory));
-                }
-                else
-                {
+                    $processedData[$key] = array_merge_recursive_distinct(
+                        $processedData[$key], $this->_processSection($value, $directory)
+                    );
+                } else {
                     $processedData[$key] = $this->_processSection($value, $directory);
                 }
-            }
-            else
-            {
+            } else {
                 $this->processKey($key, $value, $directory, $processedData);
             }
         }
@@ -391,8 +451,7 @@ class Config
      */
     protected function _buildNestedSection($sections, $value, $directory)
     {
-        if(count($sections) == 0)
-        {
+        if (count($sections) == 0) {
             return $this->_processSection($value, $directory);
         }
 
@@ -416,8 +475,9 @@ class Config
     {
         $processedData = array();
 
-        foreach ($section as $key => $value)
+        foreach ($section as $key => $value) {
             $this->processKey($key, $value, $directory, $processedData);
+        }
 
         return $processedData;
     }
@@ -436,42 +496,30 @@ class Config
      */
     protected function processKey($key, $value, $directory, array &$processedData)
     {
-        if(strpos($key, self::KEY_SEP) !== false)
-        {
+        if (strpos($key, self::KEY_SEP) !== false) {
             list($first, $second) = explode(self::KEY_SEP, $key, 2);
 
-            if (!strlen($first) || !strlen($second))
-            {
+            if (!strlen($first) || !strlen($second)) {
                 throw new Exception("Некорректный ключ '$key'");
-            }
-            elseif (!isset($processedData[$first]))
-            {
-                if ($first === '0' && !empty($processedData))
-                {
+            } elseif (!isset($processedData[$first])) {
+                if ($first === '0' && !empty($processedData)) {
                     $processedData = array($first => $processedData);
-                }
-                else
-                {
+                } else {
                     $processedData[$first] = array();
                 }
-            }
-            elseif (!is_array($processedData[$first]))
-            {
+            } elseif (!is_array($processedData[$first])) {
                 throw new Exception("Невозможно создать вложенный ключ для '$first', т. к. этот ключ уже есть");
             }
 
             $this->processKey($second, $value, $directory, $processedData[$first]);
-        }
-        elseif ($key === '@include')
-        {
-            if (is_null($directory))
+        } elseif ($key === '@include') {
+            if (is_null($directory)) {
                 throw new Exception("Не удалось обработать выражение @include");
+            }
 
             $include = $this->_processIniFile($directory . '/' . $value);
             $processedData = array_replace_recursive($processedData, $include);
-        }
-        else
-        {
+        } else {
             $processedData[$key] = $value;
         }
     }

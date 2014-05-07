@@ -243,10 +243,10 @@ class OptionTest extends PHPUnit_Framework_TestCase
 
     public function testCreate()
     {
-        $name    = 'name';
+        $name = 'name';
         $default = 'default';
-        $type    = 'string';
-        $desc    = 'Description...';
+        $type = 'string';
+        $desc = 'Description...';
         $allowed = array('default', 'value');
         $aliases = array('alias' => 'value');
 
@@ -338,7 +338,7 @@ class OptionTest extends PHPUnit_Framework_TestCase
     {
         $option = new Option('name', 'default');
 
-        $actual = (string) $option;
+        $actual = (string)$option;
         $expected = $option->getValue();
         $this->assertEquals($expected, $actual);
     }

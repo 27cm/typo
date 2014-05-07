@@ -2,20 +2,27 @@
 <tests>
     <group>
         <test>
-            <input><![CDATA[§ &ndash &frac12; &#X00221E; &#x00d8; &#xBB &#xA5; &#xa2; &#931 &#8658; &#0009829; &#189256756767; &#8655; &#x3C0  ;]]></input>
+            <input>
+                <![CDATA[§ &ndash &frac12; &#X00221E; &#x00d8; &#xBB &#xA5; &#xa2; &#931 &#8658; &#0009829; &#189256756767; &#8655; &#x3C0  ;]]></input>
             <expected><![CDATA[§ – ½ ∞ Ø » ¥ ¢ Σ ⇒ ♥ � ⇏ π]]></expected>
         </test>
         <test>
-            <input><![CDATA[§ &ndash &frac12; &#X00221E; &#x00d8; &#xBB &#xA5; &#xa2; &#931 &#8658; &#0009829; &#189256756767; &#8655; &#x3C0  ;]]></input>
-            <expected><![CDATA[&sect; &ndash; &frac12; &infin; &Oslash; &raquo; &yen; &cent; &Sigma; &rArr; &hearts; &#xfffd; &#x21cf; &pi;]]></expected>
+            <input>
+                <![CDATA[§ &ndash &frac12; &#X00221E; &#x00d8; &#xBB &#xA5; &#xa2; &#931 &#8658; &#0009829; &#189256756767; &#8655; &#x3C0  ;]]></input>
+            <expected>
+                <![CDATA[&sect; &ndash; &frac12; &infin; &Oslash; &raquo; &yen; &cent; &Sigma; &rArr; &hearts; &#xfffd; &#x21cf; &pi;]]></expected>
         </test>
         <test>
-            <input><![CDATA[§ &ndash &frac12; &#X00221E; &#x00d8; &#xBB &#xA5; &#xa2; &#931 &#8658; &#0009829; &#189256756767; &#8655; &#x3C0  ;]]></input>
-            <expected><![CDATA[&#167; &#8211; &#189; &#8734; &#216; &#187; &#165; &#162; &#931; &#8658; &#9829; &#65533; &#8655; &#960;]]></expected>
+            <input>
+                <![CDATA[§ &ndash &frac12; &#X00221E; &#x00d8; &#xBB &#xA5; &#xa2; &#931 &#8658; &#0009829; &#189256756767; &#8655; &#x3C0  ;]]></input>
+            <expected>
+                <![CDATA[&#167; &#8211; &#189; &#8734; &#216; &#187; &#165; &#162; &#931; &#8658; &#9829; &#65533; &#8655; &#960;]]></expected>
         </test>
         <test>
-            <input><![CDATA[§ &ndash &frac12; &#X00221E; &#x00d8; &#xBB &#xA5; &#xa2; &#931 &#8658; &#0009829; &#189256756767; &#8655; &#x3C0  ;]]></input>
-            <expected><![CDATA[&#xa7; &#x2013; &#xbd; &#x221e; &#xd8; &#xbb; &#xa5; &#xa2; &#x3a3; &#x21d2; &#x2665; &#xfffd; &#x21cf; &#x3c0;]]></expected>
+            <input>
+                <![CDATA[§ &ndash &frac12; &#X00221E; &#x00d8; &#xBB &#xA5; &#xa2; &#931 &#8658; &#0009829; &#189256756767; &#8655; &#x3C0  ;]]></input>
+            <expected>
+                <![CDATA[&#xa7; &#x2013; &#xbd; &#x221e; &#xd8; &#xbb; &#xa5; &#xa2; &#x3a3; &#x21d2; &#x2665; &#xfffd; &#x21cf; &#x3c0;]]></expected>
         </test>
     </group>
 </tests>

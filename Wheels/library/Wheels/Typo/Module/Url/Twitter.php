@@ -16,40 +16,42 @@ class Twitter extends Url
      *
      * @var array
      */
-    static protected $_default_options = array(
-        /**
-         * Дополнительные атрибуты.
-         *
-         * @var array
-         */
-        'attrs' => array(
-            array(
-                'name' => 'target',
-                'value' => '_blank',
+    static protected $_default_options
+        = array(
+            /**
+             * Дополнительные атрибуты.
+             *
+             * @var array
+             */
+            'attrs'   => array(
+                array(
+                    'name'  => 'target',
+                    'value' => '_blank',
+                ),
             ),
-        ),
 
-        /**
-         * Используемые модули.
-         *
-         * @var string[]
-         */
-        'modules' => array(),
-    );
+            /**
+             * Используемые модули.
+             *
+             * @var string[]
+             */
+            'modules' => array(),
+        );
 
     /**
      * Приоритет выполнения стадий.
      *
      * @var array
      */
-    static protected $_order = array(
-        'A' => 25,
-        'B' => 0,
-        'C' => 0,
-        'D' => 15,
-        'E' => 0,
-        'F' => 0,
-    );
+    static protected $_order
+        = array(
+            'A' => 25,
+            'B' => 0,
+            'C' => 0,
+            'D' => 15,
+            'E' => 0,
+            'F' => 0,
+        );
 
     static public $url = 'http://twitter.com';
 
@@ -70,59 +72,58 @@ class Twitter extends Url
      */
     protected function stageA()
     {
-        if($this->typo->_options['html-out-enabled'])
-        {
+        if ($this->typo->_options['html-out-enabled']) {
             $_this = $this;
             $rules = array(
                 // Ретвиты (RT @login:)
-                '~\bRT\h@(\w+):~i' => function($m) use($_this) {
-                    $login = $m[1];
+                '~\bRT\h@(\w+):~i'    => function ($m) use ($_this) {
+                        $login = $m[1];
 
-                    $href = Twitter::$url . "/{$login}";
-                    $attrs = array(
-                        'href' => $href,
-                        'title' => "Перейти в твиттер $login"
-                    );
-                    $parts = array('login' => $login);
-                    $_this->setAttrs($parts, $attrs);
+                        $href = Twitter::$url . "/{$login}";
+                        $attrs = array(
+                            'href'  => $href,
+                            'title' => "Перейти в твиттер $login"
+                        );
+                        $parts = array('login' => $login);
+                        $_this->setAttrs($parts, $attrs);
 
-                    $data = 'Ретвит' . Utility::createElement('a', "@{$login}", $attrs);
+                        $data = 'Ретвит' . Utility::createElement('a', "@{$login}", $attrs);
 
-                    return $_this->text->pushStorage($data, Twitter::REPLACER, Typo::VISIBLE);
-                },
+                        return $_this->text->pushStorage($data, Twitter::REPLACER, Typo::VISIBLE);
+                    },
 
                 // Логины (@login)
-                '~(?<!{a})@(\w+)~i' => function($m) use($_this) {
-                    $login = $m[1];
+                '~(?<!{a})@(\w+)~i'   => function ($m) use ($_this) {
+                        $login = $m[1];
 
-                    $href = Twitter::$url . "/{$login}";
-                    $attrs = array(
-                        'href' => $href,
-                        'title' => "Перейти в твиттер $login"
-                    );
-                    $parts = array('login' => $login);
-                    $_this->setAttrs($parts, $attrs);
+                        $href = Twitter::$url . "/{$login}";
+                        $attrs = array(
+                            'href'  => $href,
+                            'title' => "Перейти в твиттер $login"
+                        );
+                        $parts = array('login' => $login);
+                        $_this->setAttrs($parts, $attrs);
 
-                    $data = Utility::createElement('a', $m[0], $attrs);
+                        $data = Utility::createElement('a', $m[0], $attrs);
 
-                    return $_this->text->pushStorage($data, Twitter::REPLACER, Typo::VISIBLE);
-                },
+                        return $_this->text->pushStorage($data, Twitter::REPLACER, Typo::VISIBLE);
+                    },
 
                 // Хештеги
-                '~(?<!{a})#({a}+)~iu' => function($m) use($_this) {
-                    $hash = $m[1];
+                '~(?<!{a})#({a}+)~iu' => function ($m) use ($_this) {
+                        $hash = $m[1];
 
-                    $href = Twitter::$url . "/search?q=%23{$hash}&amp;src=hash";
-                    $attrs = array(
-                        'href' => $href,
-                    );
-                    $parts = array('hash' => $hash);
-                    $_this->setAttrs($parts, $attrs);
+                        $href = Twitter::$url . "/search?q=%23{$hash}&amp;src=hash";
+                        $attrs = array(
+                            'href' => $href,
+                        );
+                        $parts = array('hash' => $hash);
+                        $_this->setAttrs($parts, $attrs);
 
-                    $data = Utility::createElement('a', $m[0], $attrs);
+                        $data = Utility::createElement('a', $m[0], $attrs);
 
-                    return $_this->text->pushStorage($data, Twitter::REPLACER, Typo::VISIBLE);
-                },
+                        return $_this->text->pushStorage($data, Twitter::REPLACER, Typo::VISIBLE);
+                    },
             );
 
             $this->applyRules($rules);

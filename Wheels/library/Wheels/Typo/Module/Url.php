@@ -21,41 +21,43 @@ class Url extends Module
     /**
      * @see \Wheels\Typo\Module::$_config_schema
      */
-    static protected $_config_schema = array(
-        'options' => array(
-            'attrs' => array(
-                'desc'    => 'Дополнительные атрибуты',
-                'type'    => 'array',
-                'default' => array(
-                    'target' => array(
-                        'name' => 'target',
-                        'value' => '_blank',
-                        'cond' => '\Wheels\Typo\Module\Url::condTarget',
+    static protected $_config_schema
+        = array(
+            'options' => array(
+                'attrs'       => array(
+                    'desc'    => 'Дополнительные атрибуты',
+                    'type'    => 'array',
+                    'default' => array(
+                        'target' => array(
+                            'name'  => 'target',
+                            'value' => '_blank',
+                            'cond'  => '\Wheels\Typo\Module\Url::condTarget',
+                        ),
                     ),
                 ),
+                'idn-convert' => array(
+                    'desc'    => 'Преобразование интернационализованных доменных имён (IDN)',
+                    'type'    => 'bool',
+                    'default' => true,
+                ),
+                'modules'     => array(
+                    'default' => array('url/ssh'),
+                ),
             ),
-            'idn-convert' => array(
-                'desc'    => 'Преобразование интернационализованных доменных имён (IDN)',
-                'type'    => 'bool',
-                'default' => true,
-            ),
-            'modules' => array(
-                'default' => array('url/ssh'),
-            ),
-        ),
-    );
+        );
 
     /**
      * @see \Wheels\Typo\Module::$_order
      */
-    static protected $_order = array(
-        'A' => 20,
-        'B' => 0,
-        'C' => 0,
-        'D' => 20,
-        'E' => 0,
-        'F' => 0,
-    );
+    static protected $_order
+        = array(
+            'A' => 20,
+            'B' => 0,
+            'C' => 0,
+            'D' => 20,
+            'E' => 0,
+            'F' => 0,
+        );
 
 
     // --- Регулярные выражения ---
@@ -103,46 +105,49 @@ class Url extends Module
      */
     public function validateOption($name, &$value)
     {
-        switch($name)
-        {
+        switch ($name) {
             case 'attrs' :
-                if(!is_array($value))
-                    return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть массивом, а не " . gettype($value));
+                if (!is_array($value)) {
+                    return self::throwException(
+                        Exception::E_OPTION_VALUE,
+                        "Значение параметра '$name' должно быть массивом, а не " . gettype($value)
+                    );
+                }
 
-                foreach($value as &$attr)
-                {
-                    if(!is_array($attr) || !array_key_exists('name', $attr) || !array_key_exists('value', $attr))
-                        return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть массивом элементов array('name' => '...', 'value' => '...', ['cond' => '...'])");
-                    if(!array_key_exists('cond', $attr))
+                foreach ($value as &$attr) {
+                    if (!is_array($attr) || !array_key_exists('name', $attr) || !array_key_exists('value', $attr))
+                        return self::throwException(
+                            Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть массивом элементов array('name' => '...', 'value' => '...', ['cond' => '...'])"
+                        );
+                    if (!array_key_exists('cond', $attr))
                         $attr['cond'] = true;
                 }
-            break;
+                break;
 
-            default : Module::validateOption($name, $value);
+            default :
+                Module::validateOption($name, $value);
         }
     }
 
     /**
      *
-     * @param type $parts
+     * @param type  $parts
      * @param array $attrs
      */
     public function setAttrs($parts, array &$attrs)
     {
-        foreach($this->_options['attrs'] as $attr)
-        {
+        foreach ($this->_options['attrs'] as $attr) {
             $a_cond = $attr['cond'];
-            if(is_callable($a_cond))
+            if (is_callable($a_cond))
                 $a_cond = call_user_func($a_cond, $parts, $this);
 
-            if($a_cond)
-            {
+            if ($a_cond) {
                 $a_name = $attr['name'];
-                if(is_callable($a_name))
+                if (is_callable($a_name))
                     $a_name = call_user_func($a_name, $parts, $this);
 
                 $a_value = $attr['value'];
-                if(is_callable($a_value))
+                if (is_callable($a_value))
                     $a_value = call_user_func($a_value, $parts, $this);
 
                 $attrs[$a_name] = $a_value;
@@ -162,21 +167,19 @@ class Url extends Module
     {
         $_this = $this;
 
-        $callback = function($parts) use($_this)
-        {
+        $callback = function ($parts) use ($_this) {
             $match = $parts[0];
 
-            $parts += array('scheme' => '', 'slashes' => '', 'mailto' => '', 'user' => '', 'password' => '', 'www' => '', 'host' => '', 'port' => '', 'path' => '', 'query' => '', 'hash' => '');
+            $parts += array('scheme' => '', 'slashes' => '', 'mailto' => '', 'user' => '', 'password' => '',
+                            'www'    => '', 'host' => '', 'port' => '', 'path' => '', 'query' => '', 'hash' => '');
 
             // Создаём перменные
             $scheme = $slashes = $mailto = $user = $password = $www = $host = $port = $path = $query = $hash = null;
-            foreach($parts as $key => $value)
-            {
-                if(is_int($key))
+            foreach ($parts as $key => $value) {
+                if (is_int($key))
                     unset($parts[$key]);
-                else
-                {
-                    if(mb_strlen($value) == 0)
+                else {
+                    if (mb_strlen($value) == 0)
                         $parts[$key] = null;
                     ${$key} =& $parts[$key];
                 }
@@ -188,96 +191,81 @@ class Url extends Module
             $localhost = ($host == 'localhost' || preg_match('~' . Url::IP . '~', $host));
 
             // Схема
-            if(isset($scheme))
-            {
+            if (isset($scheme)) {
                 $scheme = mb_strtolower($scheme);
                 $href = $scheme . '://';
 
                 // Протоколы http, https и mailto опускаем
-                if(!in_array($scheme, array('http', 'https')))
+                if (!in_array($scheme, array('http', 'https')))
                     $value = $href;
-            }
-            elseif(isset($slashes))
-            {
+            } elseif (isset($slashes)) {
                 $href = $slashes;
-            }
-            elseif(isset($mailto) || (isset($user) && !isset($password) && !$localhost))
-            {
+            } elseif (isset($mailto) || (isset($user) && !isset($password) && !$localhost)) {
                 $href = 'mailto:';
-            }
-            else
-            {
+            } else {
                 $href = 'http://';
             }
 
             // Логин и пароль
-            if(isset($user))
-            {
-                $href  .= rawurlencode($user);
+            if (isset($user)) {
+                $href .= rawurlencode($user);
                 $value .= $user;
 
-                if(isset($password))
-                {
-                    $href  .= ':' . rawurlencode($password);
+                if (isset($password)) {
+                    $href .= ':' . rawurlencode($password);
                     $value .= ':' . $password;
                 }
 
-                $href  .= '@';
+                $href .= '@';
                 $value .= '@';
             }
 
             // www
-            if(isset($www))
+            if (isset($www))
                 $href .= 'www.';
 
             // Хост
             $host = mb_strtolower($host);
 
             // Подсвечиваем localhost только, если задан протокол
-            if($localhost && !(isset($scheme) || isset($slashes)))
+            if ($localhost && !(isset($scheme) || isset($slashes)))
                 return $match;
 
-            $href  .= Url::url_host_encode($host, $_this->getOption('idna'));
+            $href .= Url::url_host_encode($host, $_this->getOption('idna'));
             $value .= $host;
 
             // Порт
-            if(isset($port))
-            {
-                $href  .= ':' . $port;
+            if (isset($port)) {
+                $href .= ':' . $port;
                 $value .= ':' . $port;
             }
 
             // URL-путь
-            if(isset($path))
-            {
-                $href  .= Url::url_path_encode($path);
+            if (isset($path)) {
+                $href .= Url::url_path_encode($path);
                 $value .= $path;
             }
 
             // Параметры
-            if(isset($query))
-            {
-                $href  .= '?' . Url::url_query_encode($query);
+            if (isset($query)) {
+                $href .= '?' . Url::url_query_encode($query);
                 $value .= '?' . $query;
             }
 
             // Якорь
-            if(isset($hash))
-            {
-                $href  .= '#' . urlencode($hash);
+            if (isset($hash)) {
+                $href .= '#' . urlencode($hash);
                 $value .= '#' . $hash;
             }
 
             $value = htmlentities($value, ENT_QUOTES, 'utf-8');
 
-            if($_this->typo->getOption('html-out-enabled'))
-            {
+            if ($_this->typo->getOption('html-out-enabled')) {
                 $attrs = array('href' => $href);
                 $_this->setAttrs($parts, $attrs);
 
                 $data = Utility::createElement('a', $value, $attrs);
-            }
-            else
+            } else
                 $data = $value;
 
             return $_this->text->pushStorage($data, Url::REPLACER, Typo::VISIBLE);
@@ -285,9 +273,9 @@ class Url extends Module
 
         // [[<схема>:]//|mailto:][<логин>[:<пароль>]@][<www>.]<хост>[:<порт>][<URL‐путь>][?<параметры>][#<якорь>]
         $pattern = '((' . self::SCHEME . ':)?(?<slashes>//)|(?<mailto>mailto)\:)?'
-                 . '(' . self::USER . '(\:' . self::PASSWORD . ')?@)?'
-                 . '(' . self::WWW . '\.)?' . self::HOST . '(\:' . self::PORT . ')?' . self::PATH
-                 . '(\?' . self::QUERY . ')?' . '(#' . self::HASH . ')?';
+            . '(' . self::USER . '(\:' . self::PASSWORD . ')?@)?'
+            . '(' . self::WWW . '\.)?' . self::HOST . '(\:' . self::PORT . ')?' . self::PATH
+            . '(\?' . self::QUERY . ')?' . '(#' . self::HASH . ')?';
         $pattern = $this->preg_wrap($pattern);
 
         $this->typo->text->preg_replace_callback($pattern, $callback);
@@ -308,7 +296,7 @@ class Url extends Module
     /**
      * Создаёт регулярное выражение для выделения ссылок.
      *
-     * @param string $pattern   Базовое регулярное выражение.
+     * @param string $pattern Базовое регулярное выражение.
      *
      * @return string
      */
@@ -329,7 +317,7 @@ class Url extends Module
      * @link http://phlymail.com/en/downloads/idna-convert.html
      *
      * @param string $host
-     * @param bool $idna
+     * @param bool   $idna
      *
      * @return string
      */
@@ -337,8 +325,7 @@ class Url extends Module
     {
         // @todo: исключение (warning), если библиотека не подключена
         // @todo: нужно ли парсить отдельные части хоста?
-        if($idna && preg_match('~[^\x00-\xA7]~u', $host))
-        {
+        if ($idna && preg_match('~[^\x00-\xA7]~u', $host)) {
             $idna = IDNA::singleton();
             $host = $idna->encode($host);
         }
@@ -358,9 +345,8 @@ class Url extends Module
         $parts = preg_split('~([/;=])~', $path, -1, PREG_SPLIT_DELIM_CAPTURE);
 
         $encoded_path = '';
-        foreach($parts as $part)
-        {
-            if(preg_match('~[/;=]~', $part))
+        foreach ($parts as $part) {
+            if (preg_match('~[/;=]~', $part))
                 $encoded_path .= $part;
             else
                 $encoded_path .= rawurlencode($part);
@@ -384,9 +370,8 @@ class Url extends Module
         $parts = preg_split('~([&=+])~', $query, -1, PREG_SPLIT_DELIM_CAPTURE);
 
         $encoded_query = '';
-        foreach($parts as $part)
-        {
-            if(preg_match('~[&=+]~', $part))
+        foreach ($parts as $part) {
+            if (preg_match('~[&=+]~', $part))
                 $encoded_query .= $part;
             else
                 $encoded_query .= urlencode($part);
@@ -405,59 +390,57 @@ class Url extends Module
     static public function urlencode($url)
     {
         $matches = parse_url($url);
-        if(!$matches)
+        if (!$matches)
             return $url;
 
-        $parts = array('scheme' => '', 'user' => '', 'pass' => '', 'host' => '', 'port' => '', 'path' => '', 'query' => '', 'fragment' => '');
+        $parts = array('scheme' => '', 'user' => '', 'pass' => '', 'host' => '', 'port' => '', 'path' => '',
+                       'query'  => '', 'fragment' => '');
 
-        foreach(array_keys($parts) as $i)
-        {
-            if(isset($matches[$i]))
+        foreach (array_keys($parts) as $i) {
+            if (isset($matches[$i]))
                 $parts[$i] = $matches[$i];
         }
 
         list($scheme, $user, $pass, $host, $port, $path, $query, $hash) = array_values($parts);
 
-        if(!empty($scheme))
-          $scheme .= '://';
+        if (!empty($scheme))
+            $scheme .= '://';
 
-        if(!empty($user) && !empty($pass))
-        {
-            $user = rawurlencode($user).':';
-            $pass = rawurlencode($pass).'@';
-        }
-        elseif(!empty($user))
-          $user .= '@';
+        if (!empty($user) && !empty($pass)) {
+            $user = rawurlencode($user) . ':';
+            $pass = rawurlencode($pass) . '@';
+        } elseif (!empty($user))
+            $user .= '@';
 
-        if(!empty($port) && !empty($host))
-            $host = ''.$host.':';
-        elseif(!empty($host))
-            $host=$host;
+        if (!empty($port) && !empty($host))
+            $host = '' . $host . ':';
+        elseif (!empty($host))
+            $host = $host;
 
-        if(!empty($path))
+        if (!empty($path))
             $path = self::url_path_encode($path);
 
-        if(!empty($query))
+        if (!empty($query))
             $query = '?' . self::url_query_encode($query);
 
-        if(!empty($hash))
+        if (!empty($hash))
             $hash = '#' . urlencode($hash);
 
         return implode('', array($scheme, $user, $pass, $host, $port, $path, $query, $hash));
-     }
+    }
 
-     /**
+    /**
      * Проверяет, является ли ссылка внутренней.
      *
-     * @param array        $parts   Массив частей URL.
-     * @param \Wheels\Typo\Module $_this   Вызывающий модуль.
+     * @param array               $parts Массив частей URL.
+     * @param \Wheels\Typo\Module $_this Вызывающий модуль.
      *
      * @return bool
      */
     static public function condTarget(array $parts, Module $_this)
     {
         static $HTTP_HOST = null;
-        if(!isset($HTTP_HOST))
+        if (!isset($HTTP_HOST))
             $HTTP_HOST = self::url_host_encode($_SERVER['HTTP_HOST'], $_this->getOption('idna'));
 
         return ($parts['host'] != $HTTP_HOST);

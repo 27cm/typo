@@ -11,13 +11,20 @@
 namespace Wheels\Typo\Module;
 
 use Wheels\Typo\Module;
-use Wheels\Typo\Module\Exception;
+use Wheels\Typo\IOptions;
 
 /**
  * Коллекция модулей типографа.
  */
-class Collection extends \Wheels\Datastructure\Collection
+class Collection extends \Wheels\Datastructure\Collection implements IOptions
 {
+    /**
+     * Массив модулей.
+     *
+     * @var \Wheels\Typo\Module
+     */
+    protected $_array;
+
 
     // --- Открытые методы ---
 
@@ -29,5 +36,21 @@ class Collection extends \Wheels\Datastructure\Collection
     public function __construct(array $array = array())
     {
         parent::__construct('Wheels\Typo\Module', $array);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setOptionsFromGroup($name)
+    {
+        return $this->__call(__METHOD__, func_get_args());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setOptionsFromGroups(array $names)
+    {
+        return $this->__call(__METHOD__, func_get_args());
     }
 }

@@ -39,7 +39,7 @@ class Collection extends \Wheels\Datastructure\Collection
      */
     public function __construct(array $array = array(), $caseSensitive = true)
     {
-        $this->_caseSensitive = (bool) $caseSensitive;
+        $this->_caseSensitive = (bool)$caseSensitive;
         parent::__construct('Wheels\Config\Option', $array);
     }
 
@@ -63,10 +63,11 @@ class Collection extends \Wheels\Datastructure\Collection
      */
     public function prepareOffset($offset)
     {
-        if(is_string($offset) && !$this->getCaseSensitive())
+        if (is_string($offset) && !$this->getCaseSensitive()) {
             return mb_strtolower($offset);
-        else
+        } else {
             return $offset;
+        }
     }
 
     /**
@@ -92,8 +93,9 @@ class Collection extends \Wheels\Datastructure\Collection
      */
     public function offsetSet($offset, $value)
     {
-        if(!is_string($offset) && $this->_checkElemClass($value))
+        if (!is_string($offset) && $this->_checkElemClass($value)) {
             $offset = $value->getName();
+        }
 
         $offset = $this->prepareOffset($offset);
         parent::offsetSet($offset, $value);

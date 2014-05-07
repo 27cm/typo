@@ -5,11 +5,12 @@ namespace Wheels\Typo;
 use Wheels\Typo;
 use Wheels\Config;
 use Wheels\Typo\Exception;
+use Wheels\Typo\IOptions;
 
 /**
  * Модуль типографа.
  */
-abstract class Module
+abstract class Module implements IOptions
 {
     /**
      * Типограф, использующий данный модуль.
@@ -54,18 +55,24 @@ abstract class Module
     protected $_stage;
 
     /**
+     * @var string
+     */
+    protected $_configDir;
+
+    /**
      * Приоритет выполнения стадий
      *
      * @var array
      */
-    static protected $_order = array(
-        'A' => 0,
-        'B' => 0,
-        'C' => 0,
-        'D' => 0,
-        'E' => 0,
-        'F' => 0,
-    );
+    static protected $_order
+        = array(
+            'A' => 0,
+            'B' => 0,
+            'C' => 0,
+            'D' => 0,
+            'E' => 0,
+            'F' => 0,
+        );
 
     /**
      * Конфигурация.
@@ -78,103 +85,140 @@ abstract class Module
     public $config_section;
 
 
-    // --- Конструктор ---
+    // --- Открытые методы ---
 
     /**
      * Установливает значения параметров настроек по умолчанию,
      * затем установливает заданные значения параметров настроек.
      *
-     * @param string|array $options Массив настроек или название секции в файле настроек.
-     * @param \Wheels\Typo $typo           Типограф, использующий данный модуль.
-     *
-     * @uses \Wheels\Typo\Module::setOptions()
-     * @uses \Wheels\Typo\Module::getDefaultOptions()
+     * @param array        $options Массив настроек.
+     * @param \Wheels\Typo $typo    Типограф, использующий данный модуль.
      */
-    public function __construct($options = 'default', Typo $typo = null)
+    public function __construct($options = array(), Typo $typo = null)
     {
-        if(isset($typo))
-        {
+        if (isset($typo)) {
             $this->typo = $typo;
             $this->text =& $typo->text;
             $this->config_section = $typo->config_section;
 //            $this->setConfigDir($typo->_config->getDirectory());
+        } else {
+
         }
-        else
-        {
-            $this->config_section = is_string($options) ? $options : 'default';
-            $this->setConfigDir(TYPO_CONFIG_DIR);
-        }
+
+        $this->setConfigDir(TYPO_CONFIG_DIR);
 
         $schema = static::getConfigSchema();
         $this->_config = Config::create($schema);
 
-
-        $this->setOptionsFromFile('default');
-
         $this->setOptions($options);
-        foreach($this->getDefaultOptions() as $name => $value)
-        {
-            if(!array_key_exists($name, $this->_options))
-                $this->setOption($name, $value);
-        }
     }
 
-
-    // --- Открытые методы класса ---
+    /**
+     * Возвращает дирректорию с файлами
+     * @return string
+     */
+    public function getConfigDir()
+    {
+        return $this->_configDir;
+    }
 
     /**
-     * Возвращает массив значений параметров по умолчанию.
+     * Устанавливает дирректорию с конфигурационными файлами.
      *
-     * @return array
+     * @param string $dir Дирректория.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     *
+     * @throws \Wheels\Typo\Exception
      */
-    public function getDefaultOptions()
+    public function setConfigDir($dir)
     {
-        return $this->_config->getDefaultOptions();
+        if (!is_dir($dir)) {
+            throw new Exception("Каталог '{$dir}' не найден или не является каталогом");
+        } elseif (!is_writable($dir)) {
+            throw new Exception("Каталог '{$dir}' не доступен для записи");
+        } elseif (!is_readable($dir)) {
+            throw new Exception("Каталог '{$dir}' не доступен для чтения");
+        }
+
+        $this->_configDir = $dir;
+
+        $filename = strtolower(get_called_class());
+        $filename = str_replace('Wheels\\', '', $filename);
+        $filename = str_replace('\\', DS, $filename);
+        $filename = $this->_configDir . DS . strtolower($filename) . '.ini';
+
+        if (!is_file($filename)) {
+            // @todo: создать каталог и создать там ini-файл
+        }
+
+        $this->getConfig()->setGroupsFromFile($filename);
+        $this->getModules()->setConfigDir($dir);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setOptionsFromGroup($name)
+    {
+        $this->getConfig()->setOptionsValuesFromGroup($name);
+        $this->getModules()->setOptionsFromGroup($name);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setOptionsFromGroups(array $names)
+    {
+        $this->getConfig()->setOptionsValuesFromGroups($names);
+        $this->getModules()->setOptionsFromGroups($names);
     }
 
     /**
      * Проверка значения параметра (с возможной корректировкой).
      *
-     * @param string $name      Название параметра.
-     * @param mixed  $value     Значение параметра.
+     * @param string $name  Название параметра.
+     * @param mixed  $value Значение параметра.
      */
     public function validateOption($name, &$value)
     {
         // $scheme = static::getConfigSchema($name);
 
-        switch($name)
-        {
+        switch ($name) {
             case 'modules' :
-                if((bool) $value == false)
+                if ((bool)$value == false)
                     $value = array();
 
-                if(is_string($value))
+                if (is_string($value))
                     $value = explode(',', $value);
 
-                if(!is_array($value))
-                    return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть строкой или массивом строк");
+                if (!is_array($value))
+                    return self::throwException(
+                        Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть строкой или массивом строк"
+                    );
 
-                foreach($value as &$module)
-                {
-                    if(!is_string($module))
-                        return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть строкой или массивом строк");
+                foreach ($value as &$module) {
+                    if (!is_string($module))
+                        return self::throwException(
+                            Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть строкой или массивом строк"
+                        );
                 }
 
-                foreach($value as &$module)
-                {
+                foreach ($value as &$module) {
                     $module = self::getModuleClassname($module);
                 }
-            break;
+                break;
 
-            default : $value = (bool) $value;
+            default :
+                $value = (bool)$value;
         }
     }
 
     /**
      * Установливает значение параметра настроек.
      *
-     * @param string $name      Название параметра.
-     * @param mixed  $value     Значение параметра.
+     * @param string $name  Название параметра.
+     * @param mixed  $value Значение параметра.
      *
      * @throws \Wheels\Typo\Exception
      */
@@ -182,17 +226,6 @@ abstract class Module
     {
         $this->_config->setOptionValue($name, $value);
         $this->onChangeOption($name, $value);
-    }
-
-    public function setOptionsFromConfigFile($section = 'default')
-    {
-        $filename = $this->configFilename;
-        $this->_config->setOptionsValuesFromFile($filename, $section);
-
-        foreach($this->_modules as $module)
-        {
-            $module->setOptionsFromFile($section);
-        }
     }
 
     /**
@@ -208,7 +241,7 @@ abstract class Module
      */
     public function setOptions(array $options)
     {
-        $this->_config->setOptionsValues($options);
+        $this->getConfig()->setOptionsValues($options);
     }
 
     /**
@@ -232,34 +265,14 @@ abstract class Module
      */
     public function setDefaultOptions()
     {
-        foreach($this->getConfig()->getOptions() as $option) {
-            $option->setValueDefault();
-        }
-
-        foreach($this->getModules() as $module) {
-            $module->setDefaultOptions();
-        }
-    }
-
-    public function setConfigDir($dir)
-    {
-        if(!is_dir($dir))
-            return self::throwException(Exception::E_RUNTIME, "'$dir' не является директорией");
-        if(!file_exists($dir))
-            return self::throwException(Exception::E_RUNTIME, "Директория '$dir' не существует");
-
-        $filename = strtolower(get_called_class()) . '.ini';
-        $filename = str_replace(strtolower('Wheels' . DS), '', $filename);
-        $filename = str_replace(strtolower('Typo' . DS . 'Module' . DS), '', $filename);
-        $filename = $dir . DS . $filename;
-
-        $this->_config = new Config($filename);
+        $this->getConfig()->setOptionsValuesDefault();
+        $this->getModules()->setDefaultOptions();
     }
 
     /**
      * Возвращает значение параметра.
      *
-     * @param string $name  Название параметра.
+     * @param string $name Название параметра.
      *
      * @throws \Wheels\Typo\Exception
      *
@@ -267,10 +280,7 @@ abstract class Module
      */
     public function getOption($name)
     {
-        if(!$this->checkOptionExists($name))
-            return self::throwException(Exception::E_OPTION_NAME, "Несуществующий параметр '$name'");
-
-        return $this->_options[$name];
+        return $this->getConfig()->getOptionValue($name);
     }
 
     /**
@@ -289,7 +299,7 @@ abstract class Module
     /**
      * Возвращает модуль с заданным именем.
      *
-     * @param string $name  Имя модуля (полное или частичное имя класса модуля).
+     * @param string $name Имя модуля (полное или частичное имя класса модуля).
      *
      *
      * @return \Wheels\Typo\Module Модуль с заданным именем либо NULL, если модуль
@@ -297,26 +307,28 @@ abstract class Module
      */
     public function getModule($name)
     {
-        $name = str_replace('/', '\\', trim($name));
+        // @todo: перенести внутрь коллекции
+//        $name = str_replace('/', '\\', trim($name));
+//
+//        if (substr($name, 0, 1) !== '\\')
+//            $name = '\\' . $name;
+//
+//        $name = preg_quote($name, '~');
+//        foreach ($this->getModules() as $key => $module) {
+//            if (preg_match('~' . $name . '$~i', '\\' . $key))
+//                return $module;
+//        }
+//
+//        return null;
 
-        if(substr($name, 0, 1) !== '\\')
-            $name = '\\' . $name;
-
-        $name = preg_quote($name, '~');
-        foreach($this->_modules as $key => $module)
-        {
-            if(preg_match('~' . $name . '$~i', '\\' . $key))
-                return $module;
-        }
-
-        return NULL;
+        return $this->_modules[$name];
     }
 
     /**
      * Добавляет модуль.
      *
-     * @param \Wheels\Typo\Module|string $name  Модуль или его имя.
-     * @param string|array $options
+     * @param \Wheels\Typo\Module|string $name Модуль или его имя.
+     * @param string|array               $options
      *
      * @throws \Wheels\Typo\Exception
      */
@@ -356,7 +368,7 @@ abstract class Module
     /**
      * Удаляет модуль.
      *
-     * @param string $name  Название модуля.
+     * @param string $name Название модуля.
      *
      * @throws \Wheels\Typo\Exception
      *
@@ -365,12 +377,11 @@ abstract class Module
     public function removeModule($name)
     {
         $classname = self::getModuleClassname($name);
-        if(!class_exists($classname))
-        {
-            return self::throwException(Exception::E_OPTION_VALUE, "Неизвестный модуль '$name' (класс " . $classname . " не найден)");
-        }
-        elseif(array_key_exists($classname, $this->_modules))
-        {
+        if (!class_exists($classname)) {
+            return self::throwException(
+                Exception::E_OPTION_VALUE, "Неизвестный модуль '$name' (класс " . $classname . " не найден)"
+            );
+        } elseif (array_key_exists($classname, $this->_modules)) {
             $this->_options['modules'] = array_diff($this->_options['modules'], array($classname));
             unset($this->_modules[$classname]);
         }
@@ -396,17 +407,19 @@ abstract class Module
     public function setStage($stage)
     {
         $count = count(self::getStages());
-        if($stage < 0 || $stage >= $count)
+        if ($stage < 0 || $stage >= $count)
             return false;
 
         $this->_stage = $stage;
 
-        foreach($this->_modules as $module)
+        foreach ($this->_modules as $module)
             $module->setStage($stage);
 
-        uasort($this->_modules, function(Module $a, Module $b) {
-            return ($a->getOrder() < $b->getOrder()) ? -1 : 1;
-        });
+        uasort(
+            $this->_modules, function (Module $a, Module $b) {
+                return ($a->getOrder() < $b->getOrder()) ? -1 : 1;
+            }
+        );
 
         return true;
     }
@@ -424,12 +437,9 @@ abstract class Module
         $method = $this->getStageMethod();
 
         $fl = true;
-        foreach($this->_modules as $module)
-        {
-            if($fl && $module->getOrder() >= $this->getOrder())
-            {
-                if(method_exists($this, $method) && $this->checkTextType())
-                {
+        foreach ($this->_modules as $module) {
+            if ($fl && $module->getOrder() >= $this->getOrder()) {
+                if (method_exists($this, $method) && $this->checkTextType()) {
                     $this->$method();
                     # echo get_called_class() . '::' . $method . '<br>';
                 }
@@ -438,8 +448,7 @@ abstract class Module
             $module->processStage();
         }
 
-        if($fl && method_exists($this, $method) && $this->checkTextType())
-        {
+        if ($fl && method_exists($this, $method) && $this->checkTextType()) {
             $this->$method();
             # echo get_called_class() . '::' . $method . '<br>';
         }
@@ -448,8 +457,8 @@ abstract class Module
     /**
      * Применяет правила к тексту.
      *
-     * @param array $rules      Набор правил.
-     * @param array $helpers    Вспомогательные элементы регулярных выражений.
+     * @param array $rules   Набор правил.
+     * @param array $helpers Вспомогательные элементы регулярных выражений.
      *
      * @return void|string
      */
@@ -457,18 +466,13 @@ abstract class Module
     {
         $patterns = array();
         $replaces = array();
-        foreach($rules as $key => $value)
-        {
-            if(is_array($value) && array_key_exists($key, $this->_options))
-            {
-                if($this->_options[$key])
-                {
+        foreach ($rules as $key => $value) {
+            if (is_array($value) && array_key_exists($key, $this->_options)) {
+                if ($this->_options[$key]) {
                     $patterns = array_merge($patterns, array_keys($value));
                     $replaces = array_merge($replaces, array_values($value));
                 }
-            }
-            else
-            {
+            } else {
                 $patterns[] = $key;
                 $replaces[] = $value;
             }
@@ -476,35 +480,29 @@ abstract class Module
 
         self::pregHelpers($patterns, $helpers);
 
-        for($i = 0, $count = sizeof($patterns); $i < $count; $i++)
-        {
-            if(is_callable($replaces[$i]))
-            {
-                if(isset($text))
+        for ($i = 0, $count = sizeof($patterns); $i < $count; $i++) {
+            if (is_callable($replaces[$i])) {
+                if (isset($text))
                     $text = preg_replace_callback($patterns[$i], $replaces[$i], $text);
                 else
                     $this->text->preg_replace_callback($patterns[$i], $replaces[$i]);
-            }
-            elseif(is_array($replaces[$i]))
-            {
+            } elseif (is_array($replaces[$i])) {
                 $_this = $this;
-                $callback = function($matches) use($_this, $replaces, $i, $helpers) {
+                $callback = function ($matches) use ($_this, $replaces, $i, $helpers) {
                     return $_this->applyRules($replaces[$i], $helpers, $matches[0]);
                 };
                 $this->text->preg_replace_callback($patterns[$i], $callback);
-            }
-            else
-            {
-                if(isset($text))
+            } else {
+                if (isset($text))
                     $text = preg_replace($patterns[$i], $replaces[$i], $text);
-                elseif(mb_substr($patterns[$i], 0, 1) === '~')
+                elseif (mb_substr($patterns[$i], 0, 1) === '~')
                     $this->text->preg_replace($patterns[$i], $replaces[$i]);
                 else
                     $this->text->replace($patterns[$i], $replaces[$i]);
             }
         }
 
-        if(isset($text))
+        if (isset($text))
             return $text;
     }
 
@@ -545,7 +543,7 @@ abstract class Module
      */
     public function addModules(array $modules)
     {
-        foreach($modules as $module)
+        foreach ($modules as $module)
             $this->addModule($module);
     }
 
@@ -558,15 +556,14 @@ abstract class Module
     {
         $name = $this->getConfig()->getOption($name)->getName();
 
-        switch($name)
-        {
+        switch ($name) {
             case 'modules' :
                 $modules = array();
                 foreach ($this->getConfig()->getOption('modules') as $name) {
                     $modules[] = static::getModuleClassname($name);
                 }
                 $this->setModules($modules);
-            break;
+                break;
         }
     }
 
@@ -579,7 +576,7 @@ abstract class Module
     /**
      * Проверяет существование параметра настроек.
      *
-     * @param string $name  Название параметра.
+     * @param string $name Название параметра.
      *
      * @return bool Вовзращает true, если параметр с таким именем существует, иначе - false.
      */
@@ -618,14 +615,15 @@ abstract class Module
      *
      * @staticvar array $std_helpers    Стандартные вспомогательные элементы регулярных выражений.
      *
-     * @param string|string[] $pattern  Регулярное выражение или массив регулярных выражений.
-     * @param array $helpers            Вспомогательные элементы регулярных выражений.
+     * @param string|string[] $pattern Регулярное выражение или массив регулярных выражений.
+     * @param array           $helpers Вспомогательные элементы регулярных выражений.
      *
      * @return void
      */
     static protected function pregHelpers(&$pattern, array $helpers = array())
     {
-        static $std_helpers = array(
+        static $std_helpers
+        = array(
             // Буквы
             '{a}' => '[a-zA-Zа-яА-ЯёЁ]',
 
@@ -644,7 +642,7 @@ abstract class Module
             '{t}' => '(?:\{\{\{\w+\}\}\})',
         );
 
-        if(is_array($pattern))
+        if (is_array($pattern))
             $patterns = $pattern;
         else
             $patterns = array($pattern);
@@ -653,16 +651,14 @@ abstract class Module
         $helpers_keys = array_keys($helpers);
         $helpers_values = array_values($helpers);
 
-        foreach($patterns as &$p)
-        {
+        foreach ($patterns as &$p) {
             $count = 0;
-            do
-            {
+            do {
                 $p = str_replace($helpers_keys, $helpers_values, $p, $count);
-            } while($count != 0);
+            } while ($count != 0);
         }
 
-        if(is_array($pattern))
+        if (is_array($pattern))
             $pattern = $patterns;
         else
             $pattern = $patterns[0];
@@ -671,18 +667,17 @@ abstract class Module
     /**
      * Возвращает название класса по имени модуля.
      *
-     * @param string $name  Название модуля.
+     * @param string $name Название модуля.
      *
      * @return string
      */
     static protected function getModuleClassname($name)
     {
-        if(class_exists($name))
+        if (class_exists($name))
             return $name;
 
         $classname = '\\' . __CLASS__;
-        foreach(explode('/', $name) as $part)
-        {
+        foreach (explode('/', $name) as $part) {
             $classname .= '\\' . ucfirst($part);
         }
 
@@ -700,25 +695,23 @@ abstract class Module
             $filename = WHEELS_DIR . DS . get_called_class() . DS . 'config' . DS . 'schema.php';
             static::$_config_schema = include $filename;
 
-            foreach(static::$_config_schema['options'] as $n => $schema)
-            {
-                if(!array_key_exists('inherit', $schema))
-                    static::$_config_schema['options'][$n]['inherit'] = FALSE;
+            foreach (static::$_config_schema['options'] as $n => $schema) {
+                if (!array_key_exists('inherit', $schema))
+                    static::$_config_schema['options'][$n]['inherit'] = false;
             }
 
             /** @var \Wheels\Typo $parent */
             $parent = get_parent_class(get_called_class());
 
-            if($parent !== FALSE)
-            {
+            if ($parent !== false) {
                 $parent_schema = $parent::getConfigSchema();
-                foreach($parent_schema['options'] as $n => $schema)
-                {
-                    if($schema['inherit'])
-                    {
-                        if(!array_key_exists($n, static::$_config_schema['options']))
+                foreach ($parent_schema['options'] as $n => $schema) {
+                    if ($schema['inherit']) {
+                        if (!array_key_exists($n, static::$_config_schema['options']))
                             static::$_config_schema['options'][$n] = array();
-                        static::$_config_schema['options'][$n] = array_merge($schema, static::$_config_schema['options'][$n]);
+                        static::$_config_schema['options'][$n] = array_merge(
+                            $schema, static::$_config_schema['options'][$n]
+                        );
                     }
                 }
             }
@@ -730,22 +723,21 @@ abstract class Module
     /**
      * Выбрасывает исключение.
      *
-     * @param int             $code       Код состояния.
-     * @param string          $message    Сообщение.
-     * @param \Wheels\Typo\Exception $previous   Предыдущее исключение.
+     * @param int                    $code     Код состояния.
+     * @param string                 $message  Сообщение.
+     * @param \Wheels\Typo\Exception $previous Предыдущее исключение.
      *
      * @throws \Wheels\Typo\Exception
      *
      * @return void
      */
-    static public function throwException($code = Exception::E_UNKNOWN, $message = null, Exception $previous = null)
-    {
-        if(isset($message))
-            throw new Exception($message, $code, $previous);
-        else
-        {
-            $message = Exception::getMessageByCode($code);
-            throw new Exception($message, $code, $previous);
-        }
-    }
+//    static public function throwException($code = Exception::E_UNKNOWN, $message = null, Exception $previous = null)
+//    {
+//        if (isset($message))
+//            throw new Exception($message, $code, $previous);
+//        else {
+//            $message = Exception::getMessageByCode($code);
+//            throw new Exception($message, $code, $previous);
+//        }
+//    }
 }

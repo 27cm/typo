@@ -23,14 +23,15 @@ class Symbol extends Module
      *
      * @var array
      */
-    static protected $_order = array(
-        'A' => 0,
-        'B' => 30,
-        'C' => 0,
-        'D' => 0,
-        'E' => 0,
-        'F' => 0,
-    );
+    static protected $_order
+        = array(
+            'A' => 0,
+            'B' => 30,
+            'C' => 0,
+            'D' => 0,
+            'E' => 0,
+            'F' => 0,
+        );
 
 
     // --- Защищенные методы класса ---

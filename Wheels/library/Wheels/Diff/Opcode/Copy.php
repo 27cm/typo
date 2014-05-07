@@ -24,8 +24,7 @@ class Copy extends Opcode
 
     public function getOpcode()
     {
-        if($this->len === 1)
-        {
+        if ($this->len === 1) {
             return 'c';
         }
         return "c{$this->len}";

@@ -46,22 +46,24 @@ abstract class Type
     static public function create($name)
     {
         $matches = array();
-        if(preg_match('/(.+)\[\]$/', $name, $matches))
+        if (preg_match('/(.+)\[\]$/', $name, $matches)) {
             return new Tarray($matches[1]);
-
-        if(!class_exists($name))
-        {
-            $alt_classname = __CLASS__ . '\\T' . strtolower($name);
-            if(class_exists($alt_classname))
-                $name = $alt_classname;
-            else
-                throw new Exception("Тип (класс) $name не найден");
         }
 
-        if(is_subclass_of($name, __CLASS__))
+        if (!class_exists($name)) {
+            $alt_classname = __CLASS__ . '\\T' . strtolower($name);
+            if (class_exists($alt_classname)) {
+                $name = $alt_classname;
+            } else {
+                throw new Exception("Тип (класс) $name не найден");
+            }
+        }
+
+        if (is_subclass_of($name, __CLASS__)) {
             return new $name();
-        else
+        } else {
             throw new Exception("Класс $name не является наследником " . __CLASS__);
+        }
     }
 
 

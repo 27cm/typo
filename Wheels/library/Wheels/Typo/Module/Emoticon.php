@@ -21,14 +21,15 @@ abstract class Emoticon extends Module
      *
      * @var array
      */
-    static protected $_order = array(
-        'A' => 35,
-        'B' => 0,
-        'C' => 0,
-        'D' => 5,
-        'E' => 0,
-        'F' => 0,
-    );
+    static protected $_order
+        = array(
+            'A' => 35,
+            'B' => 0,
+            'C' => 0,
+            'D' => 5,
+            'E' => 0,
+            'F' => 0,
+        );
 
     /**
      * Смайлики.
@@ -54,34 +55,39 @@ abstract class Emoticon extends Module
 
     public function validateOption($name, &$value)
     {
-        switch($name)
-        {
+        switch ($name) {
             case 'tag' :
 
-            break;
+                break;
 
             case 'width' :
             case 'height' :
-                if(!is_int($value))
+                if (!is_int($value)) {
                     $value = intval($value);
-            break;
+                }
+                break;
 
             case 'attrs' :
-                if(!is_array($value))
-                    return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть массивом, а не " . gettype($value));
+                if (!is_array($value))
+                    return self::throwException(
+                        Exception::E_OPTION_VALUE,
+                        "Значение параметра '$name' должно быть массивом, а не " . gettype($value)
+                    );
 
-                foreach($value as $key => &$attr)
-                {
-                    if(!is_array($attr) || !array_key_exists('value', $attr))
-                        return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть массивом элементов array('value' => '...', ['name' => '...', 'cond' => '...'])");
-                    if(!array_key_exists('name', $attr))
-                        $attr['name'] = (string) $key;
-                    if(!array_key_exists('cond', $attr))
+                foreach ($value as $key => &$attr) {
+                    if (!is_array($attr) || !array_key_exists('value', $attr))
+                        return self::throwException(
+                            Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть массивом элементов array('value' => '...', ['name' => '...', 'cond' => '...'])"
+                        );
+                    if (!array_key_exists('name', $attr))
+                        $attr['name'] = (string)$key;
+                    if (!array_key_exists('cond', $attr))
                         $attr['cond'] = true;
                 }
-            break;
+                break;
 
-            default : Module::validateOption($name, $value);
+            default :
+                Module::validateOption($name, $value);
         }
     }
 
@@ -97,18 +103,16 @@ abstract class Emoticon extends Module
     {
         $class = get_called_class();
 
-        if(is_null($class::$emoticons))
-        {
+        if (is_null($class::$emoticons)) {
             $class::$emoticons = array();
-            if(!empty($class::$smiles))
-            {
-                foreach($class::$smiles as $key => $group)
-                {
-                    foreach($group['replaces'] as $emoticon)
-                    {
+            if (!empty($class::$smiles)) {
+                foreach ($class::$smiles as $key => $group) {
+                    foreach ($group['replaces'] as $emoticon) {
                         // @todo: сделать W_RUNTIME и не прерывать выполнение
-                        if(array_key_exists($emoticon, $class::$emoticons))
-                            return self::throwException(Exception::E_RUNTIME, "В массиве '$class::\$smiles' обнаружен повторящийся эмотикон {$emoticon}");
+                        if (array_key_exists($emoticon, $class::$emoticons))
+                            return self::throwException(
+                                Exception::E_RUNTIME, "В массиве '$class::\$smiles' обнаружен повторящийся эмотикон {$emoticon}"
+                            );
                         $class::$emoticons[$emoticon] = $key;
                     }
                 }
@@ -117,12 +121,10 @@ abstract class Emoticon extends Module
             }
         }
 
-        if($this->typo->_options['html-out-enabled'] && !empty($class::$emoticons))
-        {
+        if ($this->typo->_options['html-out-enabled'] && !empty($class::$emoticons)) {
             $_this = $this;
 
-            $callback = function($emoticon) use($_this)
-            {
+            $callback = function ($emoticon) use ($_this) {
                 $class = get_called_class();
 
                 $key = $class::$emoticons[$emoticon];
@@ -137,10 +139,9 @@ abstract class Emoticon extends Module
                 );
 
                 $attrs = $_this->setAttrs($data);
-                foreach($attrs as &$value)
-                {
-                    foreach($data as $key => $val)
-                        $value = str_replace('{' . $key . '}', (string) $val, $value);
+                foreach ($attrs as &$value) {
+                    foreach ($data as $key => $val)
+                        $value = str_replace('{' . $key . '}', (string)$val, $value);
                 }
 
                 $elem = Utility::createElement($_this->getOption('tag'), null, $attrs);
@@ -161,26 +162,24 @@ abstract class Emoticon extends Module
 
     /**
      *
-     * @param type $data
+     * @param type  $data
      * @param array $attrs
      */
     public function setAttrs($data)
     {
         $attrs = array();
-        foreach($this->_options['attrs'] as $attr)
-        {
+        foreach ($this->_options['attrs'] as $attr) {
             $a_cond = $attr['cond'];
-            if(is_callable($a_cond))
+            if (is_callable($a_cond))
                 $a_cond = call_user_func($a_cond, $data, $this);
 
-            if($a_cond)
-            {
+            if ($a_cond) {
                 $a_name = $attr['name'];
-                if(is_callable($a_name))
+                if (is_callable($a_name))
                     $a_name = call_user_func($a_name, $data, $this);
 
                 $a_value = $attr['value'];
-                if(is_callable($a_value))
+                if (is_callable($a_value))
                     $a_value = call_user_func($a_value, $data, $this);
 
                 $attrs[$a_name] = $a_value;

@@ -29,8 +29,7 @@ class Insert extends Opcode
     public function getOpcode()
     {
         $to_len = strlen($this->text);
-        if($to_len === 1)
-        {
+        if ($to_len === 1) {
             return "i:{$this->text}";
         }
         return "i{$to_len}:{$this->text}";

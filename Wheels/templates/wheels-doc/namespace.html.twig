@@ -1,9 +1,12 @@
 {% extends 'layout.html.twig' %}
 
 {% macro elementSummary(element, type) %}
-    <div id="{{ type }}_{{ element.name }}" class="element ajax clickable {{ type }}" data-toggle="collapse" data-target="#{{ type }}_{{ element.name }} .collapse">
+    <div id="{{ type }}_{{ element.name }}" class="element ajax clickable {{ type }}" data-toggle="collapse"
+         data-target="#{{ type }}_{{ element.name }} .collapse">
         <h1>{{ element.name }}{% if path(element) %}<a href="{{ path(element) }}">¶</a>{% endif %}</h1>
+
         <p class="short_description">{{ element.summary }}</p>
+
         <div class="details collapse">{{ element.description|markdown|raw }}</div>
         {% if path(element) %}<a href="{{ path(element) }}" class="more">« More »</a>{% endif %}
     </div>
@@ -76,14 +79,14 @@
     {% import _self as self %}
 
     {% for namespace in node.children %}
-    <li>
-        <a href="{{ path(namespace) }}" title="{{ namespace.name }}">
-            <i class="icon-th"></i> {{ namespace.name }}
-        </a>
-        <ul class="nav nav-list nav-namespaces">
-            {{ self.renderNamespaceSidebar(namespace) }}
-        </ul>
-    </li>
+        <li>
+            <a href="{{ path(namespace) }}" title="{{ namespace.name }}">
+                <i class="icon-th"></i> {{ namespace.name }}
+            </a>
+            <ul class="nav nav-list nav-namespaces">
+                {{ self.renderNamespaceSidebar(namespace) }}
+            </ul>
+        </li>
     {% endfor %}
 {% endmacro %}
 
@@ -99,7 +102,8 @@
         <div class="span4">
             <div class="btn-group view pull-right" data-toggle="buttons-radio">
                 <button class="btn details" title="Show descriptions and method names">
-                    <i class="icon-list"></i></button><button class="btn simple" title="Show only method names">
+                    <i class="icon-list"></i></button>
+                <button class="btn simple" title="Show only method names">
                     <i class="icon-align-justify"></i>
                 </button>
             </div>

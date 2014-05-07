@@ -29,17 +29,13 @@ class Replace extends Opcode
 
     public function getOpcode()
     {
-        if($this->fromLen === 1)
-        {
+        if ($this->fromLen === 1) {
             $del_opcode = 'd';
-        }
-        else
-        {
+        } else {
             $del_opcode = "d{$this->fromLen}";
         }
         $to_len = strlen($this->text);
-        if($to_len === 1)
-        {
+        if ($to_len === 1) {
             return "{$del_opcode}i:{$this->text}";
         }
         return "{$del_opcode}i{$to_len}:{$this->text}";

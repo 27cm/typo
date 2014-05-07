@@ -38,22 +38,19 @@ class Exception extends \Exception
     /**
      * @uses parent::__construct()
      *
-     * @param string     $message   Сообщение.
-     * @param int        $code      Код состояния.
-     * @param \Exception $previous  Предыдущее исключение.
+     * @param string     $message  Сообщение.
+     * @param int        $code     Код состояния.
+     * @param \Exception $previous Предыдущее исключение.
      *
      * @return void
      */
     public function __construct($message = '', $code = self::E_UNKNOWN, \Exception $previous = null)
     {
-        if(version_compare(PHP_VERSION, '5.3.0', '<'))
-        {
-            parent::__construct($message, (int) $code);
+        if (version_compare(PHP_VERSION, '5.3.0', '<')) {
+            parent::__construct($message, (int)$code);
             $this->_previous = $previous;
-        }
-        else
-        {
-            parent::__construct($message, (int) $code, $previous);
+        } else {
+            parent::__construct($message, (int)$code, $previous);
             $this->_previous = $previous;
         }
     }
@@ -64,16 +61,16 @@ class Exception extends \Exception
     /**
      * Предоставляет доступа к final методу getPrevious().
      *
-     * @param string $method    Имя метода.
-     * @param array  $args      Массив аргументов.
+     * @param string $method Имя метода.
+     * @param array  $args   Массив аргументов.
      *
      * @return mixed
      */
     public function __call($method, array $args)
     {
-        switch(strtolower($method))
-        {
-            case 'getprevious' : return $this->_getPrevious();
+        switch (strtolower($method)) {
+            case 'getprevious' :
+                return $this->_getPrevious();
         }
         return null;
     }
@@ -85,10 +82,10 @@ class Exception extends \Exception
      */
     public function __toString()
     {
-        if(version_compare(PHP_VERSION, '5.3.0', '<'))
-        {
-            if($this->hasPrevious())
+        if (version_compare(PHP_VERSION, '5.3.0', '<')) {
+            if ($this->hasPrevious()) {
                 return $this->_getPrevious()->__toString() . "\n\nNext " . parent::__toString();
+            }
         }
         return parent::__toString();
     }
@@ -130,7 +127,8 @@ class Exception extends \Exception
      */
     static public function getMessageByCode($code)
     {
-        static $messages = array(
+        static $messages
+        = array(
             self::E_UNKNOWN      => 'Неизвестная ошибка',
             self::E_OPTION_NAME  => 'Несуществующий параметр',
             self::E_OPTION_TYPE  => 'Недопустимый тип значения параметра',
@@ -138,9 +136,10 @@ class Exception extends \Exception
             self::E_RUNTIME      => '',
         );
 
-        if(array_key_exists($messages, $code))
+        if (array_key_exists($messages, $code)) {
             return $messages[$code];
-        else
+        } else {
             return $messages[self::E_UNKNOWN];
+        }
     }
 }

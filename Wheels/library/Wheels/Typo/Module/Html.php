@@ -21,42 +21,44 @@ class Html extends Module
      *
      * @var array
      */
-    static protected $_default_options = array(
-        /**
-         * Безопасные блоки, содержимое которых не обрабатывается типографом.
-         *
-         * @var string|string[]
-         */
-        'safe-blocks' => array('<!-- -->', 'code', 'comment', 'pre', 'script', 'style'),
+    static protected $_default_options
+        = array(
+            /**
+             * Безопасные блоки, содержимое которых не обрабатывается типографом.
+             *
+             * @var string|string[]
+             */
+            'safe-blocks' => array('<!-- -->', 'code', 'comment', 'pre', 'script', 'style'),
 
-        /**
-         * Атрибуты тегов, подлежащие типографированию.
-         *
-         * var string|string[]
-         */
-        'typo-attrs' => array('title', 'alt'),
+            /**
+             * Атрибуты тегов, подлежащие типографированию.
+             *
+             * var string|string[]
+             */
+            'typo-attrs'  => array('title', 'alt'),
 
-        /**
-         * Простановка параграфов.
-         *
-         * @var bool
-         */
-        'paragraphs' => true,
-    );
+            /**
+             * Простановка параграфов.
+             *
+             * @var bool
+             */
+            'paragraphs'  => true,
+        );
 
     /**
      * Приоритет выполнения стадий.
      *
      * @var array
      */
-    static protected $_order = array(
-        'A' => 10,
-        'B' => 0,
-        'C' => 0,
-        'D' => 30,
-        'E' => 0,
-        'F' => 0,
-    );
+    static protected $_order
+        = array(
+            'A' => 10,
+            'B' => 0,
+            'C' => 0,
+            'D' => 30,
+            'E' => 0,
+            'F' => 0,
+        );
 
     /**
      * Невидимые HTML блоки.
@@ -92,32 +94,37 @@ class Html extends Module
      */
     public function validateOption($name, &$value)
     {
-        switch($name)
-        {
+        switch ($name) {
             case 'safe-blocks' :
             case 'typo-attrs' :
-                if(is_string($value))
+                if (is_string($value)) {
                     $value = explode(',', $value);
+                }
 
-                if(!is_array($value))
-                    return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть массивом или строкой, а не " . gettype($value));
+                if (!is_array($value))
+                    return self::throwException(
+                        Exception::E_OPTION_VALUE,
+                        "Значение параметра '$name' должно быть массивом или строкой, а не " . gettype($value)
+                    );
 
                 $value = array_map('trim', $value);
                 $value = array_map('mb_strtolower', $value);
 
                 $data = array();
-                foreach($value as $val)
-                {
-                    if(!is_string($val))
-                        return self::throwException(Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть массивом строк");
+                foreach ($value as $val) {
+                    if (!is_string($val))
+                        return self::throwException(
+                            Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть массивом строк"
+                        );
 
-                    if(mb_strlen($val))
+                    if (mb_strlen($val))
                         $data[] = $val;
                 }
                 $value = $data;
-            break;
+                break;
 
-            default : Module::validateOption($name, $value);
+            default :
+                Module::validateOption($name, $value);
         }
     }
 
@@ -131,8 +138,7 @@ class Html extends Module
      */
     protected function stageA()
     {
-        if($this->typo->_options['html-in-enabled'])
-        {
+        if ($this->typo->_options['html-in-enabled']) {
             $safe_blocks_visible = array_diff($this->_options['safe-blocks'], self::$invisible_blocks);
             $safe_blocks_invisible = array_intersect($this->_options['safe-blocks'], self::$invisible_blocks);
 
@@ -142,9 +148,7 @@ class Html extends Module
 
             $this->removeTags(self::$visible_tags, self::REPLACER_TAG, Typo::VISIBLE);
             $this->removeAllTags(self::REPLACER_TAG, Typo::INVISIBLE);
-        }
-        else
-        {
+        } else {
             $this->removeBlocks($this->_options['safe-blocks'], self::REPLACER_BLOCK, Typo::VISIBLE);
 
             $this->removeAllTags(self::REPLACER_TAG, Typo::VISIBLE);
@@ -158,17 +162,14 @@ class Html extends Module
      */
     protected function stageD()
     {
-        if($this->typo->_options['html-in-enabled'])
-        {
+        if ($this->typo->_options['html-in-enabled']) {
             $this->text->popStorage(self::REPLACER_TAG, Typo::INVISIBLE);
             $this->text->popStorage(self::REPLACER_TAG, Typo::VISIBLE);
 
             $this->text->popStorage(self::REPLACER_BLOCK_A, Typo::VISIBLE);
             $this->text->popStorage(self::REPLACER_BLOCK, Typo::INVISIBLE);
             $this->text->popStorage(self::REPLACER_BLOCK, Typo::VISIBLE);
-        }
-        else
-        {
+        } else {
             $this->text->popStorage(self::REPLACER_TAG, Typo::VISIBLE);
 
             $this->text->popStorage(self::REPLACER_BLOCK, Typo::VISIBLE);
@@ -178,23 +179,21 @@ class Html extends Module
     /**
      * Заменяет блоки в тексте.
      *
-     * @param array  $blocks    HTML блоки.
-     * @param string $replacer  Имя строки для замены.
-     * @param string $type      Тип заменителя.
+     * @param array  $blocks   HTML блоки.
+     * @param string $replacer Имя строки для замены.
+     * @param string $type     Тип заменителя.
      *
      * @uses \Wheels\Typo\Text::preg_replace_storage()
      */
     protected function removeBlocks(array $blocks, $replacer, $type)
     {
         $patterns = array();
-        foreach ($blocks as $tag)
-        {
-            switch($tag)
-            {
+        foreach ($blocks as $tag) {
+            switch ($tag) {
                 case '<!-- -->' :
                     $open = '<!--';
                     $close = '-->';
-                break;
+                    break;
                 default:
                     $open = "<\h*{$tag}(\h[^>]*)?>";
                     $close = "<\/{$tag}>";
@@ -209,17 +208,16 @@ class Html extends Module
     /**
      * Заменяет теги в тексте.
      *
-     * @param array  $tags      HTML теги.
-     * @param string $replacer  Имя строки для замены.
-     * @param string $type      Тип заменителя.
+     * @param array  $tags     HTML теги.
+     * @param string $replacer Имя строки для замены.
+     * @param string $type     Тип заменителя.
      *
      * @uses \Wheels\Typo\Text::preg_replace_storage()
      */
     protected function removeTags(array $tags, $replacer, $type)
     {
         $patterns = array();
-        foreach ($tags as $tag)
-        {
+        foreach ($tags as $tag) {
             $patterns[] = "<\h*{$tag}[^>](\h[^>]*)?>";
         }
         $pattern = implode('|', $patterns);
@@ -230,38 +228,39 @@ class Html extends Module
     /**
      * Заменяет все теги в тексте.
      *
-     * @param string $replacer  Имя строки для замены.
-     * @param string $type      Тип заменителя.
+     * @param string $replacer Имя строки для замены.
+     * @param string $type     Тип заменителя.
      *
      * @uses \Wheels\Typo\Text::preg_replace_storage()
      */
     public function removeAllTags($replacer, $type)
     {
-        if(!empty($this->_options['typo-attrs']))
-        {
+        if (!empty($this->_options['typo-attrs'])) {
             $_this = $this;
             /*$typo = new Typo(array(
                 'html-in-enabled'  => false,
                 'html-out-enabled' => false,
             ));*/
 
-            $pattern = '~(?<=\s)(?<name>' . implode('|', array_map('preg_quote', $this->_options['typo-attrs'])) . ')\=["\'](?<value>[^"\']*)["\']~iu';
+            $pattern = '~(?<=\s)(?<name>' . implode('|', array_map('preg_quote', $this->_options['typo-attrs']))
+                . ')\=["\'](?<value>[^"\']*)["\']~iu';
 
-            $callback = function($matches) use(/*$typo, */$_this) {
+            $callback = function ($matches) use ( /*$typo, */
+                $_this
+            ) {
                 $text = new Text($matches['value'], Text::TYPE_HTML_ATTR_VALUE, $_this->_options['charset']);
-                return $matches['name'] . '="' . /*$typo->execute(*/$text/*)*/ . '"';
+                return $matches['name'] . '="' . /*$typo->execute(*/
+                $text /*)*/ . '"';
             };
 
-            $callback2 = function($matches) use($_this, $pattern, $callback, $replacer, $type)
-            {
+            $callback2 = function ($matches) use ($_this, $pattern, $callback, $replacer, $type) {
                 $data = preg_replace_callback($pattern, $callback, $matches[0]);
 
                 return $_this->text->pushStorage($data, $replacer, $type);
             };
 
             $this->text->preg_replace_callback('~<[^>]*\w+[^>]*>~s', $callback2);
-        }
-        else
+        } else
             $this->text->preg_replace_storage('~<[^>]*\w+[^>]*>~s', $replacer, $type);
     }
 }

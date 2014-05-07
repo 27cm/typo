@@ -2,12 +2,12 @@
 
 return array(
     'options' => array(
-        'charset' => array(
+        'charset'          => array(
             'desc'    => 'Кодировка текста',
             'type'    => '\Wheels\Typo\Type\Tcharset',
             'default' => 'UTF-8',
         ),
-        'encoding' => array(
+        'encoding'         => array(
             'desc'    => 'Режим кодирования спецсимволов',
             'type'    => 'string',
             'aliases' => array(
@@ -24,7 +24,7 @@ return array(
             ),
             'default' => 'none',
         ),
-        'html-in-enabled' => array(
+        'html-in-enabled'  => array(
             'desc'    => 'Включение HTML в тексте на входе',
             'type'    => 'bool',
             'default' => true,
@@ -34,10 +34,10 @@ return array(
             'type'    => 'bool',
             'default' => true,
         ),
-        'modules' => array(
+        'modules'          => array(
             'default' => array('html', 'nobr', 'punct', 'space', 'symbol', 'url'),
         ),
-        'e-convert' => array(
+        'e-convert'        => array(
             'desc'    => "Замена буквы 'ё' на 'е'",
             'type'    => 'bool',
             'default' => false,

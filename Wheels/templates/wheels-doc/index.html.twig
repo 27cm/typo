@@ -5,6 +5,7 @@
 {% block heroUnit %}
     <div class="hero-unit">
         <h1>{{ project.name|raw }}</h1>
+
         <h2>Documentation</h2>
     </div>
 {% endblock %}
@@ -31,7 +32,8 @@
                     <ul class="nav nav-list">
                         <li class="nav-header">Packages</li>
                         {% block listRootPackages %}
-                            <li><a href="{{ path(project.indexes.packages|first) }}">Global ({{ (project.indexes.packages|first).name }})</a></li>
+                            <li><a href="{{ path(project.indexes.packages|first) }}">Global
+                                    ({{ (project.indexes.packages|first).name }})</a></li>
                             {% for package in (project.indexes.packages|first).children %}
                                 <li><a href="{{ path(package) }}">{{ package.name }}</a></li>
                             {% endfor %}
@@ -46,7 +48,8 @@
                 <ul class="nav nav-list">
                     <li class="nav-header">Charts</li>
                     {% block listCharts %}
-                        <li><a href="{{ path('graph_class.html') }}"><i class="icon-list-alt"></i> Class inheritance diagram</a></li>
+                        <li><a href="{{ path('graph_class.html') }}"><i class="icon-list-alt"></i> Class inheritance
+                                diagram</a></li>
                     {% endblock %}
                 </ul>
             </div>

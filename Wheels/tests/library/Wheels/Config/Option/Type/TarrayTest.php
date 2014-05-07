@@ -6,9 +6,10 @@ use Wheels\Config\Option\AbstractType;
 
 class TarrayTest extends AbstractType
 {
-    static protected $_testValidateData = array(
-        array(array('this', 'is', 'an array'), TRUE),
-        array(array(), TRUE),
-        array('string', FALSE),
-    );
+    static protected $_testValidateData
+        = array(
+            array(array('this', 'is', 'an array'), true),
+            array(array(), true),
+            array('string', false),
+        );
 }

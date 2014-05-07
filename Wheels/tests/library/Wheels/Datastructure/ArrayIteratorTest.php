@@ -47,7 +47,7 @@ class ArrayIteratorTest extends PHPUnit_Framework_TestCase
     public function testSetAllowModifications()
     {
         $iterator = new ArrayIterator();
-        $iterator->setAllowModifications(FALSE);
+        $iterator->setAllowModifications(false);
 
         $actual = $iterator->getAllowModifications();
         $this->assertFalse($actual);
@@ -61,7 +61,7 @@ class ArrayIteratorTest extends PHPUnit_Framework_TestCase
         );
 
         $iterator = new ArrayIterator();
-        $iterator->setAllowModifications(FALSE);
+        $iterator->setAllowModifications(false);
 
         $iterator->setArray(array(1, 2, 3));
     }
@@ -107,7 +107,7 @@ class ArrayIteratorTest extends PHPUnit_Framework_TestCase
         $expected = array(1, 2);
         $iterator = new ArrayIterator($expected);
 
-        $iterator->offsetSet(NULL, 3);
+        $iterator->offsetSet(null, 3);
         $iterator->offsetSet('a', 'A');
         $iterator->offsetSet(0, 2);
 
@@ -187,9 +187,9 @@ class ArrayIteratorTest extends PHPUnit_Framework_TestCase
     public function testCount()
     {
         $iterator = new ArrayIterator(array(1, 2, 3));
-        $iterator->offsetSet(NULL, 4);
-        $iterator->offsetSet(NULL, 5);
-        $iterator->offsetSet(NULL, 6);
+        $iterator->offsetSet(null, 4);
+        $iterator->offsetSet(null, 5);
+        $iterator->offsetSet(null, 6);
         $iterator->offsetUnset(0);
         $iterator->offsetUnset(2);
 

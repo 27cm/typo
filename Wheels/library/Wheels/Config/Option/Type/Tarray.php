@@ -34,14 +34,15 @@ class Tarray extends Type
      *
      * @uses \Wheels\Config\Option\Type::create()
      */
-    public function __construct($type = NULL)
+    public function __construct($type = null)
     {
-        if($type instanceof Type)
+        if ($type instanceof Type) {
             $this->_type = $type;
-        elseif(is_null($type))
+        } elseif (is_null($type)) {
             $this->_type = static::create('mixed');
-        else
+        } else {
             $this->_type = static::create($type);
+        }
     }
 
 
@@ -52,8 +53,9 @@ class Tarray extends Type
      */
     public function convert($var)
     {
-        if(in_array($var, array(null, false, 'none', 'NONE'), true))
+        if (in_array($var, array(null, false, 'none', 'NONE'), true)) {
             return array();
+        }
 
         return $var;
     }
@@ -63,12 +65,11 @@ class Tarray extends Type
      */
     public function validate($var)
     {
-        if(is_array($var))
-        {
-            foreach($var as $value)
-            {
-                if(!$this->_type->validate($value))
+        if (is_array($var)) {
+            foreach ($var as $value) {
+                if (!$this->_type->validate($value)) {
                     return false;
+                }
             }
             return true;
         }

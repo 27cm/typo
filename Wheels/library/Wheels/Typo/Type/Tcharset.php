@@ -25,8 +25,9 @@ class Tcharset extends Tstring
      */
     public function convert($var)
     {
-        if(is_string($var))
+        if (is_string($var)) {
             $var = mb_strtoupper($var);
+        }
 
         return parent::convert($var);
     }

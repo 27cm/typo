@@ -21,42 +21,44 @@ class Ssh extends Url
      *
      * @var array
      */
-    static protected $_default_options = array(
-        /**
-         * Дополнительные атрибуты.
-         *
-         * @var array
-         */
-        'attrs' => array(),
+    static protected $_default_options
+        = array(
+            /**
+             * Дополнительные атрибуты.
+             *
+             * @var array
+             */
+            'attrs'   => array(),
 
-        /**
-         * IDNA.
-         *
-         * @var bool
-         */
-        'idna' => true,
+            /**
+             * IDNA.
+             *
+             * @var bool
+             */
+            'idna'    => true,
 
-        /**
-         * Используемые модули.
-         *
-         * @var string[]
-         */
-        'modules' => array(),
-    );
+            /**
+             * Используемые модули.
+             *
+             * @var string[]
+             */
+            'modules' => array(),
+        );
 
     /**
      * Приоритет выполнения стадий.
      *
      * @var array
      */
-    static protected $_order = array(
-        'A' => 15,
-        'B' => 0,
-        'C' => 0,
-        'D' => 25,
-        'E' => 0,
-        'F' => 0,
-    );
+    static protected $_order
+        = array(
+            'A' => 15,
+            'B' => 0,
+            'C' => 0,
+            'D' => 25,
+            'E' => 0,
+            'F' => 0,
+        );
 
 
     // --- Регулярные выражения ---
@@ -86,30 +88,28 @@ class Ssh extends Url
     {
         $_this = $this;
 
-        $callback = function($matches) use($_this)
-        {
+        $callback = function ($matches) use ($_this) {
             $href = Url::urlencode($matches[0]);
             $value = htmlentities($matches[0], ENT_QUOTES, 'utf-8');
 
             $parts = array('url' => $href);
 
-            if($_this->typo->getOption('html-out-enabled'))
-            {
+            if ($_this->typo->getOption('html-out-enabled')) {
                 $attrs = array('href' => $href);
                 $_this->setAttrs($parts, $attrs);
 
                 $data = Utility::createElement('a', $value, $attrs);
-            }
-            else
+            } else {
                 $data = $value;
+            }
 
             return $_this->text->pushStorage($data, Ssh::REPLACER, Typo::VISIBLE);
         };
 
         // <схема>://[<логин>[;fingerprint=<отпечаток>]@]<хост>[:<порт>][<URL-путь>]
         $pattern = self::SCHEME . '://'
-                 . '(' . Url::USER . '(\:' . self::PASSWORD . ')?(;fingerprint=ssh-(dss|rsa)-' .  self::FINGERPRINT. ')?@)?'
-                 . self::HOST . '(:' . self::PORT . ')?' . self::PATH;
+            . '(' . Url::USER . '(\:' . self::PASSWORD . ')?(;fingerprint=ssh-(dss|rsa)-' . self::FINGERPRINT . ')?@)?'
+            . self::HOST . '(:' . self::PORT . ')?' . self::PATH;
         $pattern = $this->preg_wrap($pattern);
 
         $this->typo->text->preg_replace_callback($pattern, $callback);

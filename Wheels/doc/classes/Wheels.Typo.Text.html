@@ -7,11 +7,12 @@
     <meta name="author" content=""/>
     <meta name="description" content=""/>
 
-    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css"
+          rel="stylesheet">
     <link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
     <link href="../css/prism.css" rel="stylesheet" media="all"/>
     <link href="../css/template.css" rel="stylesheet" media="all"/>
-    
+
     <!--[if lt IE 9]>
     <script src="https://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
     <![endif]-->
@@ -22,53 +23,53 @@
     <script src="../js/prism.min.js"></script>
     <!-- TODO: Add http://jscrollpane.kelvinluck.com/ to style the scrollbars for browsers not using webkit-->
     <script type="text/javascript">
-    function loadExternalCodeSnippets() {
-        Array.prototype.slice.call(document.querySelectorAll('pre[data-src]')).forEach(function (pre) {
-            var src = pre.getAttribute('data-src');
-            var extension = (src.match(/\.(\w+)$/) || [, ''])[1];
-            var language = 'php';
+        function loadExternalCodeSnippets() {
+            Array.prototype.slice.call(document.querySelectorAll('pre[data-src]')).forEach(function (pre) {
+                var src = pre.getAttribute('data-src');
+                var extension = (src.match(/\.(\w+)$/) || [, ''])[1];
+                var language = 'php';
 
-            var code = document.createElement('code');
-            code.className = 'language-' + language;
+                var code = document.createElement('code');
+                code.className = 'language-' + language;
 
-            pre.textContent = '';
+                pre.textContent = '';
 
-            code.textContent = 'Loading…';
+                code.textContent = 'Loading…';
 
-            pre.appendChild(code);
+                pre.appendChild(code);
 
-            var xhr = new XMLHttpRequest();
+                var xhr = new XMLHttpRequest();
 
-            xhr.open('GET', src, true);
+                xhr.open('GET', src, true);
 
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4) {
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4) {
 
-                    if (xhr.status < 400 && xhr.responseText) {
-                        code.textContent = xhr.responseText;
+                        if (xhr.status < 400 && xhr.responseText) {
+                            code.textContent = xhr.responseText;
 
-                        Prism.highlightElement(code);
+                            Prism.highlightElement(code);
+                        }
+                        else if (xhr.status >= 400) {
+                            code.textContent = '✖ Error ' + xhr.status + ' while fetching file: ' + xhr.statusText;
+                        }
+                        else {
+                            code.textContent = '✖ Error: File does not exist or is empty';
+                        }
                     }
-                    else if (xhr.status >= 400) {
-                        code.textContent = '✖ Error ' + xhr.status + ' while fetching file: ' + xhr.statusText;
-                    }
-                    else {
-                        code.textContent = '✖ Error: File does not exist or is empty';
-                    }
-                }
-            };
+                };
 
-            xhr.send(null);
+                xhr.send(null);
+            });
+        }
+
+        $(document).ready(function () {
+            loadExternalCodeSnippets();
         });
-    }
-
-    $(document).ready(function(){
-        loadExternalCodeSnippets();
-    });
-    $('#source-view').on('shown', function () {
-        loadExternalCodeSnippets();
-    })
-</script>
+        $('#source-view').on('shown', function () {
+            loadExternalCodeSnippets();
+        })
+    </script>
 
     <link rel="shortcut icon" href="../images/favicon.ico"/>
     <link rel="apple-touch-icon" href="../images/apple-touch-icon.png"/>
@@ -92,8 +93,8 @@
                             API Documentation <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                                                        <li><a href="../namespaces/Wheels.html">\Wheels</a></li>
-                                                    </ul>
+                            <li><a href="../namespaces/Wheels.html">\Wheels</a></li>
+                        </ul>
                     </li>
                     <li class="dropdown" id="charts-menu">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -114,12 +115,13 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i class="icon-list-alt"></i>&#160;Ошибки <span class="label label-info pull-right">306</span>
+                                    <i class="icon-list-alt"></i>&#160;Ошибки <span class="label label-info pull-right">306</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="../reports/markers.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">3</span>
+                                    <i class="icon-list-alt"></i>&#160;Markers <span
+                                        class="label label-info pull-right">3</span>
                                 </a>
                             </li>
                         </ul>
@@ -134,1712 +136,1859 @@
 </div>
 
 <div id="___" class="container-fluid">
-        <section class="row-fluid">
-        <div class="span2 sidebar">
+<section class="row-fluid">
+<div class="span2 sidebar">
+<div class="accordion" style="margin-bottom: 0">
+<div class="accordion-group">
+<div class="accordion-heading">
+    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-2005491177"></a>
+    <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
+</div>
+<div id="namespace-2005491177" class="accordion-body collapse in">
+<div class="accordion-inner">
+
+<div class="accordion" style="margin-bottom: 0">
+<div class="accordion-group">
+<div class="accordion-heading">
+    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1719800916"></a>
+    <a href="../namespaces/Wheels.html" style="margin-left: 30px; padding-left: 0">Wheels</a>
+</div>
+<div id="namespace-1719800916" class="accordion-body collapse ">
+<div class="accordion-inner">
+
+<div class="accordion" style="margin-bottom: 0">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1270960916"></a>
+            <a href="../namespaces/Wheels.Config.html" style="margin-left: 30px; padding-left: 0">Config</a>
+        </div>
+        <div id="namespace-1270960916" class="accordion-body collapse ">
+            <div class="accordion-inner">
+
+                <div class="accordion" style="margin-bottom: 0">
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a class="accordion-toggle collapsed" data-toggle="collapse"
+                               data-target="#namespace-1282735304"></a>
+                            <a href="../namespaces/Wheels.Config.Schema.html"
+                               style="margin-left: 30px; padding-left: 0">Schema</a>
+                        </div>
+                        <div id="namespace-1282735304" class="accordion-body collapse ">
+                            <div class="accordion-inner">
+
                                 <div class="accordion" style="margin-bottom: 0">
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-2005491177"></a>
-                                <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
-            </div>
-            <div id="namespace-2005491177" class="accordion-body collapse in">
-                <div class="accordion-inner">
+                                    <div class="accordion-group">
+                                        <div class="accordion-heading">
+                                            <a class="accordion-toggle collapsed" data-toggle="collapse"
+                                               data-target="#namespace-235246591"></a>
+                                            <a href="../namespaces/Wheels.Config.Schema.Option.html"
+                                               style="margin-left: 30px; padding-left: 0">Option</a>
+                                        </div>
+                                        <div id="namespace-235246591" class="accordion-body collapse ">
+                                            <div class="accordion-inner">
+
+                                                <div class="accordion" style="margin-bottom: 0">
+                                                    <div class="accordion-group">
+                                                        <div class="accordion-heading">
+                                                            <a class="accordion-toggle collapsed" data-toggle="collapse"
+                                                               data-target="#namespace-346029986"></a>
+                                                            <a href="../namespaces/Wheels.Config.Schema.Option.Type.html"
+                                                               style="margin-left: 30px; padding-left: 0">Type</a>
+                                                        </div>
+                                                        <div id="namespace-346029986" class="accordion-body collapse ">
+                                                            <div class="accordion-inner">
+
+
+                                                                <ul>
+                                                                    <li class="class"><a
+                                                                            href="../classes/Wheels.Config.Schema.Option.Type.Tarray.html">Tarray</a>
+                                                                    </li>
+                                                                    <li class="class"><a
+                                                                            href="../classes/Wheels.Config.Schema.Option.Type.Tbool.html">Tbool</a>
+                                                                    </li>
+                                                                    <li class="class"><a
+                                                                            href="../classes/Wheels.Config.Schema.Option.Type.Tboolean.html">Tboolean</a>
+                                                                    </li>
+                                                                    <li class="class"><a
+                                                                            href="../classes/Wheels.Config.Schema.Option.Type.Tdouble.html">Tdouble</a>
+                                                                    </li>
+                                                                    <li class="class"><a
+                                                                            href="../classes/Wheels.Config.Schema.Option.Type.Tfloat.html">Tfloat</a>
+                                                                    </li>
+                                                                    <li class="class"><a
+                                                                            href="../classes/Wheels.Config.Schema.Option.Type.Tint.html">Tint</a>
+                                                                    </li>
+                                                                    <li class="class"><a
+                                                                            href="../classes/Wheels.Config.Schema.Option.Type.Tinteger.html">Tinteger</a>
+                                                                    </li>
+                                                                    <li class="class"><a
+                                                                            href="../classes/Wheels.Config.Schema.Option.Type.Tmixed.html">Tmixed</a>
+                                                                    </li>
+                                                                    <li class="class"><a
+                                                                            href="../classes/Wheels.Config.Schema.Option.Type.Tnull.html">Tnull</a>
+                                                                    </li>
+                                                                    <li class="class"><a
+                                                                            href="../classes/Wheels.Config.Schema.Option.Type.Tnumber.html">Tnumber</a>
+                                                                    </li>
+                                                                    <li class="class"><a
+                                                                            href="../classes/Wheels.Config.Schema.Option.Type.Treal.html">Treal</a>
+                                                                    </li>
+                                                                    <li class="class"><a
+                                                                            href="../classes/Wheels.Config.Schema.Option.Type.Tstring.html">Tstring</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <ul>
+                                                    <li class="class"><a
+                                                            href="../classes/Wheels.Config.Schema.Option.Exception.html">Exception</a>
+                                                    </li>
+                                                    <li class="class"><a
+                                                            href="../classes/Wheels.Config.Schema.Option.Type.html">Type</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                                                    <div class="accordion" style="margin-bottom: 0">
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1719800916"></a>
-                                <a href="../namespaces/Wheels.html" style="margin-left: 30px; padding-left: 0">Wheels</a>
-            </div>
-            <div id="namespace-1719800916" class="accordion-body collapse ">
-                <div class="accordion-inner">
 
-                                                    <div class="accordion" style="margin-bottom: 0">
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1270960916"></a>
-                                <a href="../namespaces/Wheels.Config.html" style="margin-left: 30px; padding-left: 0">Config</a>
-            </div>
-            <div id="namespace-1270960916" class="accordion-body collapse ">
-                <div class="accordion-inner">
-
-                                                    <div class="accordion" style="margin-bottom: 0">
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1282735304"></a>
-                                <a href="../namespaces/Wheels.Config.Schema.html" style="margin-left: 30px; padding-left: 0">Schema</a>
-            </div>
-            <div id="namespace-1282735304" class="accordion-body collapse ">
-                <div class="accordion-inner">
-
-                                                    <div class="accordion" style="margin-bottom: 0">
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-235246591"></a>
-                                <a href="../namespaces/Wheels.Config.Schema.Option.html" style="margin-left: 30px; padding-left: 0">Option</a>
-            </div>
-            <div id="namespace-235246591" class="accordion-body collapse ">
-                <div class="accordion-inner">
-
-                                                    <div class="accordion" style="margin-bottom: 0">
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-346029986"></a>
-                                <a href="../namespaces/Wheels.Config.Schema.Option.Type.html" style="margin-left: 30px; padding-left: 0">Type</a>
-            </div>
-            <div id="namespace-346029986" class="accordion-body collapse ">
-                <div class="accordion-inner">
-
-                    
-                    <ul>
-                                                                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tarray.html">Tarray</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tbool.html">Tbool</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tboolean.html">Tboolean</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tdouble.html">Tdouble</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tfloat.html">Tfloat</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tint.html">Tint</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tinteger.html">Tinteger</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tmixed.html">Tmixed</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tnull.html">Tnull</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tnumber.html">Tnumber</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Treal.html">Treal</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.Tstring.html">Tstring</a></li>
-                                            </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-                    
-                    <ul>
-                                                                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Exception.html">Exception</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.Type.html">Type</a></li>
-                                            </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-                    
-                    <ul>
-                                                                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Exception.html">Exception</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.html">Option</a></li>
-                                            </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-                    
-                    <ul>
-                                                                                                    <li class="class"><a href="../classes/Wheels.Config.Exception.html">Exception</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Config.Schema.html">Schema</a></li>
-                                            </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-                                                    <div class="accordion" style="margin-bottom: 0">
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1628853865"></a>
-                                <a href="../namespaces/Wheels.Typo.html" style="margin-left: 30px; padding-left: 0">Typo</a>
-            </div>
-            <div id="namespace-1628853865" class="accordion-body collapse ">
-                <div class="accordion-inner">
-
-                                                    <div class="accordion" style="margin-bottom: 0">
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-2074002701"></a>
-                                <a href="../namespaces/Wheels.Typo.Module.html" style="margin-left: 30px; padding-left: 0">Module</a>
-            </div>
-            <div id="namespace-2074002701" class="accordion-body collapse ">
-                <div class="accordion-inner">
-
-                                                    <div class="accordion" style="margin-bottom: 0">
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-2092984464"></a>
-                                <a href="../namespaces/Wheels.Typo.Module.Smile.html" style="margin-left: 30px; padding-left: 0">Smile</a>
-            </div>
-            <div id="namespace-2092984464" class="accordion-body collapse ">
-                <div class="accordion-inner">
-
-                                                    <div class="accordion" style="margin-bottom: 0">
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-87567250"></a>
-                                <a href="../namespaces/Wheels.Typo.Module.Smile.Kolobok.html" style="margin-left: 30px; padding-left: 0">Kolobok</a>
-            </div>
-            <div id="namespace-87567250" class="accordion-body collapse ">
-                <div class="accordion-inner">
-
-                    
-                    <ul>
-                                                                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Smile.Kolobok.Standart.html">Standart</a></li>
-                                            </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-                    
-                    <ul>
-                                                                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Smile.Kolobok.html">Kolobok</a></li>
-                                            </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-                                                    <div class="accordion" style="margin-bottom: 0">
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-155356632"></a>
-                                <a href="../namespaces/Wheels.Typo.Module.Emoticon.html" style="margin-left: 30px; padding-left: 0">Emoticon</a>
-            </div>
-            <div id="namespace-155356632" class="accordion-body collapse ">
-                <div class="accordion-inner">
-
-                    
-                    <ul>
-                                                                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Emoticon.Skype.html">Skype</a></li>
-                                            </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-                                                    <div class="accordion" style="margin-bottom: 0">
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-2075798507"></a>
-                                <a href="../namespaces/Wheels.Typo.Module.Punct.html" style="margin-left: 30px; padding-left: 0">Punct</a>
-            </div>
-            <div id="namespace-2075798507" class="accordion-body collapse ">
-                <div class="accordion-inner">
-
-                    
-                    <ul>
-                                                                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Punct.Dash.html">Dash</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Punct.Quote.html">Quote</a></li>
-                                            </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-                                                    <div class="accordion" style="margin-bottom: 0">
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1803317817"></a>
-                                <a href="../namespaces/Wheels.Typo.Module.Url.html" style="margin-left: 30px; padding-left: 0">Url</a>
-            </div>
-            <div id="namespace-1803317817" class="accordion-body collapse ">
-                <div class="accordion-inner">
-
-                    
-                    <ul>
-                                                                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Url.Ssh.html">Ssh</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Url.Twitter.html">Twitter</a></li>
-                                            </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-                    
-                    <ul>
-                                                                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Align.html">Align</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Code.html">Code</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Emoticon.html">Emoticon</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Exception.html">Exception</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Filepath.html">Filepath</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Html.html">Html</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Math.html">Math</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Nobr.html">Nobr</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Punct.html">Punct</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Space.html">Space</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Symbol.html">Symbol</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Url.html">Url</a></li>
-                                            </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-                    
-                    <ul>
-                                                                                                    <li class="class"><a href="../classes/Wheels.Typo.Exception.html">Exception</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Typo.Module.html">Module</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Typo.Text.html">Text</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Typo.Utility.html">Utility</a></li>
-                                            </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-                                                    <div class="accordion" style="margin-bottom: 0">
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-469449342"></a>
-                                <a href="../namespaces/Wheels.Utility.html" style="margin-left: 30px; padding-left: 0">Utility</a>
-            </div>
-            <div id="namespace-469449342" class="accordion-body collapse ">
-                <div class="accordion-inner">
-
-                    
-                    <ul>
-                                                                                                    <li class="class"><a href="../classes/Wheels.Utility.IDNA.html">IDNA</a></li>
-                                            </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-                    
-                    <ul>
-                                                                                                    <li class="class"><a href="../classes/Wheels.Config.html">Config</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Exception.html">Exception</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Loader.html">Loader</a></li>
-                                                    <li class="class"><a href="../classes/Wheels.Typo.html">Typo</a></li>
-                                            </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-                    
-                    <ul>
-                                                                                                    <li class="class"><a href="../classes/FineDiffOp.html">FineDiffOp</a></li>
-                                                    <li class="class"><a href="../classes/FineDiffDeleteOp.html">FineDiffDeleteOp</a></li>
-                                                    <li class="class"><a href="../classes/FineDiffInsertOp.html">FineDiffInsertOp</a></li>
-                                                    <li class="class"><a href="../classes/FineDiffReplaceOp.html">FineDiffReplaceOp</a></li>
-                                                    <li class="class"><a href="../classes/FineDiffCopyOp.html">FineDiffCopyOp</a></li>
-                                                    <li class="class"><a href="../classes/FineDiffOps.html">FineDiffOps</a></li>
-                                                    <li class="class"><a href="../classes/FineDiff.html">FineDiff</a></li>
-                                            </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-        </div>
-    </section>
-    <section class="row-fluid">
-        <div class="span10 offset2">
-            <div class="row-fluid">
-                <div class="span8 content class">
-                    <nav>
-                                                <a href="../namespaces/Wheels.Typo.html">\Wheels\Typo</a> <i class="icon-level-up"></i>
-                                            </nav>
-                    <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"><i class="icon-code"></i></a>
-
-                    <h1><small>\Wheels\Typo</small>Text</h1>
-                    <p><em>Текст.</em></p>
-                    
-
-                    <section id="summary">
-                        <h2>Summary</h2>
-                        <section class="row-fluid heading">
-                            <section class="span4">
-                                <a href="#methods">Методы</a>
-                            </section>
-                            <section class="span4">
-                                <a href="#properties">Свойства</a>
-                            </section>
-                            <section class="span4">
-                                <a href="#constants">Константы</a>
-                            </section>
-                        </section>
-                        <section class="row-fluid public">
-                            <section class="span4">
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method___construct" class="">__construct()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method_setText" class="">setText()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method_setType" class="">setType()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method_getEncoding" class="">getEncoding()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method_getText" class="">getText()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method_pushStorage" class="">pushStorage()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method_popStorage" class="">popStorage()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method_iconv" class="">iconv()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method_replace" class="">replace()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method_replace_callback" class="">replace_callback()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method_substr" class="">substr()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method_substr_replace" class="">substr_replace()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method_strpos" class="">strpos()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method_preg_replace" class="">preg_replace()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method_preg_replace_callback" class="">preg_replace_callback()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method_preg_match_all" class="">preg_match_all()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method_preg_replace_storage" class="">preg_replace_storage()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method_htmlentities" class="">htmlentities()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method_htmlspecialchars" class="">htmlspecialchars()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method_html_entity_decode" class="">html_entity_decode()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method_nl2br" class="">nl2br()</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#method___toString" class="">__toString()</a><br />
-                                                            </section>
-                            <section class="span4">
-                                                                    <a href="../classes/Wheels.Typo.Text.html#property_type" class="">$type</a><br />
-                                                            </section>
-                            <section class="span4">
-                                                                    <a href="../classes/Wheels.Typo.Text.html#constant_TYPE_HTML" class="">TYPE_HTML</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#constant_TYPE_HTML_ATTR_VALUE" class="">TYPE_HTML_ATTR_VALUE</a><br />
-                                                            </section>
-                        </section>
-                        <section class="row-fluid protected">
-                            <section class="span4">
-                                                                    <em>No protected methods found</em>
-                                                            </section>
-                            <section class="span4">
-                                                                    <a href="../classes/Wheels.Typo.Text.html#property_text" class="">$text</a><br />
-                                                                    <a href="../classes/Wheels.Typo.Text.html#property_storage" class="">$storage</a><br />
-                                                            </section>
-                            <section class="span4">
-                                <em>N/A</em>
-                            </section>
-                        </section>
-                        <section class="row-fluid private">
-                            <section class="span4">
-                                                                    <em>No private methods found</em>
-                                                            </section>
-                            <section class="span4">
-                                                                    <a href="../classes/Wheels.Typo.Text.html#property_encoding" class="">$encoding</a><br />
-                                                            </section>
-                            <section class="span4">
-                                <em>N/A</em>
-                            </section>
-                        </section>
-                    </section>
-                </div>
-                <aside class="span4 detailsbar">
-                                        
-                    
-                    <dl>
-                        <dt>File</dt>
-                            <dd><a href="../files/Wheels.Typo.Text.php.html"><div class="path-wrapper">Wheels\Typo\Text.php</div></a></dd>
-                                                <dt>Package</dt>
-                            <dd><div class="namespace-wrapper">\Default</div></dd>
-                                                <dt>Class hierarchy</dt>
-                            <dd class="hierarchy">
-                                                                                                                                                                    <div class="namespace-wrapper">\Wheels\Typo\Text</div>
-                            </dd>
-
-                        
-                        
-                        
-                        
-                                                                        </dl>
-                    <h2>Tags</h2>
-                    <table class="table table-condensed">
-                                            <tr>
-                            <th>
-                                todo
-                            </th>
-                            <td>
-                                                            </td>
-                        </tr>
-                                        </table>
-                </aside>
-            </div>
-
-                                    <a id="constants" name="constants"></a>
-            <div class="row-fluid">
-                <div class="span8 content class">
-                    <h2>Константы</h2>
-                </div>
-                <aside class="span4 detailsbar"></aside>
-            </div>
-
-                                <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="constant_TYPE_HTML" name="constant_TYPE_HTML" class="anchor"></a>
-            <article id="constant_TYPE_HTML" class="constant">
-                <h3 class="">TYPE_HTML</h3>
-                <pre class="signature">TYPE_HTML</pre>
-                <p><em>HTML</em></p>
-                
-            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                        <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="constant_TYPE_HTML_ATTR_VALUE" name="constant_TYPE_HTML_ATTR_VALUE" class="anchor"></a>
-            <article id="constant_TYPE_HTML_ATTR_VALUE" class="constant">
-                <h3 class="">TYPE_HTML_ATTR_VALUE</h3>
-                <pre class="signature">TYPE_HTML_ATTR_VALUE</pre>
-                <p><em>Значение атрибута тега.</em></p>
-                
-            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                        <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                            
-                                    <a id="properties" name="properties"></a>
-            <div class="row-fluid">
-                <div class="span8 content class">
-                    <h2>Свойства</h2>
-                </div>
-                <aside class="span4 detailsbar"></aside>
-            </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="property_type" name="property_type" class="anchor"></a>
-            <article class="property">
-                <h3 class="public ">$type</h3>
-                <pre class="signature">$type : string</pre>
-                <p><em>Тип.</em></p>
-                
-
-                                <h4>Type</h4>
-                string
-                                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                        <dl>
-                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="property_text" name="property_text" class="anchor"></a>
-            <article class="property">
-                <h3 class="protected ">$text</h3>
-                <pre class="signature">$text : string</pre>
-                <p><em>Текст.</em></p>
-                
-
-                                <h4>Type</h4>
-                string
-                                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                        <dl>
-                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="property_storage" name="property_storage" class="anchor"></a>
-            <article class="property">
-                <h3 class="protected ">$storage</h3>
-                <pre class="signature">$storage : array</pre>
-                <p><em>Временное хранилище.</em></p>
-                
-
-                                <h4>Type</h4>
-                array
-                                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                        <dl>
-                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="property_encoding" name="property_encoding" class="anchor"></a>
-            <article class="property">
-                <h3 class="private ">$encoding</h3>
-                <pre class="signature">$encoding : string</pre>
-                <p><em>Кодировка текста.</em></p>
-                
-
-                                <h4>Type</h4>
-                string
-                                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                        <dl>
-                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                            
-                                    <a id="methods" name="methods"></a>
-            <div class="row-fluid">
-                <div class="span8 content class"><h2>Методы</h2></div>
-                <aside class="span4 detailsbar"></aside>
-            </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method___construct" name="method___construct" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">__construct()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">__construct(string <span class="argument">$text</span>, string <span class="argument">$type</span>, string <span class="argument">$encoding</span>)</pre>
-                <p><em></em></p>
-                
-
-                                    <h4>Параметры</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>string</td>
-                                <td>$text</td>
-                                <td><p>Текст.</p></td>
-                            </tr>
-                                                    <tr>
-                                <td>string</td>
-                                <td>$type</td>
-                                <td><p>Тип.</p></td>
-                            </tr>
-                                                    <tr>
-                                <td>string</td>
-                                <td>$encoding</td>
-                                <td><p>Кодировка текста. Если не указана, то будет определена автоматически.</p></td>
-                            </tr>
-                                            </table>
-                
-                
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_setText" name="method_setText" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">setText()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">setText(string <span class="argument">$value</span>, string <span class="argument">$encoding</span>)</pre>
-                <p><em>Устанавливает значение текста.</em></p>
-                
-
-                                    <h4>Параметры</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>string</td>
-                                <td>$value</td>
-                                <td><p>Текст.</p></td>
-                            </tr>
-                                                    <tr>
-                                <td>string</td>
-                                <td>$encoding</td>
-                                <td><p>Кодировка текста. Если не указана, то будет определена автоматически.</p></td>
-                            </tr>
-                                            </table>
-                
-                
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                                                            <dt>Uses</dt>
-                                                                <dd>\Wheels\Typo\Utility::detectCharset()</dd>
-                                                </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_setType" name="method_setType" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">setType()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">setType(string <span class="argument">$value</span>)</pre>
-                <p><em>Устанавливает тип.</em></p>
-                
-
-                                    <h4>Параметры</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>string</td>
-                                <td>$value</td>
-                                <td><p>Тип.</p></td>
-                            </tr>
-                                            </table>
-                
-                
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_getEncoding" name="method_getEncoding" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">getEncoding()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">getEncoding() : string</pre>
-                <p><em>Вовзращает кодировку текста.</em></p>
-                
-
-                
-                
-                                    <h4>Returns</h4>
-                    string
-                                                </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_getText" name="method_getText" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">getText()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">getText()</pre>
-                <p><em></em></p>
-                
-
-                
-                
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_pushStorage" name="method_pushStorage" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">pushStorage()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">pushStorage(string <span class="argument">$data</span>, string <span class="argument">$replacer</span>, string <span class="argument">$type</span>) : string</pre>
-                <p><em>Помещает фрагмент текста в хранилище.</em></p>
-                
-
-                                    <h4>Параметры</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>string</td>
-                                <td>$data</td>
-                                <td><p>Фрагмент текста.</p></td>
-                            </tr>
-                                                    <tr>
-                                <td>string</td>
-                                <td>$replacer</td>
-                                <td><p>Имя строки для замены.</p></td>
-                            </tr>
-                                                    <tr>
-                                <td>string</td>
-                                <td>$type</td>
-                                <td><p>Тип заменителя.</p></td>
-                            </tr>
-                                            </table>
-                
-                
-                                    <h4>Returns</h4>
-                    string
-                                                </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            staticvar
-                        </th>
-                        <td>
-                                                                                            <p>int $counters Счётчики замен.</p>
-                                                    </td>
-                    </tr>
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_popStorage" name="method_popStorage" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">popStorage()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">popStorage(string <span class="argument">$replacer</span>, string <span class="argument">$type</span>, int <span class="argument">$count</span>) : string</pre>
-                <p><em>Восстанавливает фрагмент текста из хранилища.</em></p>
-                
-
-                                    <h4>Параметры</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>string</td>
-                                <td>$replacer</td>
-                                <td><p>Имя строки для замены.</p></td>
-                            </tr>
-                                                    <tr>
-                                <td>string</td>
-                                <td>$type</td>
-                                <td><p>Тип заменителя.</p></td>
-                            </tr>
-                                                    <tr>
-                                <td>int</td>
-                                <td>$count</td>
-                                <td><p>Если передан, то будет установлен в количество произведенных замен.</p></td>
-                            </tr>
-                                            </table>
-                
-                
-                                    <h4>Returns</h4>
-                    string
-                                                </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                                                            <dt>Uses</dt>
-                                                                <dd>\Wheels\Typo\Text::replace()</dd>
-                                                </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_iconv" name="method_iconv" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">iconv()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">iconv(string <span class="argument">$in_charset</span>, string <span class="argument">$out_charset</span>)</pre>
-                <p><em>Преобразовывает текст в требуемую кодировку.</em></p>
-                
-
-                                    <h4>Параметры</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>string</td>
-                                <td>$in_charset</td>
-                                <td><p>Кодировка входной строки.</p></td>
-                            </tr>
-                                                    <tr>
-                                <td>string</td>
-                                <td>$out_charset</td>
-                                <td><p>Требуемая на выходе кодировка.</p></td>
-                            </tr>
-                                            </table>
-                
-                                    <h4>Throws</h4>
-                    <dl>
-                                                    <dt>\Wheels\Typo\Exception</dt>
-                            <dd></dd>
-                                                                    </dl>
-                
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_replace" name="method_replace" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">replace()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">replace(string|string[] <span class="argument">$search</span>, string|string[] <span class="argument">$replace</span>, int <span class="argument">$count</span>)</pre>
-                <p><em>Заменяет все вхождения строки поиска на строку замены.</em></p>
-                
-
-                                    <h4>Параметры</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>string|string[]</td>
-                                <td>$search</td>
-                                <td><p>Искомое значение.</p></td>
-                            </tr>
-                                                    <tr>
-                                <td>string|string[]</td>
-                                <td>$replace</td>
-                                <td><p>Значение замены.</p></td>
-                            </tr>
-                                                    <tr>
-                                <td>int</td>
-                                <td>$count</td>
-                                <td><p>Если передан, то будет установлен в количество произведенных замен.</p></td>
-                            </tr>
-                                            </table>
-                
-                
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_replace_callback" name="method_replace_callback" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">replace_callback()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">replace_callback(string|string[] <span class="argument">$search</span>, callable <span class="argument">$callback</span>)</pre>
-                <p><em>Заменяет все вхождения строки поиска на строку замены с использованием callback-функции.</em></p>
-                
-
-                                    <h4>Параметры</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>string|string[]</td>
-                                <td>$search</td>
-                                <td><p>Искомое значение.</p></td>
-                            </tr>
-                                                    <tr>
-                                <td>callable</td>
-                                <td>$callback</td>
-                                <td><p>Вызываемая callback-функция, которой будет передано найденное значение;</p>
-<pre><code>                             callback-функция должна вернуть строку с заменой.</code></pre></td>
-                            </tr>
-                                            </table>
-                
-                
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_substr" name="method_substr" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">substr()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">substr(int <span class="argument">$start</span>, int <span class="argument">$length</span>) : \Wheels\Typo\type</pre>
-                <p><em>Возвращает подстроку.</em></p>
-                
-
-                                    <h4>Параметры</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>int</td>
-                                <td>$start</td>
-                                <td><p>Если start неотрицателен, возвращаемая подстрока начинается с позиции start от начала текста, считая от нуля.</p>
-<pre><code>                 Если start отрицательный, возвращаемая подстрока начинается с позиции, отстоящей на start символов от конца текста.</code></pre></td>
-                            </tr>
-                                                    <tr>
-                                <td>int</td>
-                                <td>$length</td>
-                                <td><p>Если length положительный, возвращаемая строка будет не длиннее length символов, начиная с параметра start.</p>
-<pre><code>                 Если length отрицательный, то будет отброшено указанное этим аргументом число символов с конца текста.</code></pre></td>
-                            </tr>
-                                            </table>
-                
-                
-                                    <h4>Returns</h4>
-                    \Wheels\Typo\type
-                                                </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_substr_replace" name="method_substr_replace" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">substr_replace()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">substr_replace(string <span class="argument">$replacement</span>, int <span class="argument">$start</span>, int <span class="argument">$length</span>)</pre>
-                <p><em>Заменяет часть строки.</em></p>
-                
-
-                                    <h4>Параметры</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>string</td>
-                                <td>$replacement</td>
-                                <td><p>Строка замены.</p></td>
-                            </tr>
-                                                    <tr>
-                                <td>int</td>
-                                <td>$start</td>
-                                <td><p>Если start положителен, замена начинается с символа с порядковым номером start в тексте.</p>
-<pre><code>                       Если start отрицателен, замена начинается с символа с порядковым номером start, считая от конца текста.</code></pre></td>
-                            </tr>
-                                                    <tr>
-                                <td>int</td>
-                                <td>$length</td>
-                                <td><p>Если аргумент положителен, то он представляет собой длину заменяемой подстроки в тексте.</p>
-<pre><code>                       Если этот аргумент отрицательный, он определяет количество символов от конца текста, на которых заканчивается замена.</code></pre></td>
-                            </tr>
-                                            </table>
-                
-                
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_strpos" name="method_strpos" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">strpos()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">strpos(mixed <span class="argument">$needle</span>, int <span class="argument">$offset</span>) : mixed</pre>
-                <p><em>Возвращает позицию первого вхождения подстроки.</em></p>
-                
-
-                                    <h4>Параметры</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>mixed</td>
-                                <td>$needle</td>
-                                <td><p>Если не является строкой или массивом, то приводится к целому и трактуется как код символа.</p>
-<pre><code>                 Если является массивом, то результатом будет ассоциативный массив с ключами:
-                 'pos' - позиция первой найденной подстроки из массива needle;
-                 'str' - значение первой наденной подстроки из массива needle;</code></pre></td>
-                            </tr>
-                                                    <tr>
-                                <td>int</td>
-                                <td>$offset</td>
-                                <td><p>Если этот параметр указан, то поиск будет начат с указанного количества символов с начала текста.</p></td>
-                            </tr>
-                                            </table>
-                
-                
-                                    <h4>Returns</h4>
-                    mixed
-                                            &mdash; <p>Возвращает позицию, в которой находится искомая строка, относительно начала текста (независимо от смещения offset).</p>
-<pre><code>             Возвращает FALSE, если искомая строка не найдена.</code></pre>
-                                                </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_preg_replace" name="method_preg_replace" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">preg_replace()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">preg_replace(string|string[] <span class="argument">$pattern</span>, string|string[] <span class="argument">$replacement</span>, int <span class="argument">$limit</span>, int <span class="argument">$count</span>)</pre>
-                <p><em>Выполняет поиск и замену по регулярному выражению.</em></p>
-                
-
-                                    <h4>Параметры</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>string|string[]</td>
-                                <td>$pattern</td>
-                                <td><p>Искомый шаблон.</p></td>
-                            </tr>
-                                                    <tr>
-                                <td>string|string[]</td>
-                                <td>$replacement</td>
-                                <td><p>Строка или массив строк для замены.</p></td>
-                            </tr>
-                                                    <tr>
-                                <td>int</td>
-                                <td>$limit</td>
-                                <td><p>Максимально возможное количество замен для каждого шаблона;</p>
-<pre><code>                                 по умолчанию равно -1 (без ограничений).</code></pre></td>
-                            </tr>
-                                                    <tr>
-                                <td>int</td>
-                                <td>$count</td>
-                                <td><p>Количество произведенных замен.</p></td>
-                            </tr>
-                                            </table>
-                
-                
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_preg_replace_callback" name="method_preg_replace_callback" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">preg_replace_callback()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">preg_replace_callback(string|string[] <span class="argument">$pattern</span>, callable <span class="argument">$callback</span>, int <span class="argument">$limit</span>, int <span class="argument">$count</span>)</pre>
-                <p><em>Выполняет поиск по регулярному выражению и замену с использованием callback-функции.</em></p>
-                
-
-                                    <h4>Параметры</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>string|string[]</td>
-                                <td>$pattern</td>
-                                <td><p>Искомый шаблон.</p></td>
-                            </tr>
-                                                    <tr>
-                                <td>callable</td>
-                                <td>$callback</td>
-                                <td><p>Вызываемая callback-функция, которой будет передан массив совпавших элементов текста;</p>
-<pre><code>                             callback-функция должна вернуть строку с заменой.</code></pre></td>
-                            </tr>
-                                                    <tr>
-                                <td>int</td>
-                                <td>$limit</td>
-                                <td><p>Максимально возможное количество замен для каждого шаблона;</p>
-<pre><code>                             по умолчанию равно -1 (без ограничений).</code></pre></td>
-                            </tr>
-                                                    <tr>
-                                <td>int</td>
-                                <td>$count</td>
-                                <td><p>Количество произведенных замен.</p></td>
-                            </tr>
-                                            </table>
-                
-                
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_preg_match_all" name="method_preg_match_all" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">preg_match_all()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">preg_match_all(string <span class="argument">$pattern</span>, array <span class="argument">$matches</span>, string <span class="argument">$flags</span>, int <span class="argument">$offset</span>) : \Wheels\Typo\type</pre>
-                <p><em>Выполняет глобальный поиск шаблона в тексте.</em></p>
-                
-
-                                    <h4>Параметры</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>string</td>
-                                <td>$pattern</td>
-                                <td><p>Искомый шаблон.</p></td>
-                            </tr>
-                                                    <tr>
-                                <td>array</td>
-                                <td>$matches</td>
-                                <td><p>Параметр flags регулирует порядок вывода совпадений в возвращаемом многомерном массиве.</p></td>
-                            </tr>
-                                                    <tr>
-                                <td>string</td>
-                                <td>$flags</td>
-                                <td></td>
-                            </tr>
-                                                    <tr>
-                                <td>int</td>
-                                <td>$offset</td>
-                                <td><p>Обычно поиск осуществляется слева направо, с начала строки.</p>
-<pre><code>                     Дополнительный параметр offset может быть использован для указания альтернативной начальной позиции для поиска.</code></pre></td>
-                            </tr>
-                                            </table>
-                
-                
-                                    <h4>Returns</h4>
-                    \Wheels\Typo\type
-                                            &mdash; <p>Возвращает количество найденных вхождений шаблона (которое может быть и нулем) либо FALSE,</p>
-<pre><code>                     если во время выполнения возникли какие-либо ошибки.</code></pre>
-                                                </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_preg_replace_storage" name="method_preg_replace_storage" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">preg_replace_storage()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">preg_replace_storage(string|string[] <span class="argument">$pattern</span>,  <span class="argument">$replacer</span>, string <span class="argument">$type</span>, int <span class="argument">$limit</span>, int <span class="argument">$count</span>)</pre>
-                <p><em>Выполняет поиск и замену по регулярному выражению с помещением найденных фрагментов в хранилище.</em></p>
-                
-
-                                    <h4>Параметры</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>string|string[]</td>
-                                <td>$pattern</td>
-                                <td><p>Искомый шаблон.</p></td>
-                            </tr>
-                                                    <tr>
-                                <td></td>
-                                <td>$replacer</td>
-                                <td></td>
-                            </tr>
-                                                    <tr>
-                                <td>string</td>
-                                <td>$type</td>
-                                <td><p>Строка для замены.</p></td>
-                            </tr>
-                                                    <tr>
-                                <td>int</td>
-                                <td>$limit</td>
-                                <td><p>Максимально возможное количество замен для каждого шаблона;</p>
-<pre><code>                             по умолчанию равно -1 (без ограничений).</code></pre></td>
-                            </tr>
-                                                    <tr>
-                                <td>int</td>
-                                <td>$count</td>
-                                <td><p>Количество произведенных замен.</p></td>
-                            </tr>
-                                            </table>
-                
-                
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                                                            <dt>Uses</dt>
-                                                                <dd>\Wheels\Typo\Text::pushStorage()</dd>
-                                            <dd>\Wheels\Typo\Text::preg_replace_callback()</dd>
-                                                </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_htmlentities" name="method_htmlentities" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">htmlentities()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">htmlentities(int <span class="argument">$flags</span>, bool <span class="argument">$double_encode</span>)</pre>
-                <p><em>Преобразует все возможные символы в соответствующие HTML-сущности.</em></p>
-                
-
-                                    <h4>Параметры</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>int</td>
-                                <td>$flags</td>
-                                <td><p>Битовая маска из флагов, определяющих режим обработки кавычек,</p>
-<pre><code>                         некорректных кодовых последовательностей и используемый тип документа.
-                         По умолчанию используется ENT_COMPAT | ENT_HTML401.</code></pre></td>
-                            </tr>
-                                                    <tr>
-                                <td>bool</td>
-                                <td>$double_encode</td>
-                                <td><p>При выключении параметра PHP не будет преобразовывать существующие html-сущности.</p>
-<pre><code>                         По умолчанию преобразуется все без ограничений.</code></pre></td>
-                            </tr>
-                                            </table>
-                
-                
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_htmlspecialchars" name="method_htmlspecialchars" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">htmlspecialchars()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">htmlspecialchars(int <span class="argument">$flags</span>, bool <span class="argument">$double_encode</span>)</pre>
-                <p><em>Преобразует специальные символы в HTML-сущности.</em></p>
-                
-
-                                    <h4>Параметры</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>int</td>
-                                <td>$flags</td>
-                                <td><p>Битовая маска из флагов, определяющих режим обработки кавычек,</p>
-<pre><code>                         некорректных кодовых последовательностей и используемый тип документа.
-                         По умолчанию используется ENT_COMPAT | ENT_HTML401.</code></pre></td>
-                            </tr>
-                                                    <tr>
-                                <td>bool</td>
-                                <td>$double_encode</td>
-                                <td><p>При выключении параметра PHP не будет преобразовывать существующие html-сущности.</p>
-<pre><code>                         По умолчанию преобразуется все без ограничений.</code></pre></td>
-                            </tr>
-                                            </table>
-                
-                
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_html_entity_decode" name="method_html_entity_decode" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">html_entity_decode()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">html_entity_decode(int <span class="argument">$flags</span>)</pre>
-                <p><em>Преобразует все HTML-сущности в соответствующие символы.</em></p>
-                
-
-                                    <h4>Параметры</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>int</td>
-                                <td>$flags</td>
-                                <td><p>Битовая маска из флагов, определяющих режим обработки кавычек,</p>
-<pre><code>                         некорректных кодовых последовательностей и используемый тип документа.
-                         По умолчанию используется ENT_COMPAT | ENT_HTML401.</code></pre></td>
-                            </tr>
-                                            </table>
-                
-                
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_nl2br" name="method_nl2br" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">nl2br()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">nl2br(bool <span class="argument">$is_xhtml</span>)</pre>
-                <p><em>Вставляет HTML-код разрыва строки перед каждым переводом строки.</em></p>
-                
-
-                                    <h4>Параметры</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>bool</td>
-                                <td>$is_xhtml</td>
-                                <td><p>Использовать ли совместимые с XHTML переводы строк или нет.</p></td>
-                            </tr>
-                                            </table>
-                
-                
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method___toString" name="method___toString" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">__toString()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">__toString() : string</pre>
-                <p><em>Преобразовывает объект в строку.</em></p>
-                
-
-                
-                
-                                    <h4>Returns</h4>
-                    string
-                                                </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr>
-                        <th>
-                            todo
-                        </th>
-                        <td>
-                                                    </td>
-                    </tr>
-                            </table>
-        </aside>
-    </div>
-
-                                                                    </div>
-    </section>
-
-    <div id="source-view" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="source-view-label" aria-hidden="true">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h3 id="source-view-label">Text.php</h3>
-        </div>
-        <div class="modal-body">
-            <pre data-src="../files/Wheels\Typo\Text.php.txt" class="language-php line-numbers"></pre>
-        </div>
-    </div>
-
-    <footer class="row-fluid">
-        <section class="span10 offset2">
-            <section class="row-fluid">
-                <section class="span10 offset1">
-                    <section class="row-fluid footer-sections">
-                        <section class="span4">
-                                                        <h1><i class="icon-code"></i></h1>
-                            <div>
                                 <ul>
-                                                                            <li><a href="../namespaces/Wheels.html">\Wheels</a></li>
-                                                                    </ul>
-                            </div>
-                        </section>
-                        <section class="span4">
-                                                        <h1><i class="icon-bar-chart"></i></h1>
-                            <div>
-                                <ul>
-                                    <li><a href="../graphs/class.html">Class Hierarchy Diagram</a></li>
+                                    <li class="class"><a
+                                            href="../classes/Wheels.Config.Schema.Exception.html">Exception</a></li>
+                                    <li class="class"><a href="../classes/Wheels.Config.Schema.Option.html">Option</a>
+                                    </li>
                                 </ul>
                             </div>
-                        </section>
-                        <section class="span4">
-                                                        <h1><i class="icon-pushpin"></i></h1>
-                            <div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <ul>
+                    <li class="class"><a href="../classes/Wheels.Config.Exception.html">Exception</a></li>
+                    <li class="class"><a href="../classes/Wheels.Config.Schema.html">Schema</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="accordion" style="margin-bottom: 0">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1628853865"></a>
+            <a href="../namespaces/Wheels.Typo.html" style="margin-left: 30px; padding-left: 0">Typo</a>
+        </div>
+        <div id="namespace-1628853865" class="accordion-body collapse ">
+            <div class="accordion-inner">
+
+                <div class="accordion" style="margin-bottom: 0">
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a class="accordion-toggle collapsed" data-toggle="collapse"
+                               data-target="#namespace-2074002701"></a>
+                            <a href="../namespaces/Wheels.Typo.Module.html" style="margin-left: 30px; padding-left: 0">Module</a>
+                        </div>
+                        <div id="namespace-2074002701" class="accordion-body collapse ">
+                            <div class="accordion-inner">
+
+                                <div class="accordion" style="margin-bottom: 0">
+                                    <div class="accordion-group">
+                                        <div class="accordion-heading">
+                                            <a class="accordion-toggle collapsed" data-toggle="collapse"
+                                               data-target="#namespace-2092984464"></a>
+                                            <a href="../namespaces/Wheels.Typo.Module.Smile.html"
+                                               style="margin-left: 30px; padding-left: 0">Smile</a>
+                                        </div>
+                                        <div id="namespace-2092984464" class="accordion-body collapse ">
+                                            <div class="accordion-inner">
+
+                                                <div class="accordion" style="margin-bottom: 0">
+                                                    <div class="accordion-group">
+                                                        <div class="accordion-heading">
+                                                            <a class="accordion-toggle collapsed" data-toggle="collapse"
+                                                               data-target="#namespace-87567250"></a>
+                                                            <a href="../namespaces/Wheels.Typo.Module.Smile.Kolobok.html"
+                                                               style="margin-left: 30px; padding-left: 0">Kolobok</a>
+                                                        </div>
+                                                        <div id="namespace-87567250" class="accordion-body collapse ">
+                                                            <div class="accordion-inner">
+
+
+                                                                <ul>
+                                                                    <li class="class"><a
+                                                                            href="../classes/Wheels.Typo.Module.Smile.Kolobok.Standart.html">Standart</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <ul>
+                                                    <li class="class"><a
+                                                            href="../classes/Wheels.Typo.Module.Smile.Kolobok.html">Kolobok</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion" style="margin-bottom: 0">
+                                    <div class="accordion-group">
+                                        <div class="accordion-heading">
+                                            <a class="accordion-toggle collapsed" data-toggle="collapse"
+                                               data-target="#namespace-155356632"></a>
+                                            <a href="../namespaces/Wheels.Typo.Module.Emoticon.html"
+                                               style="margin-left: 30px; padding-left: 0">Emoticon</a>
+                                        </div>
+                                        <div id="namespace-155356632" class="accordion-body collapse ">
+                                            <div class="accordion-inner">
+
+
+                                                <ul>
+                                                    <li class="class"><a
+                                                            href="../classes/Wheels.Typo.Module.Emoticon.Skype.html">Skype</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion" style="margin-bottom: 0">
+                                    <div class="accordion-group">
+                                        <div class="accordion-heading">
+                                            <a class="accordion-toggle collapsed" data-toggle="collapse"
+                                               data-target="#namespace-2075798507"></a>
+                                            <a href="../namespaces/Wheels.Typo.Module.Punct.html"
+                                               style="margin-left: 30px; padding-left: 0">Punct</a>
+                                        </div>
+                                        <div id="namespace-2075798507" class="accordion-body collapse ">
+                                            <div class="accordion-inner">
+
+
+                                                <ul>
+                                                    <li class="class"><a
+                                                            href="../classes/Wheels.Typo.Module.Punct.Dash.html">Dash</a>
+                                                    </li>
+                                                    <li class="class"><a
+                                                            href="../classes/Wheels.Typo.Module.Punct.Quote.html">Quote</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion" style="margin-bottom: 0">
+                                    <div class="accordion-group">
+                                        <div class="accordion-heading">
+                                            <a class="accordion-toggle collapsed" data-toggle="collapse"
+                                               data-target="#namespace-1803317817"></a>
+                                            <a href="../namespaces/Wheels.Typo.Module.Url.html"
+                                               style="margin-left: 30px; padding-left: 0">Url</a>
+                                        </div>
+                                        <div id="namespace-1803317817" class="accordion-body collapse ">
+                                            <div class="accordion-inner">
+
+
+                                                <ul>
+                                                    <li class="class"><a
+                                                            href="../classes/Wheels.Typo.Module.Url.Ssh.html">Ssh</a>
+                                                    </li>
+                                                    <li class="class"><a
+                                                            href="../classes/Wheels.Typo.Module.Url.Twitter.html">Twitter</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
                                 <ul>
-                                    <li><a href="../reports/errors.html">Ошибки</a></li>
-                                    <li><a href="../reports/markers.html">Markers</a></li>
+                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Align.html">Align</a></li>
+                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Code.html">Code</a></li>
+                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Emoticon.html">Emoticon</a>
+                                    </li>
+                                    <li class="class"><a
+                                            href="../classes/Wheels.Typo.Module.Exception.html">Exception</a></li>
+                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Filepath.html">Filepath</a>
+                                    </li>
+                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Html.html">Html</a></li>
+                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Math.html">Math</a></li>
+                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Nobr.html">Nobr</a></li>
+                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Punct.html">Punct</a></li>
+                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Space.html">Space</a></li>
+                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Symbol.html">Symbol</a>
+                                    </li>
+                                    <li class="class"><a href="../classes/Wheels.Typo.Module.Url.html">Url</a></li>
                                 </ul>
                             </div>
-                        </section>
-                    </section>
+                        </div>
+                    </div>
+                </div>
+
+
+                <ul>
+                    <li class="class"><a href="../classes/Wheels.Typo.Exception.html">Exception</a></li>
+                    <li class="class"><a href="../classes/Wheels.Typo.Module.html">Module</a></li>
+                    <li class="class"><a href="../classes/Wheels.Typo.Text.html">Text</a></li>
+                    <li class="class"><a href="../classes/Wheels.Typo.Utility.html">Utility</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="accordion" style="margin-bottom: 0">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-469449342"></a>
+            <a href="../namespaces/Wheels.Utility.html" style="margin-left: 30px; padding-left: 0">Utility</a>
+        </div>
+        <div id="namespace-469449342" class="accordion-body collapse ">
+            <div class="accordion-inner">
+
+
+                <ul>
+                    <li class="class"><a href="../classes/Wheels.Utility.IDNA.html">IDNA</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<ul>
+    <li class="class"><a href="../classes/Wheels.Config.html">Config</a></li>
+    <li class="class"><a href="../classes/Wheels.Exception.html">Exception</a></li>
+    <li class="class"><a href="../classes/Wheels.Loader.html">Loader</a></li>
+    <li class="class"><a href="../classes/Wheels.Typo.html">Typo</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+
+<ul>
+    <li class="class"><a href="../classes/FineDiffOp.html">FineDiffOp</a></li>
+    <li class="class"><a href="../classes/FineDiffDeleteOp.html">FineDiffDeleteOp</a></li>
+    <li class="class"><a href="../classes/FineDiffInsertOp.html">FineDiffInsertOp</a></li>
+    <li class="class"><a href="../classes/FineDiffReplaceOp.html">FineDiffReplaceOp</a></li>
+    <li class="class"><a href="../classes/FineDiffCopyOp.html">FineDiffCopyOp</a></li>
+    <li class="class"><a href="../classes/FineDiffOps.html">FineDiffOps</a></li>
+    <li class="class"><a href="../classes/FineDiff.html">FineDiff</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</section>
+<section class="row-fluid">
+<div class="span10 offset2">
+<div class="row-fluid">
+    <div class="span8 content class">
+        <nav>
+            <a href="../namespaces/Wheels.Typo.html">\Wheels\Typo</a> <i class="icon-level-up"></i>
+        </nav>
+        <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"><i class="icon-code"></i></a>
+
+        <h1>
+            <small>\Wheels\Typo</small>
+            Text
+        </h1>
+        <p><em>Текст.</em></p>
+
+
+        <section id="summary">
+            <h2>Summary</h2>
+            <section class="row-fluid heading">
+                <section class="span4">
+                    <a href="#methods">Методы</a>
+                </section>
+                <section class="span4">
+                    <a href="#properties">Свойства</a>
+                </section>
+                <section class="span4">
+                    <a href="#constants">Константы</a>
                 </section>
             </section>
-            <section class="row-fluid">
-                <section class="span10 offset1">
-                    <hr />
-                    Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on March 30th, 2014 at 20:05.
+            <section class="row-fluid public">
+                <section class="span4">
+                    <a href="../classes/Wheels.Typo.Text.html#method___construct" class="">__construct()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method_setText" class="">setText()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method_setType" class="">setType()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method_getEncoding" class="">getEncoding()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method_getText" class="">getText()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method_pushStorage" class="">pushStorage()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method_popStorage" class="">popStorage()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method_iconv" class="">iconv()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method_replace" class="">replace()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method_replace_callback"
+                       class="">replace_callback()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method_substr" class="">substr()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method_substr_replace" class="">substr_replace()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method_strpos" class="">strpos()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method_preg_replace" class="">preg_replace()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method_preg_replace_callback" class="">preg_replace_callback()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method_preg_match_all" class="">preg_match_all()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method_preg_replace_storage" class="">preg_replace_storage()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method_htmlentities" class="">htmlentities()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method_htmlspecialchars"
+                       class="">htmlspecialchars()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method_html_entity_decode"
+                       class="">html_entity_decode()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method_nl2br" class="">nl2br()</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#method___toString" class="">__toString()</a><br/>
+                </section>
+                <section class="span4">
+                    <a href="../classes/Wheels.Typo.Text.html#property_type" class="">$type</a><br/>
+                </section>
+                <section class="span4">
+                    <a href="../classes/Wheels.Typo.Text.html#constant_TYPE_HTML" class="">TYPE_HTML</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#constant_TYPE_HTML_ATTR_VALUE" class="">TYPE_HTML_ATTR_VALUE</a><br/>
+                </section>
+            </section>
+            <section class="row-fluid protected">
+                <section class="span4">
+                    <em>No protected methods found</em>
+                </section>
+                <section class="span4">
+                    <a href="../classes/Wheels.Typo.Text.html#property_text" class="">$text</a><br/>
+                    <a href="../classes/Wheels.Typo.Text.html#property_storage" class="">$storage</a><br/>
+                </section>
+                <section class="span4">
+                    <em>N/A</em>
+                </section>
+            </section>
+            <section class="row-fluid private">
+                <section class="span4">
+                    <em>No private methods found</em>
+                </section>
+                <section class="span4">
+                    <a href="../classes/Wheels.Typo.Text.html#property_encoding" class="">$encoding</a><br/>
+                </section>
+                <section class="span4">
+                    <em>N/A</em>
                 </section>
             </section>
         </section>
-    </footer>
+    </div>
+    <aside class="span4 detailsbar">
+
+
+        <dl>
+            <dt>File</dt>
+            <dd><a href="../files/Wheels.Typo.Text.php.html">
+                <div class="path-wrapper">Wheels\Typo\Text.php</div>
+            </a></dd>
+            <dt>Package</dt>
+            <dd>
+                <div class="namespace-wrapper">\Default</div>
+            </dd>
+            <dt>Class hierarchy</dt>
+            <dd class="hierarchy">
+                <div class="namespace-wrapper">\Wheels\Typo\Text</div>
+            </dd>
+
+
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<a id="constants" name="constants"></a>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <h2>Константы</h2>
+    </div>
+    <aside class="span4 detailsbar"></aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="constant_TYPE_HTML" name="constant_TYPE_HTML" class="anchor"></a>
+        <article id="constant_TYPE_HTML" class="constant">
+            <h3 class="">TYPE_HTML</h3>
+            <pre class="signature">TYPE_HTML</pre>
+            <p><em>HTML</em></p>
+
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="constant_TYPE_HTML_ATTR_VALUE" name="constant_TYPE_HTML_ATTR_VALUE" class="anchor"></a>
+        <article id="constant_TYPE_HTML_ATTR_VALUE" class="constant">
+            <h3 class="">TYPE_HTML_ATTR_VALUE</h3>
+            <pre class="signature">TYPE_HTML_ATTR_VALUE</pre>
+            <p><em>Значение атрибута тега.</em></p>
+
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+
+<a id="properties" name="properties"></a>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <h2>Свойства</h2>
+    </div>
+    <aside class="span4 detailsbar"></aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="property_type" name="property_type" class="anchor"></a>
+        <article class="property">
+            <h3 class="public ">$type</h3>
+            <pre class="signature">$type : string</pre>
+            <p><em>Тип.</em></p>
+
+
+            <h4>Type</h4>
+            string
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="property_text" name="property_text" class="anchor"></a>
+        <article class="property">
+            <h3 class="protected ">$text</h3>
+            <pre class="signature">$text : string</pre>
+            <p><em>Текст.</em></p>
+
+
+            <h4>Type</h4>
+            string
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="property_storage" name="property_storage" class="anchor"></a>
+        <article class="property">
+            <h3 class="protected ">$storage</h3>
+            <pre class="signature">$storage : array</pre>
+            <p><em>Временное хранилище.</em></p>
+
+
+            <h4>Type</h4>
+            array
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="property_encoding" name="property_encoding" class="anchor"></a>
+        <article class="property">
+            <h3 class="private ">$encoding</h3>
+            <pre class="signature">$encoding : string</pre>
+            <p><em>Кодировка текста.</em></p>
+
+
+            <h4>Type</h4>
+            string
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+
+<a id="methods" name="methods"></a>
+
+<div class="row-fluid">
+    <div class="span8 content class"><h2>Методы</h2></div>
+    <aside class="span4 detailsbar"></aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method___construct" name="method___construct" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">__construct()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">__construct(string <span class="argument">$text</span>, string <span
+                    class="argument">$type</span>, string <span class="argument">$encoding</span>)</pre>
+            <p><em></em></p>
+
+
+            <h4>Параметры</h4>
+            <table class="table table-condensed table-hover">
+                <tr>
+                    <td>string</td>
+                    <td>$text</td>
+                    <td><p>Текст.</p></td>
+                </tr>
+                <tr>
+                    <td>string</td>
+                    <td>$type</td>
+                    <td><p>Тип.</p></td>
+                </tr>
+                <tr>
+                    <td>string</td>
+                    <td>$encoding</td>
+                    <td><p>Кодировка текста. Если не указана, то будет определена автоматически.</p></td>
+                </tr>
+            </table>
+
+
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method_setText" name="method_setText" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">setText()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">setText(string <span class="argument">$value</span>, string <span
+                    class="argument">$encoding</span>)</pre>
+            <p><em>Устанавливает значение текста.</em></p>
+
+
+            <h4>Параметры</h4>
+            <table class="table table-condensed table-hover">
+                <tr>
+                    <td>string</td>
+                    <td>$value</td>
+                    <td><p>Текст.</p></td>
+                </tr>
+                <tr>
+                    <td>string</td>
+                    <td>$encoding</td>
+                    <td><p>Кодировка текста. Если не указана, то будет определена автоматически.</p></td>
+                </tr>
+            </table>
+
+
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+            <dt>Uses</dt>
+            <dd>\Wheels\Typo\Utility::detectCharset()</dd>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method_setType" name="method_setType" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">setType()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">setType(string <span
+                    class="argument">$value</span>)</pre>
+            <p><em>Устанавливает тип.</em></p>
+
+
+            <h4>Параметры</h4>
+            <table class="table table-condensed table-hover">
+                <tr>
+                    <td>string</td>
+                    <td>$value</td>
+                    <td><p>Тип.</p></td>
+                </tr>
+            </table>
+
+
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method_getEncoding" name="method_getEncoding" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">getEncoding()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">getEncoding() : string</pre>
+            <p><em>Вовзращает кодировку текста.</em></p>
+
+
+            <h4>Returns</h4>
+            string
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method_getText" name="method_getText" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">getText()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">getText()</pre>
+            <p><em></em></p>
+
+
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method_pushStorage" name="method_pushStorage" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">pushStorage()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">pushStorage(string <span class="argument">$data</span>, string <span
+                    class="argument">$replacer</span>, string <span class="argument">$type</span>) : string</pre>
+            <p><em>Помещает фрагмент текста в хранилище.</em></p>
+
+
+            <h4>Параметры</h4>
+            <table class="table table-condensed table-hover">
+                <tr>
+                    <td>string</td>
+                    <td>$data</td>
+                    <td><p>Фрагмент текста.</p></td>
+                </tr>
+                <tr>
+                    <td>string</td>
+                    <td>$replacer</td>
+                    <td><p>Имя строки для замены.</p></td>
+                </tr>
+                <tr>
+                    <td>string</td>
+                    <td>$type</td>
+                    <td><p>Тип заменителя.</p></td>
+                </tr>
+            </table>
+
+
+            <h4>Returns</h4>
+            string
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    staticvar
+                </th>
+                <td>
+                    <p>int $counters Счётчики замен.</p>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method_popStorage" name="method_popStorage" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">popStorage()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">popStorage(string <span class="argument">$replacer</span>, string <span
+                    class="argument">$type</span>, int <span class="argument">$count</span>) : string</pre>
+            <p><em>Восстанавливает фрагмент текста из хранилища.</em></p>
+
+
+            <h4>Параметры</h4>
+            <table class="table table-condensed table-hover">
+                <tr>
+                    <td>string</td>
+                    <td>$replacer</td>
+                    <td><p>Имя строки для замены.</p></td>
+                </tr>
+                <tr>
+                    <td>string</td>
+                    <td>$type</td>
+                    <td><p>Тип заменителя.</p></td>
+                </tr>
+                <tr>
+                    <td>int</td>
+                    <td>$count</td>
+                    <td><p>Если передан, то будет установлен в количество произведенных замен.</p></td>
+                </tr>
+            </table>
+
+
+            <h4>Returns</h4>
+            string
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+            <dt>Uses</dt>
+            <dd>\Wheels\Typo\Text::replace()</dd>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method_iconv" name="method_iconv" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">iconv()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">iconv(string <span class="argument">$in_charset</span>, string <span
+                    class="argument">$out_charset</span>)</pre>
+            <p><em>Преобразовывает текст в требуемую кодировку.</em></p>
+
+
+            <h4>Параметры</h4>
+            <table class="table table-condensed table-hover">
+                <tr>
+                    <td>string</td>
+                    <td>$in_charset</td>
+                    <td><p>Кодировка входной строки.</p></td>
+                </tr>
+                <tr>
+                    <td>string</td>
+                    <td>$out_charset</td>
+                    <td><p>Требуемая на выходе кодировка.</p></td>
+                </tr>
+            </table>
+
+            <h4>Throws</h4>
+            <dl>
+                <dt>\Wheels\Typo\Exception</dt>
+                <dd></dd>
+            </dl>
+
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method_replace" name="method_replace" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">replace()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">replace(string|string[] <span
+                    class="argument">$search</span>, string|string[] <span class="argument">$replace</span>, int <span
+                    class="argument">$count</span>)</pre>
+            <p><em>Заменяет все вхождения строки поиска на строку замены.</em></p>
+
+
+            <h4>Параметры</h4>
+            <table class="table table-condensed table-hover">
+                <tr>
+                    <td>string|string[]</td>
+                    <td>$search</td>
+                    <td><p>Искомое значение.</p></td>
+                </tr>
+                <tr>
+                    <td>string|string[]</td>
+                    <td>$replace</td>
+                    <td><p>Значение замены.</p></td>
+                </tr>
+                <tr>
+                    <td>int</td>
+                    <td>$count</td>
+                    <td><p>Если передан, то будет установлен в количество произведенных замен.</p></td>
+                </tr>
+            </table>
+
+
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method_replace_callback" name="method_replace_callback" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">replace_callback()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">replace_callback(string|string[] <span class="argument">$search</span>, callable <span
+                    class="argument">$callback</span>)</pre>
+            <p><em>Заменяет все вхождения строки поиска на строку замены с использованием callback-функции.</em></p>
+
+
+            <h4>Параметры</h4>
+            <table class="table table-condensed table-hover">
+                <tr>
+                    <td>string|string[]</td>
+                    <td>$search</td>
+                    <td><p>Искомое значение.</p></td>
+                </tr>
+                <tr>
+                    <td>callable</td>
+                    <td>$callback</td>
+                    <td><p>Вызываемая callback-функция, которой будет передано найденное значение;</p>
+                        <pre><code> callback-функция должна вернуть строку с заменой.</code></pre>
+                    </td>
+                </tr>
+            </table>
+
+
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method_substr" name="method_substr" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">substr()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">substr(int <span
+                    class="argument">$start</span>, int <span class="argument">$length</span>) : \Wheels\Typo\type</pre>
+            <p><em>Возвращает подстроку.</em></p>
+
+
+            <h4>Параметры</h4>
+            <table class="table table-condensed table-hover">
+                <tr>
+                    <td>int</td>
+                    <td>$start</td>
+                    <td><p>Если start неотрицателен, возвращаемая подстрока начинается с позиции start от начала текста,
+                        считая от нуля.</p>
+                        <pre><code> Если start отрицательный, возвращаемая подстрока начинается с позиции, отстоящей на
+                            start символов от конца текста.</code></pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td>int</td>
+                    <td>$length</td>
+                    <td><p>Если length положительный, возвращаемая строка будет не длиннее length символов, начиная с
+                        параметра start.</p>
+                        <pre><code> Если length отрицательный, то будет отброшено указанное этим аргументом число
+                            символов с конца текста.</code></pre>
+                    </td>
+                </tr>
+            </table>
+
+
+            <h4>Returns</h4>
+            \Wheels\Typo\type
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method_substr_replace" name="method_substr_replace" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">substr_replace()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">substr_replace(string <span
+                    class="argument">$replacement</span>, int <span class="argument">$start</span>, int <span
+                    class="argument">$length</span>)</pre>
+            <p><em>Заменяет часть строки.</em></p>
+
+
+            <h4>Параметры</h4>
+            <table class="table table-condensed table-hover">
+                <tr>
+                    <td>string</td>
+                    <td>$replacement</td>
+                    <td><p>Строка замены.</p></td>
+                </tr>
+                <tr>
+                    <td>int</td>
+                    <td>$start</td>
+                    <td><p>Если start положителен, замена начинается с символа с порядковым номером start в тексте.</p>
+                        <pre><code> Если start отрицателен, замена начинается с символа с порядковым номером start,
+                            считая от конца текста.</code></pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td>int</td>
+                    <td>$length</td>
+                    <td><p>Если аргумент положителен, то он представляет собой длину заменяемой подстроки в тексте.</p>
+                        <pre><code> Если этот аргумент отрицательный, он определяет количество символов от конца текста,
+                            на которых заканчивается замена.</code></pre>
+                    </td>
+                </tr>
+            </table>
+
+
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method_strpos" name="method_strpos" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">strpos()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">strpos(mixed <span
+                    class="argument">$needle</span>, int <span class="argument">$offset</span>) : mixed</pre>
+            <p><em>Возвращает позицию первого вхождения подстроки.</em></p>
+
+
+            <h4>Параметры</h4>
+            <table class="table table-condensed table-hover">
+                <tr>
+                    <td>mixed</td>
+                    <td>$needle</td>
+                    <td><p>Если не является строкой или массивом, то приводится к целому и трактуется как код
+                        символа.</p>
+<pre><code> Если является массивом, то результатом будет ассоциативный массив с ключами:
+    'pos' - позиция первой найденной подстроки из массива needle;
+    'str' - значение первой наденной подстроки из массива needle;</code></pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td>int</td>
+                    <td>$offset</td>
+                    <td><p>Если этот параметр указан, то поиск будет начат с указанного количества символов с начала
+                        текста.</p></td>
+                </tr>
+            </table>
+
+
+            <h4>Returns</h4>
+            mixed
+            &mdash; <p>Возвращает позицию, в которой находится искомая строка, относительно начала текста (независимо от
+            смещения offset).</p>
+            <pre><code> Возвращает FALSE, если искомая строка не найдена.</code></pre>
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method_preg_replace" name="method_preg_replace" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">preg_replace()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">preg_replace(string|string[] <span class="argument">$pattern</span>, string|string[] <span
+                    class="argument">$replacement</span>, int <span class="argument">$limit</span>, int <span
+                    class="argument">$count</span>)</pre>
+            <p><em>Выполняет поиск и замену по регулярному выражению.</em></p>
+
+
+            <h4>Параметры</h4>
+            <table class="table table-condensed table-hover">
+                <tr>
+                    <td>string|string[]</td>
+                    <td>$pattern</td>
+                    <td><p>Искомый шаблон.</p></td>
+                </tr>
+                <tr>
+                    <td>string|string[]</td>
+                    <td>$replacement</td>
+                    <td><p>Строка или массив строк для замены.</p></td>
+                </tr>
+                <tr>
+                    <td>int</td>
+                    <td>$limit</td>
+                    <td><p>Максимально возможное количество замен для каждого шаблона;</p>
+                        <pre><code> по умолчанию равно -1 (без ограничений).</code></pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td>int</td>
+                    <td>$count</td>
+                    <td><p>Количество произведенных замен.</p></td>
+                </tr>
+            </table>
+
+
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method_preg_replace_callback" name="method_preg_replace_callback" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">preg_replace_callback()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">preg_replace_callback(string|string[] <span
+                    class="argument">$pattern</span>, callable <span class="argument">$callback</span>, int <span
+                    class="argument">$limit</span>, int <span class="argument">$count</span>)</pre>
+            <p><em>Выполняет поиск по регулярному выражению и замену с использованием callback-функции.</em></p>
+
+
+            <h4>Параметры</h4>
+            <table class="table table-condensed table-hover">
+                <tr>
+                    <td>string|string[]</td>
+                    <td>$pattern</td>
+                    <td><p>Искомый шаблон.</p></td>
+                </tr>
+                <tr>
+                    <td>callable</td>
+                    <td>$callback</td>
+                    <td><p>Вызываемая callback-функция, которой будет передан массив совпавших элементов текста;</p>
+                        <pre><code> callback-функция должна вернуть строку с заменой.</code></pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td>int</td>
+                    <td>$limit</td>
+                    <td><p>Максимально возможное количество замен для каждого шаблона;</p>
+                        <pre><code> по умолчанию равно -1 (без ограничений).</code></pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td>int</td>
+                    <td>$count</td>
+                    <td><p>Количество произведенных замен.</p></td>
+                </tr>
+            </table>
+
+
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method_preg_match_all" name="method_preg_match_all" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">preg_match_all()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">preg_match_all(string <span
+                    class="argument">$pattern</span>, array <span class="argument">$matches</span>, string <span
+                    class="argument">$flags</span>, int <span class="argument">$offset</span>) : \Wheels\Typo\type</pre>
+            <p><em>Выполняет глобальный поиск шаблона в тексте.</em></p>
+
+
+            <h4>Параметры</h4>
+            <table class="table table-condensed table-hover">
+                <tr>
+                    <td>string</td>
+                    <td>$pattern</td>
+                    <td><p>Искомый шаблон.</p></td>
+                </tr>
+                <tr>
+                    <td>array</td>
+                    <td>$matches</td>
+                    <td><p>Параметр flags регулирует порядок вывода совпадений в возвращаемом многомерном массиве.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>string</td>
+                    <td>$flags</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>int</td>
+                    <td>$offset</td>
+                    <td><p>Обычно поиск осуществляется слева направо, с начала строки.</p>
+                        <pre><code> Дополнительный параметр offset может быть использован для указания альтернативной
+                            начальной позиции для поиска.</code></pre>
+                    </td>
+                </tr>
+            </table>
+
+
+            <h4>Returns</h4>
+            \Wheels\Typo\type
+            &mdash; <p>Возвращает количество найденных вхождений шаблона (которое может быть и нулем) либо FALSE,</p>
+            <pre><code> если во время выполнения возникли какие-либо ошибки.</code></pre>
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method_preg_replace_storage" name="method_preg_replace_storage" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">preg_replace_storage()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">preg_replace_storage(string|string[] <span
+                    class="argument">$pattern</span>,  <span class="argument">$replacer</span>, string <span
+                    class="argument">$type</span>, int <span class="argument">$limit</span>, int <span class="argument">$count</span>)</pre>
+            <p><em>Выполняет поиск и замену по регулярному выражению с помещением найденных фрагментов в хранилище.</em>
+            </p>
+
+
+            <h4>Параметры</h4>
+            <table class="table table-condensed table-hover">
+                <tr>
+                    <td>string|string[]</td>
+                    <td>$pattern</td>
+                    <td><p>Искомый шаблон.</p></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>$replacer</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>string</td>
+                    <td>$type</td>
+                    <td><p>Строка для замены.</p></td>
+                </tr>
+                <tr>
+                    <td>int</td>
+                    <td>$limit</td>
+                    <td><p>Максимально возможное количество замен для каждого шаблона;</p>
+                        <pre><code> по умолчанию равно -1 (без ограничений).</code></pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td>int</td>
+                    <td>$count</td>
+                    <td><p>Количество произведенных замен.</p></td>
+                </tr>
+            </table>
+
+
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+            <dt>Uses</dt>
+            <dd>\Wheels\Typo\Text::pushStorage()</dd>
+            <dd>\Wheels\Typo\Text::preg_replace_callback()</dd>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method_htmlentities" name="method_htmlentities" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">htmlentities()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">htmlentities(int <span class="argument">$flags</span>, bool <span
+                    class="argument">$double_encode</span>)</pre>
+            <p><em>Преобразует все возможные символы в соответствующие HTML-сущности.</em></p>
+
+
+            <h4>Параметры</h4>
+            <table class="table table-condensed table-hover">
+                <tr>
+                    <td>int</td>
+                    <td>$flags</td>
+                    <td><p>Битовая маска из флагов, определяющих режим обработки кавычек,</p>
+<pre><code> некорректных кодовых последовательностей и используемый тип документа.
+    По умолчанию используется ENT_COMPAT | ENT_HTML401.</code></pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td>bool</td>
+                    <td>$double_encode</td>
+                    <td><p>При выключении параметра PHP не будет преобразовывать существующие html-сущности.</p>
+                        <pre><code> По умолчанию преобразуется все без ограничений.</code></pre>
+                    </td>
+                </tr>
+            </table>
+
+
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method_htmlspecialchars" name="method_htmlspecialchars" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">htmlspecialchars()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">htmlspecialchars(int <span class="argument">$flags</span>, bool <span
+                    class="argument">$double_encode</span>)</pre>
+            <p><em>Преобразует специальные символы в HTML-сущности.</em></p>
+
+
+            <h4>Параметры</h4>
+            <table class="table table-condensed table-hover">
+                <tr>
+                    <td>int</td>
+                    <td>$flags</td>
+                    <td><p>Битовая маска из флагов, определяющих режим обработки кавычек,</p>
+<pre><code> некорректных кодовых последовательностей и используемый тип документа.
+    По умолчанию используется ENT_COMPAT | ENT_HTML401.</code></pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td>bool</td>
+                    <td>$double_encode</td>
+                    <td><p>При выключении параметра PHP не будет преобразовывать существующие html-сущности.</p>
+                        <pre><code> По умолчанию преобразуется все без ограничений.</code></pre>
+                    </td>
+                </tr>
+            </table>
+
+
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method_html_entity_decode" name="method_html_entity_decode" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">html_entity_decode()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">html_entity_decode(int <span
+                    class="argument">$flags</span>)</pre>
+            <p><em>Преобразует все HTML-сущности в соответствующие символы.</em></p>
+
+
+            <h4>Параметры</h4>
+            <table class="table table-condensed table-hover">
+                <tr>
+                    <td>int</td>
+                    <td>$flags</td>
+                    <td><p>Битовая маска из флагов, определяющих режим обработки кавычек,</p>
+<pre><code> некорректных кодовых последовательностей и используемый тип документа.
+    По умолчанию используется ENT_COMPAT | ENT_HTML401.</code></pre>
+                    </td>
+                </tr>
+            </table>
+
+
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method_nl2br" name="method_nl2br" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">nl2br()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">nl2br(bool <span class="argument">$is_xhtml</span>)</pre>
+            <p><em>Вставляет HTML-код разрыва строки перед каждым переводом строки.</em></p>
+
+
+            <h4>Параметры</h4>
+            <table class="table table-condensed table-hover">
+                <tr>
+                    <td>bool</td>
+                    <td>$is_xhtml</td>
+                    <td><p>Использовать ли совместимые с XHTML переводы строк или нет.</p></td>
+                </tr>
+            </table>
+
+
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+<div class="row-fluid">
+    <div class="span8 content class">
+        <a id="method___toString" name="method___toString" class="anchor"></a>
+        <article class="method">
+            <h3 class="public ">__toString()</h3>
+            <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"
+               style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+            <pre class="signature" style="margin-right: 54px;">__toString() : string</pre>
+            <p><em>Преобразовывает объект в строку.</em></p>
+
+
+            <h4>Returns</h4>
+            string
+        </article>
+    </div>
+    <aside class="span4 detailsbar">
+        <h1><i class="icon-arrow-down"></i></h1>
+        <dl>
+        </dl>
+        <h2>Tags</h2>
+        <table class="table table-condensed">
+            <tr>
+                <th>
+                    todo
+                </th>
+                <td>
+                </td>
+            </tr>
+        </table>
+    </aside>
+</div>
+
+</div>
+</section>
+
+<div id="source-view" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="source-view-label"
+     aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="source-view-label">Text.php</h3>
+    </div>
+    <div class="modal-body">
+        <pre data-src="../files/Wheels\Typo\Text.php.txt" class="language-php line-numbers"></pre>
+    </div>
+</div>
+
+<footer class="row-fluid">
+    <section class="span10 offset2">
+        <section class="row-fluid">
+            <section class="span10 offset1">
+                <section class="row-fluid footer-sections">
+                    <section class="span4">
+                        <h1><i class="icon-code"></i></h1>
+
+                        <div>
+                            <ul>
+                                <li><a href="../namespaces/Wheels.html">\Wheels</a></li>
+                            </ul>
+                        </div>
+                    </section>
+                    <section class="span4">
+                        <h1><i class="icon-bar-chart"></i></h1>
+
+                        <div>
+                            <ul>
+                                <li><a href="../graphs/class.html">Class Hierarchy Diagram</a></li>
+                            </ul>
+                        </div>
+                    </section>
+                    <section class="span4">
+                        <h1><i class="icon-pushpin"></i></h1>
+
+                        <div>
+                            <ul>
+                                <li><a href="../reports/errors.html">Ошибки</a></li>
+                                <li><a href="../reports/markers.html">Markers</a></li>
+                            </ul>
+                        </div>
+                    </section>
+                </section>
+            </section>
+        </section>
+        <section class="row-fluid">
+            <section class="span10 offset1">
+                <hr/>
+                Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
+                on March 30th, 2014 at 20:05.
+            </section>
+        </section>
+    </section>
+</footer>
 </div>
 
 </body>
