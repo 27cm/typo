@@ -66,16 +66,6 @@ class Config
     }
 
     /**
-     * Возвращает параметры настроек.
-     *
-     * @return \Wheels\Config\Option\Collection|\Wheels\Config\Option[] Коллекция параметров настроек.
-     */
-    public function getOptions()
-    {
-        return $this->_options;
-    }
-
-    /**
      * Возвращает параметр с заданным именем.
      *
      * @param string $name Имя параметра.
@@ -88,19 +78,13 @@ class Config
     }
 
     /**
-     * Возвращает значения параметров настроек.
+     * Возвращает параметры.
      *
-     * @return array Ассоциативный массив значений параметров.
+     * @return \Wheels\Config\Option\Collection|\Wheels\Config\Option[] Коллекция параметров настроек.
      */
-    public function getOptionsValues()
+    public function getOptions()
     {
-        $optionsValues = array();
-
-        foreach ($this->getOptions() as $name => $option) {
-            $optionsValues[$name] = $option->getValue();
-        }
-
-        return $optionsValues;
+        return $this->_options;
     }
 
     /**
@@ -116,13 +100,19 @@ class Config
     }
 
     /**
-     * Возвращает группы значений параметров.
+     * Возвращает значения параметров.
      *
-     * @return array Ассоциативный массив групп значений параметров.
+     * @return array Ассоциативный массив значений параметров.
      */
-    public function getGroups()
+    public function getOptionsValues()
     {
-        return $this->_groups;
+        $optionsValues = array();
+
+        foreach ($this->getOptions() as $name => $option) {
+            $optionsValues[$name] = $option->getValue();
+        }
+
+        return $optionsValues;
     }
 
     /**
@@ -144,16 +134,13 @@ class Config
     }
 
     /**
-     * Задаёт параметры.
+     * Возвращает группы значений параметров.
      *
-     * @param \Wheels\Config\Option[] $options Массив параметров.
-     *
-     * @return void Этот метод не возвращает значения после выполнения.
+     * @return array Ассоциативный массив групп значений параметров.
      */
-    public function setOptions(array $options)
+    public function getGroups()
     {
-        $this->getOptions()->clear();
-        $this->addOptions($options);
+        return $this->_groups;
     }
 
     /**
@@ -180,6 +167,19 @@ class Config
         foreach ($options as $option) {
             $this->addOption($option);
         }
+    }
+
+    /**
+     * Задаёт параметры.
+     *
+     * @param \Wheels\Config\Option[] $options Массив параметров.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function setOptions(array $options)
+    {
+        $this->getOptions()->clear();
+        $this->addOptions($options);
     }
 
     /**
@@ -210,64 +210,6 @@ class Config
     }
 
     /**
-     * Устанавливает группы значений параметров.
-     *
-     * @param array $groups Ассоциативный массив групп значений параметров.
-     *
-     * @return void Этот метод не возвращает значения после выполнения.
-     */
-    public function setGroups(array $groups)
-    {
-        $this->_groups = array();
-        $this->addGroups($groups);
-    }
-
-    /**
-     * Добавляет группы значений параметров.
-     *
-     * @param array $groups Ассоциативный массив групп значений параметров.
-     *
-     * @return void Этот метод не возвращает значения после выполнения.
-     */
-    public function addGroups(array $groups)
-    {
-        foreach ($groups as $name => $group) {
-            $this->addGroup($name, $group);
-        }
-    }
-
-    /**
-     * Устанавливает группы значений параметров из ini-файла.
-     *
-     * @param string $filename Имя ini-файла.
-     *
-     * @return void Этот метод не возвращает значения после выполнения.
-     */
-    public function setGroupsFromFile($filename)
-    {
-        $this->_groups = array();
-        $this->addGroupsFromFile($filename);
-    }
-
-    /**
-     * Добавляет группы значений параметров из ini-файла.
-     *
-     * @param string $filename Имя ini-файла.
-     *
-     * @return void Этот метод не возвращает значения после выполнения.
-     */
-    public function addGroupsFromFile($filename)
-    {
-        $groups = $this->_processIniFile($filename);
-
-        foreach ($groups as $name => $group) {
-            if (is_array($group)) {
-                $this->addGroup($name, $group);
-            }
-        }
-    }
-
-    /**
      * Добавляет группу значений параметров.
      *
      * @param int|float|string|bool $name  Название группы значений параметров.
@@ -291,17 +233,61 @@ class Config
     }
 
     /**
-     * Устанавливает значения параметров из заданных групп значений параметров.
+     * Добавляет группы значений параметров.
      *
-     * @param array $names Массив названий групп.
+     * @param array $groups Ассоциативный массив групп значений параметров.
      *
      * @return void Этот метод не возвращает значения после выполнения.
      */
-    public function setOptionsValuesFromGroups(array $names)
+    public function addGroups(array $groups)
     {
-        foreach ($names as $name) {
-            $this->setOptionsValuesFromGroup($name);
+        foreach ($groups as $name => $group) {
+            $this->addGroup($name, $group);
         }
+    }
+
+    /**
+     * Устанавливает группы значений параметров.
+     *
+     * @param array $groups Ассоциативный массив групп значений параметров.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function setGroups(array $groups)
+    {
+        $this->_groups = array();
+        $this->addGroups($groups);
+    }
+
+    /**
+     * Добавляет группы значений параметров из ini-файла.
+     *
+     * @param string $filename Имя ini-файла.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function addGroupsFromFile($filename)
+    {
+        $groups = $this->_processIniFile($filename);
+
+        foreach ($groups as $name => $group) {
+            if (is_array($group)) {
+                $this->addGroup($name, $group);
+            }
+        }
+    }
+
+    /**
+     * Устанавливает группы значений параметров из ini-файла.
+     *
+     * @param string $filename Имя ini-файла.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function setGroupsFromFile($filename)
+    {
+        $this->_groups = array();
+        $this->addGroupsFromFile($filename);
     }
 
     /**
@@ -315,6 +301,20 @@ class Config
     {
         $options = $this->getGroup($name);
         $this->setOptionsValues($options);
+    }
+
+    /**
+     * Устанавливает значения параметров из заданных групп значений параметров.
+     *
+     * @param array $names Массив названий групп.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function setOptionsValuesFromGroups(array $names)
+    {
+        foreach ($names as $name) {
+            $this->setOptionsValuesFromGroup($name);
+        }
     }
 
     /**

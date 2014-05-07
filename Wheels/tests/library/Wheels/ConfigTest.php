@@ -104,18 +104,81 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
     }
 
+    public function testGetGroups()
+    {
+        $config = new Config();
+
+        $expected = array();
+        $actual = $config->getGroups();
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testGetGroup()
+    {
+        $a = new Option('nameA', 'defaultA');
+        $b = new Option('nameB', 'defaultB');
+
+        $options = array($a, $b);
+        $config = new Config($options);
+
+        $name = 'group';
+        $expected = array(
+            $a->getName() => 'valueA',
+            $b->getName() => 'valueB',
+        );
+        $config->addGroup($name, $expected);
+
+        $actual = $config->getGroup($name);
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testGetGroupException()
+    {
+        $a = new Option('nameA', 'defaultA');
+        $b = new Option('nameB', 'defaultB');
+
+        $groups = array(
+            'groupA' => array(
+                $a->getName() => 'valueA1',
+            ),
+            'groupB' => array(
+                $a->getName() => 'valueA2',
+                $b->getName() => 'valueB2',
+            ),
+        );
+
+        $options = array($a, $b);
+        $config = new Config($options);
+        $config->setGroups($groups);
+
+        $name = 'unknown';
+        $this->setExpectedException(
+            '\Wheels\Config\Exception',
+            "Группа настроек '$name' не найдена"
+        );
+
+        $actual = $config->getGroup($name);
+    }
+
     public function testSetOptions()
     {
         $a = new Option('nameA', 'defaultA');
         $b = new Option('nameB', 'defaultB', 'string');
+        $c = new Option('nameC', 'defaultC');
+
+        $optionsData = array(
+            array($a, $b),
+            array($b, $c),
+        );
 
         $config = new Config();
-        $options = array($a, $b);
-        $config->setOptions($options);
 
-        $expected = new Collection($options);
-        $actual = $config->getOptions();
-        $this->assertEquals($expected, $actual);
+        foreach ($optionsData as $options) {
+            $config->setOptions($options);
+            $actual = $config->getOptions();
+            $expected = new Collection($options);
+            $this->assertEquals($expected, $actual);
+        }
     }
 
     public function testAddOption()
@@ -166,6 +229,169 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $config->setOptionValue('nameB', $expected);
 
         $actual = $config->getOptionValue('nameB');
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testSetGroups()
+    {
+        $a = new Option('nameA', 'defaultA');
+        $b = new Option('nameB', 'defaultB', 'string');
+
+        $groupsData = array(
+            array(
+                'a' => array(
+                    $a->getName() => 'valueA1',
+                ),
+                'b' => array(
+                    $a->getName() => 'valueA2',
+                    $b->getName() => 'valueB2',
+                ),
+            ),
+            array(
+                'b' => array(
+                    $a->getName() => 'valueA2',
+                ),
+                'c' => array(
+                    $a->getName() => 'valueA3',
+                    $b->getName() => 'valueB3',
+                ),
+            )
+        );
+
+        $options = array($a, $b);
+        $config = new Config($options);
+
+        foreach ($groupsData as $groups) {
+            $config->setGroups($groups);
+            $actual = $config->getGroups();
+            $expected = $groups;
+            $this->assertEquals($expected, $actual);
+        }
+    }
+
+    public function testAddGroups()
+    {
+        $a = new Option('nameA', 'defaultA');
+        $b = new Option('nameB', 'defaultB', 'string');
+
+        $groupsData = array(
+            array(
+                'a' => array(
+                    $a->getName() => 'valueA1',
+                ),
+                'b' => array(
+                    $a->getName() => 'valueA2',
+                    $b->getName() => 'valueB2',
+                ),
+            ),
+            array(
+                'c' => array(
+                    $a->getName() => 'valueA2',
+                ),
+                'd' => array(
+                    $a->getName() => 'valueA3',
+                    $b->getName() => 'valueB3',
+                ),
+            )
+        );
+
+        $options = array($a, $b);
+        $config = new Config($options);
+
+        $expected = array();
+        foreach ($groupsData as $groups) {
+            $config->addGroups($groups);
+            $actual = $config->getGroups();
+            $expected = array_merge($expected, $groups);
+            $this->assertEquals($expected, $actual);
+        }
+    }
+
+    public function testAddGroup()
+    {
+        $a = new Option('nameA', 'defaultA');
+        $b = new Option('nameB', 'defaultB', 'string');
+
+        $groups = array(
+            'a' => array(
+                $a->getName() => 'valueA1',
+            ),
+            'b' => array(
+                $a->getName() => 'valueA2',
+                $b->getName() => 'valueB2',
+            ),
+        );
+
+        $options = array($a, $b);
+        $config = new Config($options);
+
+        $expected = array();
+        foreach ($groups as $name => $group) {
+            $config->addGroup($name, $group);
+            $actual = $config->getGroups();
+            $expected[$name] = $group;
+            $this->assertEquals($expected, $actual);
+        }
+    }
+
+    public function testSetOptionsValuesFromGroup()
+    {
+        $a = new Option('nameA', 'defaultA');
+        $b = new Option('nameB', 'defaultB', 'string');
+        $c = new Option('nameC', 1, 'int');
+
+        $groups = array(
+            'groupA' => array(
+                $a->getName() => 'valueA1',
+                $c->getName() => 2,
+            ),
+            'groupB' => array(
+                $a->getName() => 'valueA2',
+            ),
+        );
+
+        $options = array($a, $b, $c);
+        $config = new Config($options);
+        $config->addGroups($groups);
+
+        $config->setOptionsValuesFromGroup('groupA');
+        $actual = $config->getOptionsValues();
+        $expected = array(
+            $a->getName() => 'valueA1',
+            $b->getName() => 'defaultB',
+            $c->getName() => 2,
+        );
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testSetOptionsValuesFromGroups()
+    {
+        $a = new Option('nameA', 'defaultA');
+        $b = new Option('nameB', 'defaultB', 'string');
+        $c = new Option('nameC', 1, 'int');
+
+        $groups = array(
+            'groupA' => array(
+                $a->getName() => 'valueA1',
+                $c->getName() => 2,
+            ),
+            'groupB' => array(
+                $a->getName() => 'valueA2',
+            ),
+        );
+        $names = array_keys($groups);
+
+        $options = array($a, $b, $c);
+        $config = new Config($options);
+        $config->setGroups($groups);
+
+        $config->setOptionsValuesFromGroups($names);
+        $actual = $config->getOptionsValues();
+        $expected = array(
+            $a->getName() => 'valueA2',
+            $b->getName() => 'defaultB',
+            $c->getName() => 2,
+        );
         $this->assertEquals($expected, $actual);
     }
 
@@ -242,60 +468,62 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         Config::create($config);
     }
 
-    public function testSetOptionsValuesFromFile()
+    public function testAddGroupsFromFile()
     {
-        $sections = array(
-            'default' => array(
-                'simple' => 'simpleA',
-                'string' => 'stringA',
-                'param'  => array(
-                    'string' => 'stringA',
-                    'bool'   => array(
-                        'enabled'  => true,
-                        'disabled' => false,
+        $filesData = array(
+            array(
+                'filename' => static::$configDir . DS . 'configA.ini',
+                'groups' => array(
+                    'groupA1' => array(
+                        'simple' => 'simpleA',
+                        'string' => 'stringA',
+                        'param' => array(
+                            'string' => 'stringA',
+                            'bool' => array(
+                                'enabled' => true,
+                                'disabled' => false,
+                            ),
+                        ),
+                        'array' => array('A1', 'A2', 'A3'),
+                    ),
+                    'groupA2' => array(
+                        'simple' => 'simpleA',
+                        'string' => 'stringB',
+                        'param' => array(
+                            'string' => 'stringB',
+                            'bool' => array(
+                                'enabled'  => false,
+                                'disabled' => false,
+                            ),
+                        ),
+                        'array' => array('A1', 'A2', 'A3', 'B1', 'B2'),
                     ),
                 ),
-                'array'  => array('A1', 'A2', 'A3'),
             ),
-            'A'       => array(
-                'simple' => 'simpleA',
-                'string' => 'stringB',
-                'param'  => array(
-                    'string' => 'stringB',
-                    'bool'   => array(
-                        'enabled'  => false,
-                        'disabled' => false,
+            array(
+                'filename' => static::$configDir . DS . 'configB.ini',
+                'groups' => array(
+                    'B' => array(
+                        'simple' => 'simpleC',
+                        'param' => array(
+                            'string' => 'stringC',
+                        ),
                     ),
                 ),
-                'array'  => array('A1', 'A2', 'A3', 'B1', 'B2'),
-            ),
-            'B'       => array(
-                'simple' => 'simpleC',
-                'string' => 'default',
-                'param'  => array(
-                    'string' => 'stringC',
-                ),
-                'array'  => array(),
             ),
         );
 
-        $filename = static::$configDir . DS . 'config.ini';
-        chmod($filename, 0777);
+        $expected = array();
+        foreach ($filesData as $f) {
+            $filename = $f['filename'];
+            $groups = $f['groups'];
 
-        foreach (array_keys($sections) as $section) {
-            foreach (static::$config->getOptions() as $option) {
-                $option->setValueDefault();
-            }
+            chmod($filename, 0777);
+            static::$config->addGroupsFromFile($filename);
 
-            if ($section === 'default') {
-                static::$config->setOptionsValuesFromFile($filename);
-            } else {
-                static::$config->setOptionsValuesFromFile($filename, $section);
-            }
-
-            $actual = static::$config->getOptionsValues();
-            $expected = $sections[$section];
-            $this->assertEquals($expected, $actual, $section);
+            $actual = static::$config->getGroups();
+            $expected = array_merge($expected, $groups);
+            $this->assertEquals($expected, $actual);
         }
     }
 
