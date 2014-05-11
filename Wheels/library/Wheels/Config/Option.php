@@ -1,14 +1,23 @@
 <?php
 
+/**
+ * Wheels Library
+ *
+ * @category   Wheels
+ * @package    Wheels\Config
+ */
+
 namespace Wheels\Config;
 
 use Wheels\Config\Option\Type;
 use Wheels\Config\Option\Exception;
 
+use Wheels\Config\Option\IOption;
+
 /**
- * Класс описания параметра настроек.
+ * Класс параметра.
  */
-class Option
+class Option implements IOption
 {
     /**
      * Имя параметра.
@@ -87,9 +96,7 @@ class Option
     }
 
     /**
-     * Возвращает имя параметра.
-     *
-     * @return string Имя параметра.
+     * {@inheritDoc}
      */
     public function getName()
     {
@@ -97,9 +104,7 @@ class Option
     }
 
     /**
-     * Возвращает значение параметра.
-     *
-     * @return mixed Значение параметра.
+     * {@inheritDoc}
      */
     public function getValue()
     {
@@ -107,9 +112,7 @@ class Option
     }
 
     /**
-     * Возвращает значение параметра по умолчанию.
-     *
-     * @return mixed Значение параметра по умолчанию.
+     * {@inheritDoc}
      */
     public function getDefault()
     {
@@ -117,9 +120,7 @@ class Option
     }
 
     /**
-     * Возвращает тип параметра.
-     *
-     * @return \Wheels\Config\Option\Type Тип параметра.
+     * {@inheritDoc}
      */
     public function getType()
     {
@@ -127,9 +128,7 @@ class Option
     }
 
     /**
-     * Возвращает текстовое описание параметра.
-     *
-     * @return string|null Текстовое описание параметра или NULL, если описание не было задано.
+     * {@inheritDoc}
      */
     public function getDesc()
     {
@@ -137,9 +136,7 @@ class Option
     }
 
     /**
-     * Возвращает ассоциативный массив псевдонимов.
-     *
-     * @return array Ассоциативный массив псевдонимов.
+     * {@inheritDoc}
      */
     public function getAliases()
     {
@@ -147,9 +144,7 @@ class Option
     }
 
     /**
-     * Возвращает массив допустимых значений.
-     *
-     * @return array Массив допустимых значений.
+     * {@inheritDoc}
      */
     public function getAllowed()
     {
@@ -157,13 +152,7 @@ class Option
     }
 
     /**
-     * Задаёт имя параметра.
-     *
-     * @param string $name Имя параметра.
-     *
-     * @return void Этот метод не возвращает значения после выполнения.
-     *
-     * @throws \Wheels\Config\Option\Exception
+     * {@inheritDoc}
      */
     public function setName($name)
     {
@@ -175,13 +164,7 @@ class Option
     }
 
     /**
-     * Задаёт значение параметра.
-     *
-     * @param mixed $value Значение параметра.
-     *
-     * @return void Этот метод не возвращает значения после выполнения.
-     *
-     * @throws \Wheels\Config\Option\Exception
+     * {@inheritDoc}
      */
     public function setValue($value)
     {
@@ -195,11 +178,7 @@ class Option
     }
 
     /**
-     * Устанавливает значение параметра по умолчанию в качестве текущего значения параметра.
-     *
-     * @return void Этот метод не возвращает значения после выполнения.
-     *
-     * @throws \Wheels\Config\Option\Exception
+     * {@inheritDoc}
      */
     public function setValueDefault()
     {
@@ -207,13 +186,7 @@ class Option
     }
 
     /**
-     * Задаёт значение параметра по умолчанию.
-     *
-     * @param mixed $value Значение параметра по умолчанию.
-     *
-     * @return void Этот метод не возвращает значения после выполнения.
-     *
-     * @throws \Wheels\Config\Option\Exception
+     * {@inheritDoc}
      */
     public function setDefault($value)
     {
@@ -227,13 +200,7 @@ class Option
     }
 
     /**
-     * Задаёт текстовое описание параметра.
-     *
-     * @param string $desc Текстовое описание параметра.
-     *
-     * @return void Этот метод не возвращает значения после выполнения.
-     *
-     * @throws \Wheels\Config\Option\Exception
+     * {@inheritDoc}
      */
     public function setDesc($desc)
     {
@@ -245,13 +212,7 @@ class Option
     }
 
     /**
-     * Задаёт массив псевдонимов.
-     *
-     * @param array $aliases Ассоциативный массив псевдонимов.
-     *
-     * @return void Этот метод не возвращает значения после выполнения.
-     *
-     * @throws \Wheels\Config\Option\Exception
+     * {@inheritDoc}
      */
     public function setAliases(array $aliases)
     {
@@ -273,13 +234,7 @@ class Option
     }
 
     /**
-     * Задаёт массив допустимых значений.
-     *
-     * @param array $allowed Массив допустимых значений.
-     *
-     * @return void Этот метод не возвращает значения после выполнения.
-     *
-     * @throws \Wheels\Config\Option\Exception
+     * {@inheritDoc}
      */
     public function setAllowed(array $allowed)
     {
@@ -311,11 +266,7 @@ class Option
     }
 
     /**
-     * Проверяет значение параметра.
-     *
-     * @param mixed $value Значение параметра.
-     *
-     * @return bool Если значение параметра является допустимым, то метод возвращает TRUE, иначе - FALSE.
+     * {@inheritDoc}
      */
     public function validate($value)
     {

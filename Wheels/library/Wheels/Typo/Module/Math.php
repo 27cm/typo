@@ -2,15 +2,15 @@
 
 namespace Wheels\Typo\Module;
 
-use Wheels\Typo;
-use Wheels\Typo\Module;
+use Wheels\Typo\Typo;
+use Wheels\Typo\Module\AbstractModule;
 
 /**
  * Числа, дроби и математические знаки.
  *
  * @link http://wikipedia.org/wiki/Punctuation
  */
-class Math extends Module
+class Math extends AbstractModule
 {
     /**
      * Настройки по умолчанию.
@@ -43,7 +43,7 @@ class Math extends Module
         );
 
 
-    // --- Защищенные методы класса ---
+    // --- Защищенные методы ---
 
     /**
      * Стадия B.
@@ -86,7 +86,7 @@ class Math extends Module
                 ) use ($_this, $c) {
                     $d = ($m[1] == 'кв') ? '2' : '3';
 
-                    if ($_this->typo->_options['html-out-enabled'])
+                    if ($_this->_typo->getOption('html-out-enabled'))
                         return '$1' . $_this->sup($d);
                     else {
                         return $c['sup' . $d];
@@ -97,14 +97,14 @@ class Math extends Module
                 ) use ($_this, $c) {
                     $d = $m[2];
 
-                    if ($_this->typo->_options['html-out-enabled'])
+                    if ($_this->_typo->getOption('html-out-enabled'))
                         return '$1' . $_this->sup($d);
                     else
                         return $c['sup' . $d];
                 },
         );
 
-        if ($this->typo->_options['html-out-enabled']) {
+        if ($this->_typo->getOption('html-out-enabled')) {
             $rules += array(
                 $c['sup1']                              => $this->sup('1'),
                 $c['sup2']                              => $this->sup('2'),
@@ -145,8 +145,8 @@ class Math extends Module
 
         if (is_null($tag)) {
             $tag = array(
-                'open'  => $this->text->pushStorage('<sup><small>', Typo::REPLACER, Typo::INVISIBLE),
-                'close' => $this->text->pushStorage('</small></sup>', Typo::REPLACER, Typo::INVISIBLE),
+                'open'  => $this->getTypo()->getText()->pushStorage('<sup><small>', Typo::REPLACER, Typo::INVISIBLE),
+                'close' => $this->getTypo()->getText()->pushStorage('</small></sup>', Typo::REPLACER, Typo::INVISIBLE),
             );
         }
 
@@ -166,8 +166,8 @@ class Math extends Module
 
         if (is_null($tag)) {
             $tag = array(
-                'open'  => $this->text->pushStorage('<sub><small>', Typo::REPLACER, Typo::INVISIBLE),
-                'close' => $this->text->pushStorage('</small></sub>', Typo::REPLACER, Typo::INVISIBLE),
+                'open'  => $this->getTypo()->getText()->pushStorage('<sub><small>', Typo::REPLACER, Typo::INVISIBLE),
+                'close' => $this->getTypo()->getText()->pushStorage('</small></sub>', Typo::REPLACER, Typo::INVISIBLE),
             );
         }
 

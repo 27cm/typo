@@ -9,8 +9,6 @@
 
 namespace Wheels\Datastructure;
 
-use Wheels\Datastructure\Exception;
-
 use Iterator;
 use ArrayAccess;
 use Countable;
@@ -49,11 +47,20 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
      */
     protected $_allowModifications = true;
 
+    /**
+     * Обработчики событий.
+     *
+     * @var array
+     */
+    protected $_listeners = array(
+        'offsetSet' => array(),
+    );
 
-    // --- Конструктор ---
+
+    // --- Открытые методы ---
 
     /**
-     * Создаёт объект на основе передаваемого массива.
+     * Конструктор.
      *
      * @param array $array Массив элементов.
      */
@@ -61,9 +68,6 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
     {
         $this->setArray($array);
     }
-
-
-    // --- Открытые методы ---
 
     /**
      * Возвращает копию массива.
@@ -112,7 +116,19 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
      */
     public function setAllowModifications($value)
     {
-        $this->_allowModifications = (bool)$value;
+        $this->_allowModifications = (bool) $value;
+    }
+
+    public function addEventListener($event, $function)
+    {
+        $this->_ensureAllowModification();
+        $this->_chechEvent($event);
+
+        if (!is_callable($function)) {
+            throw new Exception('Обработчик события должен иметь тип callable');
+        }
+
+        $this->_listeners[$event][] = $function;
     }
 
     /**
@@ -130,6 +146,18 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
     }
 
     /**
+     * Подготовка смещения.
+     *
+     * @param string $offset Смещение (ключ).
+     *
+     * @return mixed Подготовленное смещение.
+     */
+    public function prepareOffset($offset)
+    {
+        return $offset;
+    }
+
+    /**
      * Определяет, существует ли заданное смещение (ключ).
      *
      * Данный метод исполняется, когда используется функция isset() или empty().
@@ -142,6 +170,7 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
      */
     public function offsetExists($offset)
     {
+        $offset = $this->prepareOffset($offset);
         return isset($this->_array[$offset]);
     }
 
@@ -156,6 +185,7 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
      */
     public function offsetGet($offset)
     {
+        $offset = $this->prepareOffset($offset);
         return $this->offsetExists($offset) ? $this->_array[$offset] : null;
     }
 
@@ -170,6 +200,7 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
     public function offsetSet($offset, $value)
     {
         $this->_ensureAllowModification();
+        $offset = $this->prepareOffset($offset);
 
         if (is_null($offset)) {
             array_push($this->_array, $value);
@@ -180,6 +211,8 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
             }
             $this->_array[$offset] = $value;
         }
+
+        $this->_on('offsetSet', func_get_args());
     }
 
     /**
@@ -192,6 +225,7 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
     public function offsetUnset($offset)
     {
         $this->_ensureAllowModification();
+        $offset = $this->prepareOffset($offset);
 
         if ($this->offsetExists($offset)) {
             unset($this->_array[$offset]);
@@ -200,7 +234,7 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
     }
 
     /**
-     *  Возвращает текущий элемент массива.
+     * Возвращает текущий элемент массива.
      *
      * @return mixed Возвращает значение элемента массива, на который в данный момент указывает внутренний
      *               указатель массива. Сам указатель не изменяется. Если внутренний указатель
@@ -214,7 +248,7 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
     /**
      * Возвращает ключ текущего элемента массива.
      *
-     * @return scalar Возвращает ключ элемента массива, на который в данный момент указывает внутренний
+     * @return mixed Возвращает ключ элемента массива, на который в данный момент указывает внутренний
      *                указатель массива. Сам указатель не изменяется. Если внутренний указатель
      *                указывает вне границ массива или массив пуст, метод возвратит NULL.
      */
@@ -226,7 +260,8 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
     /**
      * Устанавливает внутренний указатель массива на его первый элемент.
      *
-     * В начале цикла foreach этот метод вызывается первым. Этот метод не будет вызван после цикла foreach.
+     * В начале цикла foreach этот метод вызывается первым.
+     * Этот метод не будет вызван после цикла foreach.
      *
      * @return void Этот метод не возвращает значения после выполнения.
      */
@@ -294,6 +329,29 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
 
 
     // --- Защищённые методы ---
+
+    protected function _on($event, array $arguments = array())
+    {
+        $this->_chechEvent($event);
+
+        foreach ($this->_listeners[$event] as $function) {
+            call_user_func_array($function, $arguments);
+        }
+    }
+
+    /**
+     * @param string $event Название события.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     *
+     * @throws \Wheels\Datastructure\Exception
+     */
+    protected function _chechEvent($event)
+    {
+        if (!array_key_exists($event, $this->_listeners)) {
+            throw new Exception("Неизвестное событие '{$event}'");
+        }
+    }
 
     /**
      * @throws \Wheels\Datastructure\Exception

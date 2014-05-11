@@ -57,6 +57,12 @@ class Tarray extends Type
             return array();
         }
 
+        if (is_array($var)) {
+            foreach ($var as $i => $value) {
+                $var[$i] = $this->_type->convert($value);
+            }
+        }
+
         return $var;
     }
 

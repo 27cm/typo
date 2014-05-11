@@ -2,9 +2,9 @@
 
 namespace Wheels\Typo\Module;
 
-use Wheels\Typo;
-use Wheels\Typo\Module;
-use Wheels\Typo\Utility;
+use Wheels\Typo\Typo;
+use Wheels\Typo\Module\AbstractModule;
+use Wheels\Utility;
 use Wheels\Typo\Exception;
 
 /**
@@ -14,7 +14,7 @@ use Wheels\Typo\Exception;
  *
  * @link http://en.wikipedia.org/wiki/Emoticon
  */
-abstract class Emoticon extends Module
+abstract class Emoticon extends AbstractModule
 {
     /**
      * Приоритет выполнения стадий.
@@ -51,7 +51,7 @@ abstract class Emoticon extends Module
     const REPLACER = 'EMOTICON';
 
 
-    // --- Открытые методы класса ---
+    // --- Открытые методы ---
 
     public function validateOption($name, &$value)
     {
@@ -87,12 +87,12 @@ abstract class Emoticon extends Module
                 break;
 
             default :
-                Module::validateOption($name, $value);
+                AbstractModule::validateOption($name, $value);
         }
     }
 
 
-    // --- Защищенные методы класса ---
+    // --- Защищенные методы ---
 
     /**
      * Стадия A.
@@ -121,7 +121,7 @@ abstract class Emoticon extends Module
             }
         }
 
-        if ($this->typo->_options['html-out-enabled'] && !empty($class::$emoticons)) {
+        if ($this->_typo->getOption('html-out-enabled') && !empty($class::$emoticons)) {
             $_this = $this;
 
             $callback = function ($emoticon) use ($_this) {
@@ -145,10 +145,10 @@ abstract class Emoticon extends Module
                 }
 
                 $elem = Utility::createElement($_this->getOption('tag'), null, $attrs);
-                return $_this->text->pushStorage($elem, Emoticon::REPLACER, Typo::VISIBLE);
+                return $_this->getTypo()->getText()->pushStorage($elem, Emoticon::REPLACER, Typo::VISIBLE);
             };
 
-            $this->typo->text->replace_callback(array_keys($class::$emoticons), $callback);
+            $this->_typo->text->replace_callback(array_keys($class::$emoticons), $callback);
         }
     }
 
@@ -157,7 +157,7 @@ abstract class Emoticon extends Module
      */
     protected function stageD()
     {
-        $this->text->popStorage(self::REPLACER, Typo::VISIBLE);
+        $this->getTypo()->getText()->popStorage(self::REPLACER, Typo::VISIBLE);
     }
 
     /**
@@ -168,7 +168,7 @@ abstract class Emoticon extends Module
     public function setAttrs($data)
     {
         $attrs = array();
-        foreach ($this->_options['attrs'] as $attr) {
+        foreach ($this->getOption('attrs') as $attr) {
             $a_cond = $attr['cond'];
             if (is_callable($a_cond))
                 $a_cond = call_user_func($a_cond, $data, $this);

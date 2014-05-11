@@ -3,8 +3,7 @@
 namespace Wheels\Typo;
 
 use Wheels\Typo\Module;
-use Wheels\Typo\Exception;
-use Wheels\Typo\Utility;
+use Wheels\Utility;
 
 /**
  * Текст.
@@ -63,7 +62,7 @@ class Text
     }
 
 
-    // --- Открытые методы класса ---
+    // --- Открытые методы ---
 
     /**
      * Устанавливает значение текста.
@@ -71,7 +70,7 @@ class Text
      * @param string $value    Текст.
      * @param string $encoding Кодировка текста. Если не указана, то будет определена автоматически.
      *
-     * @uses \Wheels\Typo\Utility::detectCharset()
+     * @uses \Wheels\Utility::detectCharset()
      */
     public function setText($value, $encoding = null)
     {

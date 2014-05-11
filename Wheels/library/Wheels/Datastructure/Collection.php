@@ -9,17 +9,20 @@
 
 namespace Wheels\Datastructure;
 
-use Wheels\Datastructure\ArrayIterator;
-use Wheels\Datastructure\Exception;
-
 class Collection extends ArrayIterator
 {
+    /**
+     * Класс элементов.
+     *
+     * @var string
+     */
     protected $_elemsClass;
 
-    // --- Конструктор ---
+
+    // --- Открытые методы ---
 
     /**
-     * Создаёт коллекцию объектов заданного класса
+     * Конструктор.
      *
      * @param string $elemsClass Имя класса элементов коллекции.
      * @param array  $array      Массив элементов.
@@ -29,9 +32,6 @@ class Collection extends ArrayIterator
         $this->_elemsClass = $elemsClass;
         parent::__construct($array);
     }
-
-
-    // --- Открытые методы ---
 
     /**
      * {@inheritDoc}
@@ -56,6 +56,10 @@ class Collection extends ArrayIterator
     public function __call($name, $arguments)
     {
         foreach ($this->_array as $obj) {
+            if(!is_callable(array($obj, $name))) {
+                var_dump(array(get_class($obj), $name));
+                die();
+            }
             call_user_func_array(array($obj, $name), $arguments);
         }
 

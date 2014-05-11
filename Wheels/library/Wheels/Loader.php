@@ -96,7 +96,7 @@ class Loader
             $fileName = ($this->includePath !== null ? $this->includePath . DIRECTORY_SEPARATOR : '') . $fileName;
 
             if (file_exists($fileName)) {
-                require $fileName;
+                require_once $fileName;
             }
         }
     }

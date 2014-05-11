@@ -11,13 +11,19 @@
 namespace Wheels\Config\Option;
 
 use Wheels\Config\Option;
-use Wheels\Config\Option\Exception;
 
 /**
- * Коллекция описаний параметров.
+ * Коллекция параметров.
  */
-class Collection extends \Wheels\Datastructure\Collection
+class Collection extends \Wheels\Datastructure\Collection implements IOption
 {
+    /**
+     * Массив параметров.
+     *
+     * @var \Wheels\Config\Option[]
+     */
+    protected $_array;
+
     /**
      * Регистрозависимость ключей.
      *
@@ -32,15 +38,25 @@ class Collection extends \Wheels\Datastructure\Collection
     // --- Открытые методы ---
 
     /**
-     * Создаёт коллекцию параметров.
+     * Конструктор.
      *
      * @param \Wheels\Config\Option[] $array         Массив параметров.
      * @param bool                    $caseSensitive Регистрозависимость имён параметров.
      */
     public function __construct(array $array = array(), $caseSensitive = true)
     {
-        $this->_caseSensitive = (bool)$caseSensitive;
+        $this->_caseSensitive = (bool) $caseSensitive;
         parent::__construct('Wheels\Config\Option', $array);
+    }
+
+    /**
+     * Возвращает копию массива параметров.
+     *
+     * @return \Wheels\Config\Option[] Копия массива параметров.
+     */
+    public function getArray()
+    {
+        return parent::getArray();
     }
 
     /**
@@ -54,12 +70,7 @@ class Collection extends \Wheels\Datastructure\Collection
     }
 
     /**
-     * Подготовка смещения с учётом зависимости от регистра.
-     *
-     * @param string $offset Смещение (ключ).
-     *
-     * @return string Если ключи не зависят от регистра, то метод вернёт offset в нижнем регистре,
-     *                в противном случае будет возвращено исходное значение offset.
+     * {@inheritDoc}
      */
     public function prepareOffset($offset)
     {
@@ -73,40 +84,148 @@ class Collection extends \Wheels\Datastructure\Collection
     /**
      * {@inheritDoc}
      */
-    public function offsetExists($offset)
-    {
-        $offset = $this->prepareOffset($offset);
-        return parent::offsetExists($offset);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetGet($offset)
-    {
-        $offset = $this->prepareOffset($offset);
-        return parent::offsetGet($offset);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function offsetSet($offset, $value)
     {
+        /** @var \Wheels\Config\Option $value */
+
         if (!is_string($offset) && $this->_checkElemClass($value)) {
             $offset = $value->getName();
         }
 
-        $offset = $this->prepareOffset($offset);
         parent::offsetSet($offset, $value);
+    }
+
+    /**
+     * @return array
+     */
+    public function getValues()
+    {
+        $values = array();
+
+        foreach ($this->getArray() as $option) {
+            $values[$option->getName()] = $option->getValue();
+        }
+
+        return $values;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function offsetUnset($offset)
+    public function getName()
     {
-        $offset = $this->prepareOffset($offset);
-        parent::offsetUnset($offset);
+        return $this->__call(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getValue()
+    {
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDefault()
+    {
+        return $this->__call(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getType()
+    {
+        return $this->__call(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDesc()
+    {
+        return $this->__call(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAliases()
+    {
+        return $this->__call(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAllowed()
+    {
+        return $this->__call(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setName($name)
+    {
+        return $this->__call(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setValue($value)
+    {
+        return $this->__call(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setValueDefault()
+    {
+        return $this->__call(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setDefault($value)
+    {
+        return $this->__call(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setDesc($desc)
+    {
+        return $this->__call(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setAliases(array $aliases)
+    {
+        return $this->__call(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setAllowed(array $allowed)
+    {
+        return $this->__call(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function validate($value)
+    {
+        return $this->__call(__FUNCTION__, func_get_args());
     }
 }

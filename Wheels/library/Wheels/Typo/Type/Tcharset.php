@@ -37,6 +37,6 @@ class Tcharset extends Tstring
      */
     public function validate($var)
     {
-        return (parent::validate($var) && (iconv($var, 'UTF-8', '') === false));
+        return (parent::validate($var) && (iconv($var, 'UTF-8', '') !== false));
     }
 }

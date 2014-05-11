@@ -2,8 +2,8 @@
 
 namespace Wheels\Typo\Module;
 
-use Wheels\Typo;
-use Wheels\Typo\Module;
+use Wheels\Typo\Typo;
+use Wheels\Typo\Module\AbstractModule;
 
 /**
  * Ссылки.
@@ -12,7 +12,7 @@ use Wheels\Typo\Module;
  *
  * @link http://wikipedia.org/wiki/URL
  */
-class Filepath extends Module
+class Filepath extends AbstractModule
 {
     /**
      * Настройки по умолчанию.
@@ -69,7 +69,7 @@ class Filepath extends Module
         );
 
 
-    // --- Защищенные методы класса ---
+    // --- Защищенные методы ---
 
     /**
      * Стадия A.
@@ -90,7 +90,7 @@ class Filepath extends Module
         $windowsPath = '(([a-z]\:)?\\\\)?(' . $windowsRestrictedSymbols . '+\\\\)*' . $windowsRestrictedSymbols . '*\.'
             . $extensionAlterations;
         $otherPaths = '/?(\w+/)*\w*\.' . $extensionAlterations;
-        $this->text->preg_replace_storage(
+        $this->getTypo()->getText()->preg_replace_storage(
             '~\b((' . $windowsPath . ')|(' . $otherPaths . '))(?=(\{\{\{\w+\}\}\})*\b)~iu', self::REPLACER,
             Typo::VISIBLE
         );
@@ -105,6 +105,6 @@ class Filepath extends Module
      */
     protected function stageD()
     {
-        $this->text->popStorage(self::REPLACER, Typo::VISIBLE);
+        $this->getTypo()->getText()->popStorage(self::REPLACER, Typo::VISIBLE);
     }
 }

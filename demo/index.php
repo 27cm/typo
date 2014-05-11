@@ -32,11 +32,8 @@ else
     12. &#xA7 ;
 TEXT;
 
-use Wheels\Typo;
-use Wheels\Config\Schema\Option;
+use Wheels\Typo\Typo;
 use Wheels\Diff;
-use Wheels\Config\Schema\Option\Collection;
-
 
 try
 {
@@ -48,28 +45,37 @@ try
 //        if(preg_match('~[\x00-\xFF]~', Typo\Utility::chr($i)))
 //            echo $i . ' = ' . Typo\Utility::chr($i) . '<br>';
 //    die();
-    $option = new Option('name', 'default');
-    $collection = new Collection(array($option));
-    var_dump($collection);
-    die();
 
-    $diff = new Diff('slovo', 'olovo');
+//    $diff = new Diff('slovo', 'olovo');
+//
+//    echo $diff->renderDiffToHTML();
+//
+//    die();
+//
+//
+//
+//    $type = $option->getType();
+//    die(get_class($type));
 
-    echo $diff->renderDiffToHTML();
+    $options = array('charset' => 'Windows-1251');
+    $typo = new Typo($options);
 
-    die();
+    $typo->getModule('html')->setOption('paragraphs', false);
 
-    
+    $typo->setConfigDir($root . '/config/wheels/typo');
+//    $typo->setOptionsFromGroup('comment');
 
-    $type = $option->getType();
-    die(get_class($type));
 
-    $typo = new Typo();
+
+//    echo '<pre>';
+//    var_dump($typo->getModules());
+//    die();
+
 //    $typo->setConfigDir($root . DS . 'Wheels' . DS . 'tests' . DS . 'config' . DS . 'Module' . DS . 'Punct' . DS . 'QuoteTest');
 //    $typo->setOptions('default');
-    $typo->addModule('emoticon/skype');
+    //$typo->addModule('emoticon/skype');
     // var_dump($typo);
-    $output = $typo->process($input);
+    //$output = $typo->process($input);
 }
 catch(Wheels\Typo\Exception $e)
 {
