@@ -87,7 +87,7 @@ class Align extends AbstractModule
      *
      * @return void
      */
-    protected function stageB()
+    public function stageB()
     {
         $c = Typo::getChars('chr');
 

@@ -10,8 +10,6 @@ $root    = realpath(dirname(__FILE__) . DS . '..');
 $include = $root . DS . 'include';
 set_include_path(get_include_path() . PS . $include . PS . $include . DS . 'idna_convert_081');
 
-
-
 if(isset($_REQUEST['text']))
     $input = $_REQUEST['text'];
 else
@@ -46,9 +44,7 @@ try
 //            echo $i . ' = ' . Typo\Utility::chr($i) . '<br>';
 //    die();
 
-//    $diff = new Diff('slovo', 'olovo');
-//
-//    echo $diff->renderDiffToHTML();
+
 //
 //    die();
 //
@@ -57,60 +53,14 @@ try
 //    $type = $option->getType();
 //    die(get_class($type));
 
-    $options = array('charset' => 'Windows-1251');
-    $typo = new Typo($options);
+    $typo = new Typo(array('modules' => array('core')));
+    $output = $typo->process($input);
 
-    $typo->getModule('html')->setOption('paragraphs', false);
-
-    $typo->setConfigDir($root . '/config/wheels/typo');
-//    $typo->setOptionsFromGroup('comment');
-
-
-
-//    echo '<pre>';
-//    var_dump($typo->getModules());
-//    die();
-
-//    $typo->setConfigDir($root . DS . 'Wheels' . DS . 'tests' . DS . 'config' . DS . 'Module' . DS . 'Punct' . DS . 'QuoteTest');
-//    $typo->setOptions('default');
-    //$typo->addModule('emoticon/skype');
-    // var_dump($typo);
-    //$output = $typo->process($input);
+    $diff = new Diff($input, $output);
 }
-catch(Wheels\Typo\Exception $e)
-{
-    echo $e->getMessage() . '<br>';
-
-    while($e->hasPrevious())
-    {
-        $e = $e->getPrevious();
-        echo $e->getMessage() . '<br>';
-    }
-}
-catch(Exception $e)
-{
-    echo $e->getMessage() . '<br>';
+catch(Exception $e) {
+    $error = $e->getMessage();
+    die($error);
 }
 
-?>
-<style>
-    div
-    {
-        /*line-height: 1.4em;*/
-    }
-
-    a
-    {
-        display: inline-block;
-        padding: 0;
-        margin: 0;
-        text-decoration: none;
-        color: #3366ff;
-        border-bottom: 1px #3366ff dotted;
-    }
-</style>
-<form method="post">
-    <textarea name="text" rows="10" style="width: 100%;"><?php if(isset($input)) echo htmlspecialchars($input, ENT_QUOTES, 'utf-8'); ?></textarea>
-    <input type="submit" value="ОТТИПОГРАФИРОВАТЬ" style="width: 100%; height: 40px;">
-</form>
-<div style="margin: 10px; padding: 15px 30px; border: 1px gray solid; font-size: 1.7em;"><?php if(isset($output)) echo $output; ?></div>
+include 'template.php';

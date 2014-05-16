@@ -14,7 +14,9 @@ use ArrayAccess;
 use Countable;
 use Serializable;
 
-class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
+use Wheels\IAllowModifications;
+
+class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable, IAllowModifications
 {
     /**
      * Массив элементов.
@@ -40,21 +42,12 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
     /**
      * Разрешение изменять массив.
      *
-     * Содержит TRUE, если разрешено добавлять, изменять и удалять элементы массива, и FALSE - в противном случае.
+     * Содержит TRUE, если разрешено добавлять, изменять и удалять элементы массива, и false - в противном случае.
      * По умолчанию изменение массива разрешено.
      *
      * @var bool
      */
     protected $_allowModifications = true;
-
-    /**
-     * Обработчики событий.
-     *
-     * @var array
-     */
-    protected $_listeners = array(
-        'offsetSet' => array(),
-    );
 
 
     // --- Открытые методы ---
@@ -82,8 +75,8 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
     /**
      * Возвращает разрешение изменять массив.
      *
-     * @return bool Возвращает TRUE, если разрешено добавлять, изменять и удалять
-     *              элементы массива, и FALSE - в противном случае.
+     * @return bool Возвращает true, если разрешено добавлять, изменять и удалять
+     *              элементы массива, и false - в противном случае.
      */
     public function getAllowModifications()
     {
@@ -109,26 +102,21 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
     /**
      * Устанавливает разрешение изменять массив.
      *
-     * @param bool $value TRUE, если необходимо разрешить добавлять, изменять и удалять
-     *                    элементы массива, и FALSE - в противном случае.
+     * @param bool $value true, если необходимо разрешить добавлять, изменять и удалять
+     *                    элементы массива, и false - в противном случае.
      *
      * @return void Этот метод не возвращает значения после выполнения.
      */
     public function setAllowModifications($value)
     {
-        $this->_allowModifications = (bool) $value;
-    }
-
-    public function addEventListener($event, $function)
-    {
-        $this->_ensureAllowModification();
-        $this->_chechEvent($event);
-
-        if (!is_callable($function)) {
-            throw new Exception('Обработчик события должен иметь тип callable');
+        foreach ($this->getArray() as $obj)
+        {
+            if (is_object($obj) && $obj instanceof IAllowModifications) {
+                $obj->setAllowModifications($value);
+            }
         }
 
-        $this->_listeners[$event][] = $function;
+        $this->_allowModifications = (bool) $value;
     }
 
     /**
@@ -162,11 +150,11 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
      *
      * Данный метод исполняется, когда используется функция isset() или empty().
      * Когда используется функция empty(), метод ArrayAccess::offsetGet() вызывается и
-     * результат проверяется только в случае, если метод ArrayAccess::offsetExists() возвращает TRUE.
+     * результат проверяется только в случае, если метод ArrayAccess::offsetExists() возвращает true.
      *
      * @param mixed $offset Смещение (ключ) для проверки.
      *
-     * @return bool Возвращает TRUE в случае успешного завершения или FALSE в случае возникновения ошибки.
+     * @return bool Возвращает true в случае успешного завершения или false в случае возникновения ошибки.
      */
     public function offsetExists($offset)
     {
@@ -211,8 +199,6 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
             }
             $this->_array[$offset] = $value;
         }
-
-        $this->_on('offsetSet', func_get_args());
     }
 
     /**
@@ -238,7 +224,7 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
      *
      * @return mixed Возвращает значение элемента массива, на который в данный момент указывает внутренний
      *               указатель массива. Сам указатель не изменяется. Если внутренний указатель
-     *               указывает вне границ массива или массив пуст, метод возвращает FALSE.
+     *               указывает вне границ массива или массив пуст, метод возвращает false.
      */
     public function current()
     {
@@ -286,7 +272,7 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
      * Проверка корректности позиции внутреннего указателя.
      *
      * @return bool Если внутренний указатель указывает вне границ массива или массив пуст,
-     *              метод возвращает FALSE, в противном случае - TRUE.
+     *              метод возвращает false, в противном случае - true.
      */
     public function valid()
     {
@@ -327,31 +313,13 @@ class ArrayIterator implements Iterator, ArrayAccess, Countable, Serializable
         $this->setArray(unserialize($serialized));
     }
 
+    public function uasort($cmp_function)
+    {
+        uasort($this->_array, $cmp_function);
+    }
+
 
     // --- Защищённые методы ---
-
-    protected function _on($event, array $arguments = array())
-    {
-        $this->_chechEvent($event);
-
-        foreach ($this->_listeners[$event] as $function) {
-            call_user_func_array($function, $arguments);
-        }
-    }
-
-    /**
-     * @param string $event Название события.
-     *
-     * @return void Этот метод не возвращает значения после выполнения.
-     *
-     * @throws \Wheels\Datastructure\Exception
-     */
-    protected function _chechEvent($event)
-    {
-        if (!array_key_exists($event, $this->_listeners)) {
-            throw new Exception("Неизвестное событие '{$event}'");
-        }
-    }
 
     /**
      * @throws \Wheels\Datastructure\Exception

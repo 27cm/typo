@@ -106,7 +106,7 @@ class Html extends AbstractModule
      *
      * Заменяет безопасные блоки и теги на соответствующие заменители.
      */
-    protected function stageA()
+    public function stageA()
     {
         if ($this->_typo->getOption('html-in-enabled')) {
             $safe_blocks_visible = array_diff($this->getOption('safe-blocks'), self::$invisible_blocks);
@@ -130,7 +130,7 @@ class Html extends AbstractModule
      *
      * Восстанавливает теги и безопасные блоки.
      */
-    protected function stageD()
+    public function stageD()
     {
         if ($this->_typo->getOption('html-in-enabled')) {
             $this->getTypo()->getText()->popStorage(self::REPLACER_TAG, Typo::INVISIBLE);

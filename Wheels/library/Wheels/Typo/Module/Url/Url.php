@@ -23,27 +23,7 @@ class Url extends AbstractModule
      */
     static protected $_configSchema
         = array(
-            'options' => array(
-                'attrs'       => array(
-                    'desc'    => 'Дополнительные атрибуты',
-                    'type'    => 'array',
-                    'default' => array(
-                        'target' => array(
-                            'name'  => 'target',
-                            'value' => '_blank',
-                            'cond'  => '\Wheels\Typo\Module\Url::condTarget',
-                        ),
-                    ),
-                ),
-                'idn-convert' => array(
-                    'desc'    => 'Преобразование интернационализованных доменных имён (IDN)',
-                    'type'    => 'bool',
-                    'default' => true,
-                ),
-                'modules'     => array(
-                    'default' => array('url/ssh'),
-                ),
-            ),
+
         );
 
     /**
@@ -163,7 +143,7 @@ class Url extends AbstractModule
      *
      * Заменяет все ссылки на заменитель.
      */
-    protected function stageA()
+    public function stageA()
     {
         $_this = $this;
 
@@ -286,7 +266,7 @@ class Url extends AbstractModule
      *
      * Восстанавливает ссылки.
      */
-    protected function stageD()
+    public function stageD()
     {
         $class = get_called_class();
 

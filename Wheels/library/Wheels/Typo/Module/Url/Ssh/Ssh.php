@@ -84,7 +84,7 @@ class Ssh extends Url
      *
      * @return void
      */
-    protected function stageA()
+    public function stageA()
     {
         $_this = $this;
 

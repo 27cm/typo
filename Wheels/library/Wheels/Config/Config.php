@@ -83,7 +83,7 @@ class Config
      */
     public function getOption($name)
     {
-        if (!$this->getOptions()->offsetExists($name)) {
+        if (!$this->hasOption($name)) {
             throw new Exception("Неизвестный параметр '{$name}'");
         }
 
@@ -98,6 +98,11 @@ class Config
     public function getOptions()
     {
         return $this->_options;
+    }
+
+    public function hasOption($name)
+    {
+        return $this->getOptions()->offsetExists($name);
     }
 
     /**
@@ -125,7 +130,7 @@ class Config
     /**
      * Возвращает группу значений параметров с заданным именем.
      *
-     * @param string $name Название группы значений параметров.
+     * @param scalar $name Название группы значений параметров.
      *
      * @return array Группа значений параметров с заданным именем.
      *
@@ -133,11 +138,24 @@ class Config
      */
     public function getGroup($name)
     {
-        if (!array_key_exists($name, $this->_groups)) {
-            throw new Exception("Группа значений параметров '$name' не найдена");
+        if (!$this->hasGroup($name)) {
+            throw new Exception("Неизвестная группа значений параметров '{$name}'");
         }
 
         return $this->_groups[$name];
+    }
+
+    /**
+     * Проверяет существование группы с заданным именем.
+     *
+     * @param scalar $name Название группы.
+     *
+     * @return bool Возвращает true, если группа с заданным именем существует, и
+     *              false - в противном случае.
+     */
+    public function hasGroup($name)
+    {
+        return array_key_exists($name, $this->_groups);
     }
 
     /**
@@ -266,8 +284,8 @@ class Config
     /**
      * Добавляет группу значений параметров.
      *
-     * @param int|float|string|bool $name  Название группы значений параметров.
-     * @param array                 $group Ассоциативный массив значений параметров.
+     * @param scalar $name  Название группы значений параметров.
+     * @param array  $group Ассоциативный массив значений параметров.
      *
      * @return void Этот метод не возвращает значения после выполнения.
      *
@@ -370,7 +388,7 @@ class Config
     /**
      * Устанавливает значения параметров из заданной группы значений параметров.
      *
-     * @param int|float|string|bool $name Название группы значений параметров.
+     * @param scalar $name Название группы значений параметров.
      *
      * @return void Этот метод не возвращает значения после выполнения.
      */
@@ -383,7 +401,7 @@ class Config
     /**
      * Устанавливает значения параметров из заданных групп значений параметров.
      *
-     * @param array $names Массив названий групп.
+     * @param scalar[] $names Массив названий групп.
      *
      * @return void Этот метод не возвращает значения после выполнения.
      */
@@ -473,11 +491,11 @@ class Config
 
         $filename = Utility::realpath($filename);
 
-        if (!is_file($filename)) {
-            throw new Exception("Файл '$filename' не найден");
+        if (!file_exists($filename)) {
+            throw new Exception("Файл '{$filename}' не найден");
         }
         if (!is_readable($filename)) {
-            throw new Exception("Файл '$filename' закрыт для чтения");
+            throw new Exception("Файл '{$filename}' закрыт для чтения");
         }
 
         $directory = realpath(dirname($filename));

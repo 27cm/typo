@@ -107,16 +107,15 @@ abstract class AbstractModule extends AbstractTypo
 //    }
 
     /**
-     * Возвращает приоритет выполнения текущей стадии.
+     * Возвращает приоритет выполнения для стадии.
+     *
+     * @param $stage
      *
      * @return int
      */
-    public function getOrder()
+    public function getOrder($stage)
     {
-        $stages = self::getStages();
-        $key = $stages[$this->_stage];
-
-        return static::$_order[$key];
+        return static::$_order[$stage];
     }
 
     /**
@@ -133,8 +132,8 @@ abstract class AbstractModule extends AbstractTypo
         $patterns = array();
         $replaces = array();
         foreach ($rules as $key => $value) {
-            if (is_array($value) && array_key_exists($key, $this->_options)) {
-                if ($this->_options[$key]) {
+            if (is_array($value) && $this->getConfig()->hasOption($key)) {
+                if ($this->getOption($key)) {
                     $patterns = array_merge($patterns, array_keys($value));
                     $replaces = array_merge($replaces, array_values($value));
                 }
@@ -282,21 +281,33 @@ abstract class AbstractModule extends AbstractTypo
      */
     static public function getModuleClassname($name)
     {
-        $name = trim($name);
-        $name = str_replace('/', '\\', $name);
+        static $aliases = array(
+            'align'    => '\\Wheels\\Typo\\Module\\Align\\Align',
+            'code'     => '\\Wheels\\Typo\\Module\\Code\\Code',
+            'core'     => '\\Wheels\\Typo\\Module\\Core\\Core',
+            'emoticon' => '\\Wheels\\Typo\\Module\\Emoticon\\Emoticon',
+            'html'     => '\\Wheels\\Typo\\Module\\Html\\Html',
+            'nobr'     => '\\Wheels\\Typo\\Module\\Nobr\\Nobr',
+            'punct'    => '\\Wheels\\Typo\\Module\\Punct\\Punct',
+            'space'    => '\\Wheels\\Typo\\Module\\Space\\Space',
+            'symbol'   => '\\Wheels\\Typo\\Module\\Symbol\\Symbol',
+            'url'      => '\\Wheels\\Typo\\Module\\Url\\Url',
+        );
 
-        if (substr($name, 0, 1) !== '\\')
-            $name = '\\' . $name;
-
-        if (!class_exists($name)) {
-            $parts = explode('\\', $name);
-            $parts[] = $parts[count($parts) - 1];
-            $parts = array_map('ucfirst', $parts);
-            $name = implode('\\', $parts);
-            $name = '\\' . __NAMESPACE__ . $name;
+        $classname = $name;
+        if (substr($classname, 0, 1) !== '\\') {
+            $classname = '\\' . $classname;
         }
 
-        return $name;
+        if (!class_exists($classname)) {
+            $name = strtolower($name);
+
+            if (array_key_exists($name, $aliases)) {
+                $classname = $aliases[$name];
+            }
+        }
+
+        return $classname;
     }
 
     /**

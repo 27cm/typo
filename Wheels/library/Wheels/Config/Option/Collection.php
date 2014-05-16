@@ -15,7 +15,7 @@ use Wheels\Config\Option;
 /**
  * Коллекция параметров.
  */
-class Collection extends \Wheels\Datastructure\Collection implements IOption
+class Collection extends \Wheels\Datastructure\Collection implements OptionInterface
 {
     /**
      * Массив параметров.
@@ -27,7 +27,7 @@ class Collection extends \Wheels\Datastructure\Collection implements IOption
     /**
      * Регистрозависимость ключей.
      *
-     * Содержит TRUE, если ключи зависят от регистра, и FALSE - в противном случае.
+     * Содержит true, если ключи зависят от регистра, и false - в противном случае.
      * По умолчанию все ключи являются регистрозависимыми.
      *
      * @var bool

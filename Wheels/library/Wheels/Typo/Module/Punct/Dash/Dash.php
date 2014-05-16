@@ -70,7 +70,7 @@ class Dash extends AbstractModule
      *
      * Применяет правила для расстановки дефисов и тире в тексте.
      */
-    protected function stageB()
+    public function stageB()
     {
         $c = Typo::getChars('chr');
 
@@ -132,7 +132,7 @@ class Dash extends AbstractModule
      *
      * @link http://ru.wikipedia.org/wiki/%D0%9F%D0%B5%D1%80%D0%B5%D0%BD%D0%BE%D1%81_(%D1%82%D0%B8%D0%BF%D0%BE%D0%B3%D1%80%D0%B0%D1%84%D0%B8%D0%BA%D0%B0)
      */
-    protected function stageC()
+    public function stageC()
     {
         if ($this->getOption('hyphenation') !== self::HYPEN_NONE) {
             $c = Typo::getChars('chr');

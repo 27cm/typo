@@ -12,12 +12,13 @@ namespace Wheels\Config;
 use Wheels\Config\Option\Type;
 use Wheels\Config\Option\Exception;
 
-use Wheels\Config\Option\IOption;
+use Wheels\Config\Option\OptionInterface;
+use Wheels\IAllowModifications;
 
 /**
  * Класс параметра.
  */
-class Option implements IOption
+class Option implements OptionInterface, IAllowModifications
 {
     /**
      * Имя параметра.
@@ -68,8 +69,39 @@ class Option implements IOption
      */
     protected $_allowed = array();
 
+    /**
+     * Обработчики событий.
+     *
+     * @var array
+     */
+    protected $_listeners = array(
+        'setValue' => array(),
+    );
+
+    /**
+     * Разрешение изменять параметр.
+     *
+     * Содержит true, если разрешено изменять свойства параметра, и false - в противном случае.
+     * По умолчанию изменение параметра разрешено.
+     *
+     * @var bool
+     */
+    protected $_allowModifications = true;
+
 
     // --- Открытые методы ---
+
+    public function addEventListener($event, $function)
+    {
+        $this->_ensureAllowModification();
+        $this->_chechEvent($event);
+
+        if (!is_callable($function)) {
+            throw new Exception('Обработчик события должен иметь тип callable');
+        }
+
+        $this->_listeners[$event][] = $function;
+    }
 
     /**
      *
@@ -93,6 +125,29 @@ class Option implements IOption
 
         $this->setDefault($default);
         $this->setValueDefault();
+    }
+
+    protected function _on($event, array $arguments = array())
+    {
+        $this->_chechEvent($event);
+
+        foreach ($this->_listeners[$event] as $function) {
+            call_user_func_array($function, $arguments);
+        }
+    }
+
+    /**
+     * @param string $event Название события.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     *
+     * @throws \Wheels\Config\Option\Exception
+     */
+    protected function _chechEvent($event)
+    {
+        if (!array_key_exists($event, $this->_listeners)) {
+            throw new Exception("Неизвестное событие '{$event}'");
+        }
     }
 
     /**
@@ -152,10 +207,36 @@ class Option implements IOption
     }
 
     /**
+     * Возвращает разрешение изменять массив.
+     *
+     * @return bool Возвращает true, если разрешено добавлять, изменять и удалять
+     *              элементы массива, и false - в противном случае.
+     */
+    public function getAllowModifications()
+    {
+        return $this->_allowModifications;
+    }
+
+    /**
+     * Устанавливает разрешение изменять массив.
+     *
+     * @param bool $value true, если необходимо разрешить добавлять, изменять и удалять
+     *                    элементы массива, и false - в противном случае.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function setAllowModifications($value)
+    {
+        $this->_allowModifications = (bool) $value;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function setName($name)
     {
+        $this->_ensureAllowModification();
+
         if (!is_string($name)) {
             throw new Exception('Имя параметра должно быть строкой');
         }
@@ -168,6 +249,8 @@ class Option implements IOption
      */
     public function setValue($value)
     {
+        $this->_ensureAllowModification();
+
         $value = $this->_filter($value);
 
         if (!$this->validate($value)) {
@@ -175,6 +258,7 @@ class Option implements IOption
         }
 
         $this->_value = $value;
+        $this->_on(__FUNCTION__, array($value));
     }
 
     /**
@@ -182,6 +266,8 @@ class Option implements IOption
      */
     public function setValueDefault()
     {
+        $this->_ensureAllowModification();
+
         $this->setValue($this->getDefault());
     }
 
@@ -190,6 +276,8 @@ class Option implements IOption
      */
     public function setDefault($value)
     {
+        $this->_ensureAllowModification();
+
         $value = $this->_filter($value);
 
         if (!$this->validate($value)) {
@@ -204,6 +292,8 @@ class Option implements IOption
      */
     public function setDesc($desc)
     {
+        $this->_ensureAllowModification();
+
         if (!is_string($desc)) {
             throw new Exception("Текстовое описание параметра '" . $this->getName() . "' должно быть строкой");
         }
@@ -216,6 +306,8 @@ class Option implements IOption
      */
     public function setAliases(array $aliases)
     {
+        $this->_ensureAllowModification();
+
         foreach ($aliases as $value) {
             if (!$this->getType()->validate($value) || !$this->_isAllowed($value)) {
                 throw new Exception("Недопустимое значение в массиве псевдонимов параметра '" . $this->getName() . "'");
@@ -226,6 +318,7 @@ class Option implements IOption
         $this->_aliases = $aliases;
 
         try {
+            $this->setValue($this->getValue());
             $this->setDefault($this->getDefault());
         } catch (Exception $e) {
             $this->_aliases = $save;
@@ -238,12 +331,14 @@ class Option implements IOption
      */
     public function setAllowed(array $allowed)
     {
+        $this->_ensureAllowModification();
+
         $allowed = array_values($allowed);
 
         foreach ($allowed as $value) {
             if (!$this->getType()->validate($value)) {
-                throw new Exception("Недопустимое значение в массиве допустимых значений параметра '" . $this->getName()
-                    . "'");
+                $name = $this->getName();
+                throw new Exception("Недопустимое значение в массиве допустимых значений параметра '{$name}'");
             }
         }
 
@@ -253,11 +348,12 @@ class Option implements IOption
         try {
             foreach ($this->getAliases() as $value) {
                 if (!$this->_isAllowed($value)) {
-                    throw new Exception("Недопустимое значение в массиве псевдонимов параметра '" . $this->getName()
-                        . "'");
+                    $name = $this->getName();
+                    throw new Exception("Недопустимое значение в массиве псевдонимов параметра '{$name}'");
                 }
             }
 
+            $this->setValue($this->getValue());
             $this->setDefault($this->getDefault());
         } catch (Exception $e) {
             $this->_allowed = $save;
@@ -294,7 +390,7 @@ class Option implements IOption
      */
     static public function create(array $schema)
     {
-        $diff = array_diff(array_keys($schema), array('name', 'default', 'type', 'desc', 'aliases', 'allowed'));
+        $diff = array_diff(array_keys($schema), array('name', 'default', 'type', 'desc', 'aliases', 'allowed', /*allow-modification*/));
         if (!empty($diff)) {
             throw new Exception('Неизвестные разделы описания параметра: ' . implode(', ', $diff));
         }
@@ -339,7 +435,7 @@ class Option implements IOption
      */
     public function __toString()
     {
-        return (string)$this->getValue();
+        return (string) $this->getValue();
     }
 
 
@@ -356,7 +452,7 @@ class Option implements IOption
     {
         $value = $this->getType()->convert($value);
 
-        if ((is_integer($value) || is_string($value)) && array_key_exists($value, $this->_aliases)) {
+        if ((is_string($value) || is_int($value)) && array_key_exists($value, $this->_aliases)) {
             $value = $this->_aliases[$value];
         }
 
@@ -366,5 +462,15 @@ class Option implements IOption
     protected function _isAllowed($value)
     {
         return (empty($this->_allowed) || array_search($value, $this->_allowed, true) !== false);
+    }
+
+    /**
+     * @throws \Wheels\Config\Option\Exception
+     */
+    protected function _ensureAllowModification()
+    {
+        if (!$this->getAllowModifications()) {
+            throw new Exception('Изменение параметра запрещено');
+        }
     }
 }

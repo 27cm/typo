@@ -70,7 +70,7 @@ class Twitter extends Url
      *
      * @return void
      */
-    protected function stageA()
+    public function stageA()
     {
         if ($this->_typo->getOption('html-out-enabled')) {
             $_this = $this;

@@ -99,7 +99,7 @@ abstract class Emoticon extends AbstractModule
      *
      * Заменяет смайлики на заменитель.
      */
-    protected function stageA()
+    public function stageA()
     {
         $class = get_called_class();
 
@@ -155,7 +155,7 @@ abstract class Emoticon extends AbstractModule
     /**
      * Стадия D.
      */
-    protected function stageD()
+    public function stageD()
     {
         $this->getTypo()->getText()->popStorage(self::REPLACER, Typo::VISIBLE);
     }

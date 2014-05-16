@@ -78,7 +78,7 @@ class Filepath extends AbstractModule
      *
      * @return void
      */
-    protected function stageA()
+    public function stageA()
     {
         usort(
             $this->ext, function ($a, $b) {
@@ -103,7 +103,7 @@ class Filepath extends AbstractModule
      *
      * @return void
      */
-    protected function stageD()
+    public function stageD()
     {
         $this->getTypo()->getText()->popStorage(self::REPLACER, Typo::VISIBLE);
     }

@@ -13,10 +13,12 @@ use Wheels\Config\Config;
 use Wheels\Utility;
 use Wheels\Typo\Base\Exception;
 
+use Wheels\IAllowModifications;
+
 /**
  * Класс AbstractTypo.
  */
-abstract class AbstractTypo implements TypoInterface
+abstract class AbstractTypo implements ITypo, IAllowModifications
 {
     /**
      * Конфигурация.
@@ -39,7 +41,6 @@ abstract class AbstractTypo implements TypoInterface
         $this->_config = Config::create($schema);
 
         $this->setOptions($options);
-        $this->getConfig()->getOptions()->addEventListener('offsetSet', array($this, 'onConfigOptionsOffsetSet'));
     }
 
     /**
@@ -87,39 +88,25 @@ abstract class AbstractTypo implements TypoInterface
     /**
      * {@inheritDoc}
      */
-    public function setConfigDir($dir, $require = false)
+    public function setConfigDir($dir)
     {
-        $subDir = get_called_class();
-        $subDir = str_replace(__NAMESPACE__ . '\\', '', $subDir);
-        $subDir = $dir . DS . strtolower($subDir);
-        $subDir = Utility::realpath($subDir);
+        $dir = $dir . DS . get_called_class();
+        $dir = Utility::realpath($dir);
 
-        if (!is_dir($dir . DS . $subDir)) {
-            mkdir()
+        if (!is_dir($dir) && !mkdir($dir, 0777, true)) {
+            throw new Exception("Не удалось создать директорию '{$dir}'");
         }
 
         $filename = 'config.ini';
 
-        echo ($filename . '<br>');
-
-        if (!is_file($filename)) {
-            // @todo: создать каталог и создать там ini-файл
+        $filepath = Utility::realpath($dir . DS . $filename);
+        if (!file_exists($filepath)) {
+            $file = fopen($filepath, 'w');
+            fclose($file);
         }
 
-        $filename = Utility::realpath($filename);
-
-        if (!is_file($filename) !is_readable($filename))
-
-
-        try {
-            $this->getConfig()->setDir($dir);
-            $this->getConfig()->setGroupsFromFile($filename);
-        } catch(\Wheels\Config\Exception $e) {
-            // @todo: отлавливать
-            if ($require) {
-                throw $e;
-            }
-        }
+        $this->getConfig()->setDir($dir);
+        $this->getConfig()->addGroupsFromFile($filename);
     }
 
     /**
@@ -168,8 +155,9 @@ abstract class AbstractTypo implements TypoInterface
      */
     public function setOptionsFromGroup($name, $required = false)
     {
-        $names = array($name);
-        $this->setOptionsFromGroups($names, $required);
+        if ($required || $this->getConfig()->hasGroup($name)) {
+            $this->getConfig()->setOptionsValuesFromGroup($name);
+        }
     }
 
     /**
@@ -177,20 +165,15 @@ abstract class AbstractTypo implements TypoInterface
      */
     public function setOptionsFromGroups(array $names, $required = false)
     {
-        $this->getConfig()->setOptionsValuesFromGroups($names, $required);
-    }
+        if (!$required) {
+            foreach ($names as $i => $name) {
+                if (!$this->getConfig()->hasGroup($name)) {
+                    unset($names[$i]);
+                }
+            }
+        }
 
-    /**
-     * Обработчик события изменения значения параметра.
-     *
-     * @param string                $name   Название параметра.
-     * @param \Wheels\Config\Option $option Параметр.
-     *
-     * @return void Этот метод не возвращает значения после выполнения.
-     */
-    public function onConfigOptionsOffsetSet($name, $option)
-    {
-
+        $this->getConfig()->setOptionsValuesFromGroups($names);
     }
 
 
@@ -213,6 +196,10 @@ abstract class AbstractTypo implements TypoInterface
         $schema = include $filename;
         if (!is_array($schema)) {
             throw new Exception("Файл '{$filename}' должен возвращать массив");
+        }
+
+        if (!array_key_exists('case-sensitive', $schema)) {
+            $schema['case-sensitive'] = false;
         }
 
         return $schema;

@@ -128,7 +128,7 @@ class Code extends AbstractModule
      *
      * Заменяет все блоки &lt;code&gt;...&lt;/code&gt; на соответствующие заменители.
      */
-    protected function stageA()
+    public function stageA()
     {
         if (!$this->_typo->getOption('html-in-enabled'))
             return;
@@ -194,7 +194,7 @@ class Code extends AbstractModule
      *
      * Восстанавливает блоки &lt;code&gt;...&lt;/code&gt;.
      */
-    protected function stageD()
+    public function stageD()
     {
         $this->getTypo()->getText()->popStorage(self::REPLACER, Typo::VISIBLE);
     }

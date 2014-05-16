@@ -10,7 +10,7 @@
 
 namespace Wheels\Config\Option;
 
-interface IOption
+interface OptionInterface
 {
     /**
      * Возвращает имя параметра.

@@ -14,36 +14,6 @@ use Wheels\Utility;
 class Punct extends AbstractModule
 {
     /**
-     * @see \Wheels\Typo\Module::$default_options
-     */
-    static protected $_default_options
-        = array(
-            /**
-             * Исправление пробелов возле знаков препинания.
-             *
-             * @var bool
-             */
-            'spaces'  => true,
-
-            /**
-             * Автоматическая расстановка знаков препинания.
-             *
-             * @var bool
-             */
-            'auto'    => false,
-
-            /**
-             * Используемые модули.
-             *
-             * @var string[]
-             */
-            'modules' => array(
-                'punct/dash',
-                'punct/quote',
-            ),
-        );
-
-    /**
      * @see \Wheels\Typo\Module::$order
      */
     static protected $_order
@@ -64,7 +34,7 @@ class Punct extends AbstractModule
      *
      * Применяет правила для расстановки знаков препинания в тексте.
      */
-    protected function stageB()
+    public function stageB()
     {
         $c = Typo::getChars('chr');
 

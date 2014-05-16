@@ -56,10 +56,6 @@ class Collection extends ArrayIterator
     public function __call($name, $arguments)
     {
         foreach ($this->_array as $obj) {
-            if(!is_callable(array($obj, $name))) {
-                var_dump(array(get_class($obj), $name));
-                die();
-            }
             call_user_func_array(array($obj, $name), $arguments);
         }
 

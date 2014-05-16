@@ -10,12 +10,15 @@
 
 namespace Wheels\Typo\Module;
 
-use Wheels\Typo\TypoInterface;
+use Wheels\Typo\ITypo;
 
 /**
  * Коллекция модулей типографа.
+ *
+ * @method AbstractModule[] getArray()
+ * @method AbstractModule offsetGet($offset)
  */
-class Collection extends \Wheels\Datastructure\Collection implements TypoInterface
+class Collection extends \Wheels\Datastructure\Collection implements ITypo
 {
     /**
      * Массив модулей типографа.
@@ -28,23 +31,11 @@ class Collection extends \Wheels\Datastructure\Collection implements TypoInterfa
     // --- Открытые методы ---
 
     /**
-     * Создаёт коллекцию параметров.
-     *
-     * @param \Wheels\Typo\Module\AbstractModule[] $array Массив модулей типографа.
+     * {@inheritDoc}
      */
     public function __construct(array $array = array())
     {
         parent::__construct('Wheels\Typo\Module\AbstractModule', $array);
-    }
-
-    /**
-     * Возвращает копию массива модулей.
-     *
-     * @return \Wheels\Typo\Module\AbstractModule[] Копия массива модулей.
-     */
-    public function getArray()
-    {
-        return parent::getArray();
     }
 
     /**
@@ -71,16 +62,21 @@ class Collection extends \Wheels\Datastructure\Collection implements TypoInterfa
         parent::offsetSet($offset, $value);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function setAllowModifications($value)
+    public function getOptions()
     {
-        foreach ($this->getArray() as $module) {
-            $module->setAllowModifications($value);
+        $options = array();
+        foreach ($this->getArray() as $name => $module) {
+            $options[$name] = $module->getOptions();
         }
+        return $options;
+    }
 
-        parent::setAllowModifications($value);
+    public function setOptions(array $options)
+    {
+        foreach ($options as $name => $moduleOptions) {
+            $this->offsetGet($name)->setOptions($moduleOptions);
+        }
+        return $options;
     }
 
     /**

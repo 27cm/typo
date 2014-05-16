@@ -16,11 +16,6 @@ use Wheels\Utility;
 /**
  * Типограф.
  *
- * <code>
- * $typo = new Typo();
- * echo $typo->process('Какой-то текст...');
- * </code>
- *
  * @version 0.1 2014-02-16
  */
 class Typo extends AbstractTypo
@@ -44,12 +39,12 @@ class Typo extends AbstractTypo
      *
      * @var int
      */
-    protected $_stage;
+    protected $_stageNum;
 
     /**
      * @var array
      */
-    protected $_optionsGroups = array();
+    protected $_savedOptions = array();
 
     /**
      * Коды символов.
@@ -69,21 +64,6 @@ class Typo extends AbstractTypo
      * @var string
      */
     const VERSION = '0.1';
-
-
-    // --- Режимы кодирования спецсимволов ---
-
-    /** Не кодировать. */
-    const MODE_NONE = 'MODE_NONE';
-
-    /** В виде имён. */
-    const MODE_NAMES = 'MODE_NAMES';
-
-    /** В виде кодов. */
-    const MODE_CODES = 'MODE_CODES';
-
-    /** В виде шестнадцатеричных кодов. */
-    const MODE_HEX_CODES = 'MODE_HEX_CODES';
 
 
     // --- Заменители ---
@@ -110,8 +90,64 @@ class Typo extends AbstractTypo
 
         parent::__construct($options);
 
-        // @todo: исправить необходимость принудительного вызова обработчика события
-        $this->onConfigOptionsOffsetSet('modules', $this->getConfig()->getOption('modules'));
+        $this->getConfig()->getOption('modules')->addEventListener('setValue', array($this, 'onConfigModulesSet'));
+
+        $this->onConfigModulesSet();
+    }
+
+    /**
+     * Обрабатывает текст.
+     *
+     * @param string $text    Исходный текст.
+     * @param array  $options Параметры.
+     *
+     * @return string Обработанный текст.
+     */
+    public function process($text, array $options = array())
+    {
+        $this->saveOptions();
+        $this->setOptions($options);
+        $this->setAllowModifications(false);
+
+        $this->getText()->setText($text, $this->getOption('charset'));
+
+        $charset = $this->getOption('charset');
+        $int_encoding = mb_internal_encoding();
+        $defaultCharset = 'UTF-8';
+
+        // Изменение кодировки текста на кодировку по умолчанию
+        mb_internal_encoding($defaultCharset);
+        if ($charset != $defaultCharset) {
+            $this->getText()->iconv($charset, $defaultCharset);
+        }
+
+        // Выполнение всех стадий
+        $stages = array('A', 'B', 'C');
+        for ($i = 0; $i < 3; $i++) {
+            $stage = $stages[$i];
+            $method = 'stage' . $stage;
+
+            $this->getModules()->uasort(function (AbstractModule $a, AbstractModule $b) use ($stage) {
+                return ($a->getOrder($stage) < $b->getOrder($stage)) ? -1 : 1;
+            });
+
+            foreach ($this->getModules() as $module) {
+                if (is_callable(array($module, $method))) {
+                    $module->$method();
+                }
+            }
+        }
+
+        // Восстанавление кодировки текста
+        if ($charset != $defaultCharset) {
+            $this->getText()->iconv($defaultCharset, $charset);
+        }
+        mb_internal_encoding($int_encoding);
+
+        $this->setAllowModifications(true);
+        $this->restoreOptions();
+
+        return $this->getText()->getText();
     }
 
     /**
@@ -141,7 +177,7 @@ class Typo extends AbstractTypo
      *
      * @return \Wheels\Typo\Module\AbstractModule Модуль с заданным именем.
      *
-     * @throws Exception
+     * @throws \Wheels\Typo\Exception
      */
     public function getModule($name)
     {
@@ -166,11 +202,10 @@ class Typo extends AbstractTypo
     }
 
     /**
-     * Устанавливает значения параметров по умолчанию.
+     * {@inheritDoc}
      */
     public function setDefaultOptions()
     {
-        $this->_optionsGroups = array();
         parent::setDefaultOptions();
         $this->getModules()->setDefaultOptions();
     }
@@ -180,8 +215,8 @@ class Typo extends AbstractTypo
      */
     public function setOptionsFromGroup($name, $required = false)
     {
-        $names = array($name);
-        $this->setOptionsFromGroups($names, $required);
+        parent::setOptionsFromGroup($name, $required);
+        $this->getModules()->setOptionsFromGroup($name, $required);
     }
 
     /**
@@ -189,8 +224,7 @@ class Typo extends AbstractTypo
      */
     public function setOptionsFromGroups(array $names, $required = false)
     {
-        $this->_optionsGroups = $names;
-        $this->getConfig()->setOptionsValuesFromGroups($names);
+        parent::setOptionsFromGroups($names, $required);
         $this->getModules()->setOptionsFromGroups($names, $required);
     }
 
@@ -204,70 +238,105 @@ class Typo extends AbstractTypo
     }
 
     /**
-     * Обрабатывает текст.
-     *
-     * @param string $text    Исходный текст.
-     * @param array  $options Параметры.
-     *
-     * @return string Обработанный текст.
+     * {@inheritDoc}
      */
-    public function process($text, array $options = array())
+    public function getOptions()
     {
-        if (!empty($options)) {
-            $common = $this->getOptions();
-            $this->setOptions($options);
+        $options = parent::getOptions();
+
+        $keys = array();
+        $modulesOptions = $this->getModules()->getOptions();
+        foreach (array_keys($modulesOptions) as $name) {
+            $keys[] = 'module.' . $name;
         }
+        $modulesOptions = array_values($modulesOptions);
+        $modulesOptions = array_combine($keys, $modulesOptions);
 
-        $this->setAllowModifications(false);
-
-        // @todo: Все модули должны быть только в классе типографа, а сам типограф не должен являться модулем
-        // @todo: Модули должны определять порядок выполнения путём проверки условий, а не с помощью номеров
-
-        if ($text instanceof Text) {
-            // @todo: нельзя переопределять
-            $this->_text = $text;
-        } else {
-            $this->getText()->setText($text, $this->getOption('charset'));
-        }
-
-        // @todo: исправить ошибки повторного вызова
-        // text->getCharset();
-
-        $charset = $this->getOption('charset');
-        $int_encoding = mb_internal_encoding();
-        $default_charset = 'UTF-8';
-
-        // Меняем кодировку текста
-        mb_internal_encoding($default_charset);
-        if ($charset != $default_charset) {
-            $this->getText()->iconv($charset, $default_charset);
-        }
-
-        // Выполнение всех стадий
-        $this->_resetStage();
-        do {
-            $this->_processStage();
-        } while ($this->_setNextStage());
-
-        // Восстанавливаем кодировку текста
-        if ($charset != $default_charset) {
-            $this->getText()->iconv($default_charset, $charset);
-        }
-        mb_internal_encoding($int_encoding);
-
-        $this->setAllowModifications(true);
-
-        if (isset($common)) {
-            $this->setOptions($common);
-        }
-
-        return $this->getText()->getText();
+        return array_merge($options, $modulesOptions);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function setOptions(array $options)
+    {
+        // @todo: Написать наследника Config
+        $o = $this->getConfig()->getOptions();
+
+        $modules = array();
+        foreach ($options as $name => $value) {
+            if ($o->prepareOffset($name) === $o->prepareOffset('modules')) {
+                $modules[$name] = $value;
+                unset($options[$name]);
+            }
+        }
+        $options = array_merge($modules, $options);
+
+        foreach ($options as $name => $value) {
+            $this->setOption($name, $value);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setOption($name, $value)
+    {
+        if (preg_match('~^module\.([^\.]+)$~i', $name, $matches)) {
+            $moduleName = $matches[1];
+            $this->getModule($moduleName)->setOptions($value);
+        } elseif (preg_match('~^(?:module\.)?([^\.]+)\.([^\.]+)$~i', $name, $matches)) {
+            $moduleName = $matches[1];
+            $optionName = $matches[2];
+            $this->getModule($moduleName)->setOption($optionName, $value);
+        } else {
+            parent::setOption($name, $value);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getOption($name)
+    {
+        if (preg_match('~^module\.([^\.]+)$~i', $name, $matches)) {
+            $moduleName = $matches[1];
+            return $this->getModule($moduleName)->getOptions();
+        } elseif (preg_match('~^(?:module\.)?([^\.]+)\.([^\.]+)$~i', $name, $matches)) {
+            $moduleName = $matches[1];
+            $optionName = $matches[2];
+            return $this->getModule($moduleName)->getOption($optionName);
+        } else {
+            return parent::getOption($name);
+        }
+    }
+
+    /**
+     * Сохраняет настройки.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function saveOptions()
+    {
+        $this->_savedOptions = $this->getOptions();
+    }
+
+    /**
+     * Восстанавливает настройки.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function restoreOptions()
+    {
+        $this->setOptions($this->_savedOptions);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setAllowModifications($value)
     {
         $this->getModules()->setAllowModifications($value);
-
         parent::setAllowModifications($value);
     }
 
@@ -278,23 +347,20 @@ class Typo extends AbstractTypo
      */
     static public function getVersion()
     {
-        return self::VERSION;
+        return static::VERSION;
     }
 
     /**
-     * Устанавливает значения параметров настроек по умолчанию,
-     * затем устанавливает заданные значения параметров настроек
-     * и типографирует заданный текст.
+     * Обрабатывает заданный текст.
      *
      * @param string $text    Исходный текст.
-     * @param array  $options Ассоциативный массив ('название параметра' => 'значение').
+     * @param array  $options Ассоциативный массив настроек.
      *
-     * @return string Оттипографированный текст.
+     * @return string Обработанный текст.
      */
     static public function staticProcess($text, array $options = array())
     {
         $typo = new self($options);
-
         return $typo->process($text);
     }
 
@@ -323,111 +389,6 @@ class Typo extends AbstractTypo
     // --- Защищённые методы ---
 
     /**
-     * Сбрасывает текущую стадию.
-     *
-     *
-     */
-    protected function _resetStage()
-    {
-        $this->_setStage(0);
-    }
-
-    protected function _setNextStage()
-    {
-        return $this->_setStage($this->_stage + 1);
-    }
-
-    /**
-     * Устанавливает стадию работы, сортирует используемые модули по приоритетам выполнения.
-     *
-     * @param int $stage Стадия работы.
-     *
-     * @return bool
-     */
-    protected function _setStage($stage)
-    {
-        $count = count(self::_getStages());
-        if ($stage < 0 || $stage >= $count)
-            return false;
-
-        $this->_stage = $stage;
-
-        foreach ($this->_modules as $module)
-            $module->setStage($stage);
-
-        uasort(
-            $this->_modules, function (AbstractModule $a, AbstractModule $b) {
-                return ($a->getOrder() < $b->getOrder()) ? -1 : 1;
-            }
-        );
-
-        return true;
-    }
-
-    /**
-     * Вовзращает имя метода текущей стадии.
-     *
-     * @return string
-     */
-    protected function _getStageMethod()
-    {
-        $stages = self::_getStages();
-        $name = $stages[$this->_stage];
-        return 'stage' . $name;
-    }
-
-    /**
-     * Возвращает массив имён всех стадий.
-     *
-     * @return array
-     */
-    static protected function _getStages()
-    {
-        return array_keys(AbstractModule::$_order);
-    }
-
-
-    /**
-     * Запускает выполнение текущей стадии.
-     *
-     * @return void
-     */
-    protected function _processStage()
-    {
-        $method = $this->_getStageMethod();
-
-        $fl = true;
-        foreach ($this->_modules as $module) {
-            if ($fl && $module->getOrder() >= $this->getOrder()) {
-                if (method_exists($this, $method) && $this->checkTextType()) {
-                    $this->$method();
-                }
-                $fl = false;
-            }
-            $module->processStage();
-        }
-
-        if ($fl && method_exists($this, $method) && $this->checkTextType()) {
-            $this->$method();
-        }
-    }
-
-    /**
-     * @see \Wheels\Typo\Module::onChangeOption()
-     */
-    protected function onChangeOption($name, &$value)
-    {
-        switch ($name) {
-            case 'encoding' :
-                // ...
-                break;
-
-            default :
-                AbstractModule::onChangeOption($name, $value);
-        }
-    }
-
-    /**
      * Возвращает символ по его коду.
      *
      * @param int $c Код символа.
@@ -436,49 +397,40 @@ class Typo extends AbstractTypo
      */
     protected function chr($c)
     {
-        switch ($this->_options['encoding']) {
-            case self::MODE_NONE :
-                return Utility::chr($c);
-                break;
-            case self::MODE_CODES :
-                return sprintf('&#%u;', $c);
-                break;
-            default :
-                return sprintf('&#x%x;', $c);
-        }
+//        switch ($this->getOption('encoding')) {
+//            case self::MODE_NONE :
+//                return Utility::chr($c);
+//                break;
+//            case self::MODE_CODES :
+//                return sprintf('&#%u;', $c);
+//                break;
+//            default :
+//                return sprintf('&#x%x;', $c);
+//        }
     }
 
     /**
-     * {@inheritDoc}
+     * Обработчик события изменения значения параметра 'modules'.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
      */
-    public function onConfigOptionsOffsetSet($name, $option)
+    public function onConfigModulesSet()
     {
-//        var_dump($option);
-//        die();
-        switch ($name) {
-            case 'modules' :
-                $classnames = $option->getValue();
-                $modules = $this->getModules();
+        $classnames = $this->getOption('modules');
+        $modules = array_keys($this->getModules()->getArray());
 
-                foreach ($this->getModules() as $classname => $module) {
-                    if (!array_key_exists($classname, $classnames)) {
-                        unset($this->_modules[$classname]);
-                    }
-                }
+        foreach ($modules as $classname) {
+            if (!in_array($classname, $classnames, true)) {
+                unset($this->_modules[$classname]);
+            }
+        }
 
-                foreach ($classnames as $classname) {
-                    if (!array_key_exists($classname, $modules)) {
-                        /** @var \Wheels\Typo\Module $module */
-                        $module = new $classname($this);
-
-                        if (!empty($this->_optionsGroups)) {
-                            $module->setOptionsFromGroups($this->_optionsGroups);
-                        }
-
-                        $this->_modules[] = $module;
-                    }
-                }
-            break;
+        foreach ($classnames as $classname) {
+            if (!$this->_hasModule($classname)) {
+                /** @var \Wheels\Typo\Module\AbstractModule $module */
+                $module = new $classname($this);
+                $this->_addModule($module);
+            }
         }
     }
 
@@ -487,32 +439,16 @@ class Typo extends AbstractTypo
      */
     protected function _setModules()
     {
-        $classnames = $this->getOption('modules');
 
-        $modules = $this->getModules();
-
-        foreach ($this->getModules() as $classname => $module) {
-            if (!array_key_exists($classname, $classnames)) {
-                unset($this->_modules[$classname]);
-            }
-        }
-
-        foreach ($classnames as $classname) {
-            if (!array_key_exists($classname, $modules)) {
-                /** @var \Wheels\Typo\Module\AbstractModule $module */
-                $module = new $classname($this);
-
-                if (!empty($this->_optionsGroups)) {
-                    $module->setOptionsFromGroups($this->_optionsGroups);
-                }
-
-                $this->_modules[] = $module;
-            }
-        }
     }
 
     protected function _addModule(AbstractModule $module)
     {
+        $this->_modules[] = $module;
+    }
 
+    protected function _hasModule($name)
+    {
+        return $this->getModules()->offsetExists($name);
     }
 }

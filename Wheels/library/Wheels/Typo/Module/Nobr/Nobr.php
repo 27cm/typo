@@ -18,37 +18,9 @@ use Wheels\Typo\Exception;
 class Nobr extends AbstractModule
 {
     /**
-     * @see \Wheels\Typo\Module::$default_options
-     */
-    static protected $_default_options
-        = array(
-            /**
-             * Открывающий тег для неразрывных конструкций.
-             *
-             * @example <span style="word-spacing:nowrap;">
-             * @example <span class="nowrap">
-             * @example <nobr> (тег отсутствует в стандартах HTML)
-             *
-             * @var string
-             */
-            'open'  => '<span style="word-spacing:nowrap;">',
-
-            /**
-             * Закрывающий тег для неразрывных конструкций.
-             *
-             * @example </span>
-             * @example </nobr>
-             *
-             * @var string
-             */
-            'close' => '</span>',
-        );
-
-    /**
      * @see \Wheels\Typo\Module::$order
      */
-    static protected $_order
-        = array(
+    static protected $_order = array(
             'A' => 0,
             'B' => 40,
             'C' => 0,
@@ -99,7 +71,7 @@ class Nobr extends AbstractModule
      *
      * Заменяет номера телефонов на заменители.
      */
-    protected function stageA()
+    public function stageA()
     {
         $_this = $this;
 
@@ -126,7 +98,7 @@ class Nobr extends AbstractModule
      *
      * @todo Объединение IP-адресов
      */
-    protected function stageB()
+    public function stageB()
     {
         $c = Typo::getChars('chr');
 
@@ -184,7 +156,7 @@ class Nobr extends AbstractModule
         $this->applyRules($rules);
     }
 
-    protected function stageC()
+    public function stageC()
     {
         // @todo: Удаление всех тегов <br> и замена неразрывных пробелов на обычные пробелы из неразрывных конструкций
     }

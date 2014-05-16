@@ -41,7 +41,7 @@ class Symbol extends AbstractModule
      *
      * Применяет правила для расстановки кавычек в тексте.
      */
-    protected function stageB()
+    public function stageB()
     {
 //        $s =& $this->typo->chr;
 //

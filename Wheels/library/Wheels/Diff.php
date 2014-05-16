@@ -131,6 +131,29 @@ class Diff
         return ob_get_clean();
     }
 
+    public function renderDiffToHTML2()
+    {
+        $in_offset = 0;
+        ob_start();
+        foreach ($this->edits as $edit) {
+            $n = $edit->getFromLen();
+            if ($edit instanceof Copy) {
+                self::renderDiffToHTMLFromOpcode2('c', $this->from_text, $in_offset, $n);
+            } else if ($edit instanceof Delete) {
+                self::renderDiffToHTMLFromOpcode2('d', $this->from_text, $in_offset, $n);
+            } else {
+                if ($edit instanceof Insert) {
+                    self::renderDiffToHTMLFromOpcode2('i', $edit->getText(), 0, $edit->getToLen());
+                } else /* if ( $edit instanceof DiffReplaceOp ) */ {
+//                    self::renderDiffToHTMLFromOpcode('d', $this->from_text, $in_offset, $n);
+                    self::renderDiffToHTMLFromOpcode2('i', $edit->getText(), 0, $edit->getToLen());
+                }
+            }
+            $in_offset += $n;
+        }
+        return ob_get_clean();
+    }
+
     /**
      * Return an opcodes string describing the diff between a "From" and a
      * "To" string
@@ -591,6 +614,21 @@ class Diff
             echo '<del>', htmlentities(htmlentities($deletion)), '</del>';
         } else /* if ( $opcode === 'i' ) */ {
             echo '<ins>', htmlentities(htmlentities(substr($from, $from_offset, $from_len))), '</ins>';
+        }
+    }
+
+    private static function renderDiffToHTMLFromOpcode2($opcode, $from, $from_offset, $from_len)
+    {
+        if ($opcode === 'c') {
+            echo substr($from, $from_offset, $from_len);
+        } else if ($opcode === 'd') {
+            $deletion = substr($from, $from_offset, $from_len);
+            if (strcspn($deletion, " \n\r") === 0) {
+                $deletion = str_replace(array("\n", "\r"), array('\n', '\r'), $deletion);
+            }
+            echo '<del>', $deletion, '</del>';
+        } else /* if ( $opcode === 'i' ) */ {
+            echo '<ins>', substr($from, $from_offset, $from_len), '</ins>';
         }
     }
 }
