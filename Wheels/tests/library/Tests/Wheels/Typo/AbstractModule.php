@@ -28,7 +28,7 @@ abstract class AbstractModule extends PHPUnit_Framework_TestCase
     static public function setUpBeforeClass()
     {
         self::$typo = new Typo();
-        self::$typo->setConfigDir(TEST_DIR . DS . 'config' . DS . get_called_class());
+        self::$typo->setConfigDir(TESTS_DIR . DS . 'config' . DS . get_called_class());
     }
 
     public function XMLProvider()

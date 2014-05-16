@@ -1,6 +1,6 @@
 <?php
 
-namespace Wheels\Config;
+namespace Tests\Wheels\Config;
 
 use Wheels\Config\Option;
 use Wheels\Config\Option\Type\Tmixed;
@@ -82,6 +82,14 @@ class OptionTest extends PHPUnit_Framework_TestCase
         $actual = $option->getAllowed();
         $expected = array();
         $this->assertEquals($expected, $actual);
+    }
+
+    public function testGetAllowModifications()
+    {
+        $option = new Option('name', 'default');
+
+        $actual = $option->getAllowModifications();
+        $this->assertTrue($actual);
     }
 
     public function testSetName()
@@ -239,6 +247,79 @@ class OptionTest extends PHPUnit_Framework_TestCase
         $option->setAliases($aliases);
         $allowed = array('valueA', 'valueC');
         $option->setAllowed($allowed);
+    }
+
+    public function testSetAllowModifications()
+    {
+        $option = new Option('name', 'default');
+        $option->setAllowModifications(false);
+
+        $actual = $option->getAllowModifications();
+        $this->assertFalse($actual);
+    }
+
+    public function testEnsureAllowModificationsException()
+    {
+        $option = new Option('name', 'default');
+        $option->setAllowModifications(false);
+        $name = $option->getName();
+
+        $this->setExpectedException(
+            '\Wheels\Config\Option\Exception',
+            "Изменение параметра '{$name}' запрещено"
+        );
+
+        $option->setValue('value');
+    }
+
+    public function testAddEventListener()
+    {
+        $option = new Option('name', 'default');
+        $option->setValue('valueA');
+        $option->addEventListener('setValue', array($this, 'setValueEventListener'));
+
+        $expected = 'valueB';
+        $option->setValue($expected);
+
+        $actual = $this->setValueEventListener();
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testAddEventListenerException()
+    {
+        $option = new Option('name', 'default');
+        $name = $option->getName();
+        $event = 'setValue';
+
+        $this->setExpectedException(
+            '\Wheels\Config\Option\Exception',
+            "Обработчик события '{$event}' параметра '{$name}' должен иметь тип callable"
+        );
+
+        $option->addEventListener($event, array($this, 'setValueEventListenerUnknown'));
+    }
+
+    public function testEnsureHasEventException()
+    {
+        $option = new Option('name', 'default');
+        $name = $option->getName();
+        $event = 'unknown';
+
+        $this->setExpectedException(
+            '\Wheels\Config\Option\Exception',
+            "Неизвестное событие '{$event}' параметра '{$name}'"
+        );
+
+        $option->addEventListener($event, array($this, 'setValueEventListener'));
+    }
+
+    public function setValueEventListener($value = null)
+    {
+        static $v;
+        if (isset($value)) {
+            $v = $value;
+        }
+        return $v;
     }
 
     public function testCreate()

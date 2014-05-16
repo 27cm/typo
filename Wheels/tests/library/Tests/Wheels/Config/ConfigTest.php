@@ -1,8 +1,8 @@
 <?php
 
-namespace Wheels;
+namespace Tests\Wheels\Config;
 
-use Wheels\Config;
+use Wheels\Config\Config;
 use Wheels\Config\Option;
 use Wheels\Config\Option\Collection;
 
@@ -24,7 +24,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
 
     static public function setUpBeforeClass()
     {
-        static::$configDir = realpath(TEST_DIR . DS . 'config' . DS . str_replace(__NAMESPACE__, '', __CLASS__));
+        static::$configDir = realpath(TESTS_DIR . DS . 'config' . DS . str_replace(__NAMESPACE__, '', __CLASS__));
 
         $config = array(
             'options' => array(

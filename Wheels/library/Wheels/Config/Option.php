@@ -16,7 +16,7 @@ use Wheels\Config\Option\OptionInterface;
 use Wheels\IAllowModifications;
 
 /**
- * Класс параметра.
+ * Параметр.
  */
 class Option implements OptionInterface, IAllowModifications
 {
@@ -91,18 +91,6 @@ class Option implements OptionInterface, IAllowModifications
 
     // --- Открытые методы ---
 
-    public function addEventListener($event, $function)
-    {
-        $this->_ensureAllowModification();
-        $this->_chechEvent($event);
-
-        if (!is_callable($function)) {
-            throw new Exception('Обработчик события должен иметь тип callable');
-        }
-
-        $this->_listeners[$event][] = $function;
-    }
-
     /**
      *
      * @param string $name    Имя параметра.
@@ -125,29 +113,6 @@ class Option implements OptionInterface, IAllowModifications
 
         $this->setDefault($default);
         $this->setValueDefault();
-    }
-
-    protected function _on($event, array $arguments = array())
-    {
-        $this->_chechEvent($event);
-
-        foreach ($this->_listeners[$event] as $function) {
-            call_user_func_array($function, $arguments);
-        }
-    }
-
-    /**
-     * @param string $event Название события.
-     *
-     * @return void Этот метод не возвращает значения после выполнения.
-     *
-     * @throws \Wheels\Config\Option\Exception
-     */
-    protected function _chechEvent($event)
-    {
-        if (!array_key_exists($event, $this->_listeners)) {
-            throw new Exception("Неизвестное событие '{$event}'");
-        }
     }
 
     /**
@@ -362,6 +327,29 @@ class Option implements OptionInterface, IAllowModifications
     }
 
     /**
+     * Добавляет обработчик события.
+     *
+     * @param string   $event    Название события.
+     * @param callable $function Вызываемая функция.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     *
+     * @throws \Wheels\Config\Option\Exception
+     */
+    public function addEventListener($event, $function)
+    {
+        $this->_ensureAllowModification();
+        $this->_ensureHasEvent($event);
+
+        if (!is_callable($function)) {
+            $name = $this->getName();
+            throw new Exception("Обработчик события '{$event}' параметра '{$name}' должен иметь тип callable");
+        }
+
+        $this->_listeners[$event][] = $function;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function validate($value)
@@ -390,7 +378,7 @@ class Option implements OptionInterface, IAllowModifications
      */
     static public function create(array $schema)
     {
-        $diff = array_diff(array_keys($schema), array('name', 'default', 'type', 'desc', 'aliases', 'allowed', /*allow-modification*/));
+        $diff = array_diff(array_keys($schema), array('name', 'default', 'type', 'desc', 'aliases', 'allowed', 'allow-modification'));
         if (!empty($diff)) {
             throw new Exception('Неизвестные разделы описания параметра: ' . implode(', ', $diff));
         }
@@ -423,6 +411,10 @@ class Option implements OptionInterface, IAllowModifications
 
         if (array_key_exists('allowed', $schema)) {
             $option->setAllowed($schema['allowed']);
+        }
+
+        if (array_key_exists('allow-modification', $schema)) {
+            $option->setAllowModifications($schema['allow-modification']);
         }
 
         return $option;
@@ -459,18 +451,65 @@ class Option implements OptionInterface, IAllowModifications
         return $value;
     }
 
+    /**
+     * Проверяет, присутствует ли значение параметра в массиве допустимых значений.
+     *
+     * @param mixed $value Значение параметра.
+     *
+     * @return bool True, если значение параметра присутствует в массиве допустимых значений
+     *              или массив допустимых значений пуст, и false - в противном случае.
+     */
     protected function _isAllowed($value)
     {
         return (empty($this->_allowed) || array_search($value, $this->_allowed, true) !== false);
     }
 
     /**
+     * Проверяет разрешение изменять параметр.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     *
      * @throws \Wheels\Config\Option\Exception
      */
     protected function _ensureAllowModification()
     {
         if (!$this->getAllowModifications()) {
-            throw new Exception('Изменение параметра запрещено');
+            $name = $this->getName();
+            throw new Exception("Изменение параметра '{$name}' запрещено");
+        }
+    }
+
+    /**
+     * Вызывает все обработчики события с заданным именем.
+     *
+     * @param string $event     Название события.
+     * @param array  $arguments Массив значений параметров, передаваемых обработчикам события.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    protected function _on($event, array $arguments = array())
+    {
+        $this->_ensureHasEvent($event);
+
+        foreach ($this->_listeners[$event] as $function) {
+            call_user_func_array($function, $arguments);
+        }
+    }
+
+    /**
+     * Проверяет существование события.
+     *
+     * @param string $event Название события.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     *
+     * @throws \Wheels\Config\Option\Exception
+     */
+    protected function _ensureHasEvent($event)
+    {
+        if (!array_key_exists($event, $this->_listeners)) {
+            $name = $this->getName();
+            throw new Exception("Неизвестное событие '{$event}' параметра '{$name}'");
         }
     }
 }

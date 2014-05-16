@@ -263,14 +263,13 @@ class Typo extends AbstractTypo
         // @todo: Написать наследника Config
         $o = $this->getConfig()->getOptions();
 
-        $modules = array();
         foreach ($options as $name => $value) {
             if ($o->prepareOffset($name) === $o->prepareOffset('modules')) {
-                $modules[$name] = $value;
+                $this->setOption($name, $value);
                 unset($options[$name]);
+                break;
             }
         }
-        $options = array_merge($modules, $options);
 
         foreach ($options as $name => $value) {
             $this->setOption($name, $value);

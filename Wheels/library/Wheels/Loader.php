@@ -100,4 +100,10 @@ class Loader
             }
         }
     }
+
+    static public function staticRegister($namespace = null, $includePath = null, $throw = true, $prepend = false)
+    {
+        $loader = new self($namespace, $includePath);
+        $loader->register($throw, $prepend);
+    }
 }
