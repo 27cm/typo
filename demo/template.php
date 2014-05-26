@@ -126,8 +126,8 @@
             </div>
         </div>
     </form>
-    <div><?php /* if(isset($output)) echo $output; */ ?></div>
-    <div><?php echo $diff->renderDiffToHTML2(); ?></div>
+    <div><?php if(isset($output)) echo htmlspecialchars($output); ?></div>
+    <div><?php /*echo $diff->renderDiffToHTML2(); /* какие-то баги с е Е */ ?></div>
 </div>
 
 <script src="js/jquery.min.js"></script>

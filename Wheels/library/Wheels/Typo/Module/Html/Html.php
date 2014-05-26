@@ -4,17 +4,14 @@ namespace Wheels\Typo\Module\Html;
 
 use Wheels\Typo\Typo;
 use Wheels\Typo\Text;
-use Wheels\Typo\Module\AbstractModule;
-use Wheels\Typo\Exception;
+use Wheels\Typo\Module\Module;
 
 /**
- * HTML.
- *
- * Заменяет все теги и указанные блоки на безопасные конструкции, а затем восстанавливает их.
+ * Модуль, предотвращающий типографирование HTML тегов в тексте.
  *
  * @link http://wikipedia.org/wiki/HTML
  */
-class Html extends AbstractModule
+class Html extends Module
 {
     /**
      * Приоритет выполнения стадий.
@@ -24,10 +21,8 @@ class Html extends AbstractModule
     static protected $_order = array(
         'A' => 10,
         'B' => 0,
-        'C' => 0,
-        'D' => 30,
-        'E' => 0,
-        'F' => 0,
+        'C' => 30,
+        'D' => 0,
     );
 
     /**
@@ -53,107 +48,53 @@ class Html extends AbstractModule
     /** Блок. */
     const REPLACER_BLOCK = 'BLOCK';
 
-    /** Блок <a>...</a>. */
-    const REPLACER_BLOCK_A = 'BLOCK_A';
-
 
     // --- Открытые методы ---
 
     /**
-     * @see \Typo\Module::validateOption()
-     */
-    public function validateOption($name, &$value)
-    {
-        switch ($name) {
-            case 'safe-blocks' :
-            case 'typo-attrs' :
-                if (is_string($value)) {
-                    $value = explode(',', $value);
-                }
-
-                if (!is_array($value))
-                    return self::throwException(
-                        Exception::E_OPTION_VALUE,
-                        "Значение параметра '$name' должно быть массивом или строкой, а не " . gettype($value)
-                    );
-
-                $value = array_map('trim', $value);
-                $value = array_map('mb_strtolower', $value);
-
-                $data = array();
-                foreach ($value as $val) {
-                    if (!is_string($val))
-                        return self::throwException(
-                            Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть массивом строк"
-                        );
-
-                    if (mb_strlen($val))
-                        $data[] = $val;
-                }
-                $value = $data;
-                break;
-
-            default :
-                AbstractModule::validateOption($name, $value);
-        }
-    }
-
-
-    // --- Защищенные методы ---
-
-    /**
      * Стадия A.
      *
-     * Заменяет безопасные блоки и теги на соответствующие заменители.
+     * - Заменяет безопасные блоки на [[[BLOCK1]]], {{{BLOCK2}}}, ...
+     * - Заменяет теги на [[[TAG1]]], {{{TAG2}}}, ...
      */
     public function stageA()
     {
-        if ($this->_typo->getOption('html-in-enabled')) {
-            $safe_blocks_visible = array_diff($this->getOption('safe-blocks'), self::$invisible_blocks);
-            $safe_blocks_invisible = array_intersect($this->getOption('safe-blocks'), self::$invisible_blocks);
+        $safe_blocks = $this->getOption('safe-blocks');
 
-            $this->removeBlocks($safe_blocks_visible, self::REPLACER_BLOCK, Typo::VISIBLE);
-            $this->removeBlocks($safe_blocks_invisible, self::REPLACER_BLOCK, Typo::INVISIBLE);
-            $this->removeBlocks(array('a'), self::REPLACER_BLOCK_A, Typo::VISIBLE);
+        $safe_blocks_visible = array_diff($safe_blocks, static::$invisible_blocks);
+        $safe_blocks_invisible = array_intersect($safe_blocks, static::$invisible_blocks);
 
-            $this->removeTags(self::$visible_tags, self::REPLACER_TAG, Typo::VISIBLE);
-            $this->removeAllTags(self::REPLACER_TAG, Typo::INVISIBLE);
-        } else {
-            $this->removeBlocks($this->getOption('safe-blocks'), self::REPLACER_BLOCK, Typo::VISIBLE);
+        $this->removeBlocks($safe_blocks_visible, self::REPLACER_BLOCK, Typo::VISIBLE);
+        $this->removeBlocks($safe_blocks_invisible, self::REPLACER_BLOCK, Typo::INVISIBLE);
 
-            $this->removeAllTags(self::REPLACER_TAG, Typo::VISIBLE);
-        }
+        $this->removeTags(static::$visible_tags, self::REPLACER_TAG, Typo::VISIBLE);
+        $this->removeAllTags(self::REPLACER_TAG, Typo::INVISIBLE);
     }
 
     /**
-     * Стадия D.
+     * Стадия C.
      *
-     * Восстанавливает теги и безопасные блоки.
+     * - Восстанавливает теги;
+     * - Восстанавливает безопасные блоки.
      */
-    public function stageD()
+    public function stageC()
     {
-        if ($this->_typo->getOption('html-in-enabled')) {
-            $this->getTypo()->getText()->popStorage(self::REPLACER_TAG, Typo::INVISIBLE);
-            $this->getTypo()->getText()->popStorage(self::REPLACER_TAG, Typo::VISIBLE);
+        $this->getTypo()->getText()->popStorage(self::REPLACER_TAG, Typo::INVISIBLE);
+        $this->getTypo()->getText()->popStorage(self::REPLACER_TAG, Typo::VISIBLE);
 
-            $this->getTypo()->getText()->popStorage(self::REPLACER_BLOCK_A, Typo::VISIBLE);
-            $this->getTypo()->getText()->popStorage(self::REPLACER_BLOCK, Typo::INVISIBLE);
-            $this->getTypo()->getText()->popStorage(self::REPLACER_BLOCK, Typo::VISIBLE);
-        } else {
-            $this->getTypo()->getText()->popStorage(self::REPLACER_TAG, Typo::VISIBLE);
-
-            $this->getTypo()->getText()->popStorage(self::REPLACER_BLOCK, Typo::VISIBLE);
-        }
+        $this->getTypo()->getText()->popStorage(self::REPLACER_BLOCK, Typo::INVISIBLE);
+        $this->getTypo()->getText()->popStorage(self::REPLACER_BLOCK, Typo::VISIBLE);
     }
+
+
+    // --- Защищённые методы ---
 
     /**
      * Заменяет блоки в тексте.
      *
-     * @param array  $blocks   HTML блоки.
+     * @param array  $blocks   Массив названий HTML тегов.
      * @param string $replacer Имя строки для замены.
      * @param string $type     Тип заменителя.
-     *
-     * @uses \Wheels\Typo\Text::preg_replace_storage()
      */
     protected function removeBlocks(array $blocks, $replacer, $type)
     {
@@ -173,17 +114,15 @@ class Html extends AbstractModule
         }
         $pattern = implode('|', $patterns);
 
-        $this->getTypo()->getText()->preg_replace_storage("~($pattern)~isU", $replacer, $type);
+        $this->getTypo()->getText()->preg_replace_storage("~({$pattern})~isU", $replacer, $type);
     }
 
     /**
      * Заменяет теги в тексте.
      *
-     * @param array  $tags     HTML теги.
+     * @param array  $tags     Массив названий HTML тегов.
      * @param string $replacer Имя строки для замены.
      * @param string $type     Тип заменителя.
-     *
-     * @uses \Wheels\Typo\Text::preg_replace_storage()
      */
     protected function removeTags(array $tags, $replacer, $type)
     {
@@ -193,7 +132,7 @@ class Html extends AbstractModule
         }
         $pattern = '~(' . implode('|', $patterns) . ')~isU';
 
-        $this->getTypo()->getText()->preg_replace_storage($pattern, $replacer, $type);
+        $this->preg_replace_tags_storage($pattern, $replacer, $type);
     }
 
     /**
@@ -201,38 +140,34 @@ class Html extends AbstractModule
      *
      * @param string $replacer Имя строки для замены.
      * @param string $type     Тип заменителя.
-     *
-     * @uses \Wheels\Typo\Text::preg_replace_storage()
      */
     public function removeAllTags($replacer, $type)
     {
+        $this->preg_replace_tags_storage('~<[^>]*\w+[^>]*>~s', $replacer, $type);
+    }
+
+    protected function preg_replace_tags_storage($pattern, $replacer, $type)
+    {
         $attrs = $this->getOption('typo-attrs');
+
         if (!empty($attrs)) {
             $_this = $this;
-            /*$typo = new Typo(array(
-                'html-in-enabled'  => false,
-                'html-out-enabled' => false,
-            ));*/
 
-            $pattern = '~(?<=\s)(?<name>' . implode('|', array_map('preg_quote', $attrs))
-                . ')\=["\'](?<value>[^"\']*)["\']~iu';
+            $pattern2 = '~(?<=\s)(?<name>' . implode('|', array_map('preg_quote', $attrs)) . ')\=["\'](?<value>[^"\']*)["\']~iu';
 
-            $callback = function ($matches) use ( /*$typo, */
-                $_this
-            ) {
-                $text = new Text($matches['value'], Text::TYPE_HTML_ATTR_VALUE, $_this->getOption('charset'));
-                return $matches['name'] . '="' . /*$typo->execute(*/
-                $text /*)*/ . '"';
+            $callback = function ($matches) use ( /*$typo, */ $_this) {
+                $text = new Text($matches['value'], Text::TYPE_HTML_ATTR_VALUE, 'UTF-8');
+                return $matches['name'] . '="' . /*$typo->execute(*/ $text /*)*/ . '"';
             };
 
-            $callback2 = function ($matches) use ($_this, $pattern, $callback, $replacer, $type) {
-                $data = preg_replace_callback($pattern, $callback, $matches[0]);
-
+            $callback2 = function ($matches) use ($_this, $pattern2, $callback, $replacer, $type) {
+                $data = preg_replace_callback($pattern2, $callback, $matches[0]);
                 return $_this->getTypo()->getText()->pushStorage($data, $replacer, $type);
             };
 
-            $this->getTypo()->getText()->preg_replace_callback('~<[^>]*\w+[^>]*>~s', $callback2);
-        } else
-            $this->getTypo()->getText()->preg_replace_storage('~<[^>]*\w+[^>]*>~s', $replacer, $type);
+            $this->getTypo()->getText()->preg_replace_callback($pattern, $callback2);
+        } else {
+            $this->getTypo()->getText()->preg_replace_storage($pattern, $replacer, $type);
+        }
     }
 }

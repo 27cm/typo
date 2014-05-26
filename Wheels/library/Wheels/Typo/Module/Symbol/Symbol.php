@@ -2,14 +2,14 @@
 
 namespace Wheels\Typo\Module\Symbol;
 
-use Wheels\Typo\Module\AbstractModule;
+use Wheels\Typo\Module\Module;
 
 /**
  * Спецсимволы.
  *
  * Расставляет спецсимволы в тексте.
  */
-class Symbol extends AbstractModule
+class Symbol extends Module
 {
     /**
      * Настройки по умолчанию.

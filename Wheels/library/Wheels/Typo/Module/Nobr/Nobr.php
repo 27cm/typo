@@ -3,7 +3,7 @@
 namespace Wheels\Typo\Module\Nobr;
 
 use Wheels\Typo\Typo;
-use Wheels\Typo\Module\AbstractModule;
+use Wheels\Typo\Module\Module;
 use Wheels\Typo\Exception;
 
 /**
@@ -15,7 +15,7 @@ use Wheels\Typo\Exception;
  * По умолчанию нерезрывные конструкции обрамляются в &lt;span style="word-spacing:nowrap;"&gt;...&lt;/span&gt;.
  * При желании вы можете использовать любой другой тег.
  */
-class Nobr extends AbstractModule
+class Nobr extends Module
 {
     /**
      * @see \Wheels\Typo\Module::$order
@@ -59,7 +59,7 @@ class Nobr extends AbstractModule
                 break;
 
             default :
-                AbstractModule::validateOption($name, $value);
+                Module::validateOption($name, $value);
         }
     }
 

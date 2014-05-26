@@ -3,7 +3,7 @@
 namespace Wheels\Typo\Module;
 
 use Wheels\Typo\Typo;
-use Wheels\Typo\Module\AbstractModule;
+use Wheels\Typo\Module\Module;
 
 /**
  * Ссылки.
@@ -12,7 +12,7 @@ use Wheels\Typo\Module\AbstractModule;
  *
  * @link http://wikipedia.org/wiki/URL
  */
-class Filepath extends AbstractModule
+class Filepath extends Module
 {
     /**
      * Настройки по умолчанию.

@@ -5,7 +5,7 @@ namespace Tests\Wheels\Typo;
 use Wheels\Typo\Typo;
 use Wheels\Typo\Exception;
 use Wheels\Typo\Module\Collection as ModulesCollection;
-use Wheels\Typo\Module\AbstractModule;
+use Wheels\Typo\Module\Module;
 use Wheels\Typo\Module\Core\Core;
 
 //use Wheels\Typo\Module\Filepath;
@@ -61,7 +61,7 @@ class TypoTest extends PHPUnit_Framework_TestCase
         $names = array('core', 'html', 'nobr', 'punct', 'space', 'symbol', 'url');
         $modules = array();
         foreach ($names as $name) {
-            $classname = AbstractModule::getModuleClassname($name);
+            $classname = Module::getModuleClassname($name);
             $modules[] = new $classname($typo);
         }
 
@@ -75,7 +75,7 @@ class TypoTest extends PHPUnit_Framework_TestCase
         $typo = new Typo();
 
         $name = 'core';
-        $classname = AbstractModule::getModuleClassname($name);
+        $classname = Module::getModuleClassname($name);
 
         $actual = $typo->getModule($name);
         $expected = new $classname($typo);

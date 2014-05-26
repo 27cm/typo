@@ -10,7 +10,7 @@
 namespace Wheels\Typo;
 
 use Wheels\Typo\Module\Collection as ModulesCollection;
-use Wheels\Typo\Module\AbstractModule;
+use Wheels\Typo\Module\Module;
 use Wheels\Utility;
 
 /**
@@ -30,7 +30,7 @@ class Typo extends AbstractTypo
     /**
      * Модули.
      *
-     * @var \Wheels\Typo\Module\Collection|\Wheels\Typo\Module\AbstractModule[]
+     * @var \Wheels\Typo\Module\Collection|\Wheels\Typo\Module\Module[]
      */
     protected $_modules = array();
 
@@ -68,9 +68,6 @@ class Typo extends AbstractTypo
 
     // --- Заменители ---
 
-    /** Элемент. */
-    const REPLACER = 'E';
-
     /** Видимый элемент. */
     const VISIBLE = '[[[%s%u]]]';
 
@@ -91,7 +88,6 @@ class Typo extends AbstractTypo
         parent::__construct($options);
 
         $this->getConfig()->getOption('modules')->addEventListener('setValue', array($this, 'onConfigModulesSet'));
-
         $this->onConfigModulesSet();
     }
 
@@ -109,25 +105,20 @@ class Typo extends AbstractTypo
         $this->setOptions($options);
         $this->setAllowModifications(false);
 
-        $this->getText()->setText($text, $this->getOption('charset'));
+        $this->getText()->setText($text, 'UTF-8');
 
-        $charset = $this->getOption('charset');
-        $int_encoding = mb_internal_encoding();
-        $defaultCharset = 'UTF-8';
 
         // Изменение кодировки текста на кодировку по умолчанию
-        mb_internal_encoding($defaultCharset);
-        if ($charset != $defaultCharset) {
-            $this->getText()->iconv($charset, $defaultCharset);
-        }
+        $encoding = mb_internal_encoding();
+        mb_internal_encoding('UTF-8');
 
         // Выполнение всех стадий
-        $stages = array('A', 'B', 'C');
-        for ($i = 0; $i < 3; $i++) {
+        $stages = array('A', 'B', 'C', 'D');
+        for ($i = 0, $count = count($stages); $i < $count; $i++) {
             $stage = $stages[$i];
             $method = 'stage' . $stage;
 
-            $this->getModules()->uasort(function (AbstractModule $a, AbstractModule $b) use ($stage) {
+            $this->getModules()->uasort(function (Module $a, Module $b) use ($stage) {
                 return ($a->getOrder($stage) < $b->getOrder($stage)) ? -1 : 1;
             });
 
@@ -139,10 +130,7 @@ class Typo extends AbstractTypo
         }
 
         // Восстанавление кодировки текста
-        if ($charset != $defaultCharset) {
-            $this->getText()->iconv($defaultCharset, $charset);
-        }
-        mb_internal_encoding($int_encoding);
+        mb_internal_encoding($encoding);
 
         $this->setAllowModifications(true);
         $this->restoreOptions();
@@ -163,7 +151,7 @@ class Typo extends AbstractTypo
     /**
      * Возвращает модули.
      *
-     * @return \Wheels\Typo\Module\Collection|\Wheels\Typo\Module\AbstractModule[] Коллекция модулей.
+     * @return \Wheels\Typo\Module\Collection|\Wheels\Typo\Module\Module[] Коллекция модулей.
      */
     public function getModules()
     {
@@ -175,7 +163,7 @@ class Typo extends AbstractTypo
      *
      * @param string $name Название модуля.
      *
-     * @return \Wheels\Typo\Module\AbstractModule Модуль с заданным именем.
+     * @return \Wheels\Typo\Module\Module Модуль с заданным именем.
      *
      * @throws \Wheels\Typo\Exception
      */
@@ -388,27 +376,6 @@ class Typo extends AbstractTypo
     // --- Защищённые методы ---
 
     /**
-     * Возвращает символ по его коду.
-     *
-     * @param int $c Код символа.
-     *
-     * @return string|bool
-     */
-    protected function chr($c)
-    {
-//        switch ($this->getOption('encoding')) {
-//            case self::MODE_NONE :
-//                return Utility::chr($c);
-//                break;
-//            case self::MODE_CODES :
-//                return sprintf('&#%u;', $c);
-//                break;
-//            default :
-//                return sprintf('&#x%x;', $c);
-//        }
-    }
-
-    /**
      * Обработчик события изменения значения параметра 'modules'.
      *
      * @return void Этот метод не возвращает значения после выполнения.
@@ -426,7 +393,7 @@ class Typo extends AbstractTypo
 
         foreach ($classnames as $classname) {
             if (!$this->_hasModule($classname)) {
-                /** @var \Wheels\Typo\Module\AbstractModule $module */
+                /** @var \Wheels\Typo\Module\Module $module */
                 $module = new $classname($this);
                 $this->_addModule($module);
             }
@@ -441,7 +408,7 @@ class Typo extends AbstractTypo
 
     }
 
-    protected function _addModule(AbstractModule $module)
+    protected function _addModule(Module $module)
     {
         $this->_modules[] = $module;
     }

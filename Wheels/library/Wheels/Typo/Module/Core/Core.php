@@ -2,14 +2,27 @@
 
 namespace Wheels\Typo\Module\Core;
 
-use Wheels\Typo\Module\AbstractModule;
+use Wheels\Typo\Module\Module;
+use Wheels\Typo\Typo;
 use Wheels\Utility;
 
 /**
+ * Модуль-ядро типографа.
  *
+ * Обрабатывает HTML-сущности.
  */
-class Core extends AbstractModule
+class Core extends Module
 {
+    /**
+     * {@inheritDoc}
+     */
+    static protected $_order = array(
+        'A' => 20,
+        'B' => 0,
+        'C' => 0,
+        'D' => 0,
+    );
+
 
     // --- Режимы кодирования спецсимволов ---
 
@@ -25,87 +38,81 @@ class Core extends AbstractModule
     /** В виде шестнадцатеричных кодов. */
     const MODE_HEX_CODES = 'MODE_HEX_CODES';
 
+
+    // --- Открытые методы ---
+
     /**
      * Стадия A.
+     *
+     * - Исправляет ошибки в записе HTML-сущностей (лишние пробелы "&nbsp ;", забытые точки с запятой "&gt&thinsp", ведущие пробелы "&#000032;");
+     * - Преобразует все HTML-сущности в соответствующие символы;
+     * - Заменяет букву 'ё' на 'е';
+     * - Заменяет неверные коды символов символом замены юникода (U+FFFD);
+     * - Преобразует специальные символы в HTML-сущности.
      */
     public function stageA()
     {
-        $rules = array(
-            #A1 Убираем лишние пробелы в кодах символов
-            '~(&(#\d+|[\da-z]+|#x[\da-f]+))\h+(?=\;)~iu' => '$1',
+        #A1 Исправление HTML-сущностей
+        if ($this->getOption('html-entity-fix')) {
+            $this->applyRulesPregReplace(array(
+                '/(&([\da-z]+|#(\d+|x[\da-f]+)))\h+;/iu' => '$1;',
+                '/(&([\da-z]+|#(\d+|x[\da-f]+)))\b(?!;)/i' => '$1;',
+                '/(&#)0+((0|[1-9]\d*);)/' => '$1$2',
+                '/(&#x)0+((0|[1-9a-f][\da-f]*);)/i' => '$1$2',
+            ));
+        }
 
-            #A2 Добавляем недостающие точки с запятой в кодах символов
-            '~(&#\d+)(?![\;\d])~' => '$1;',
-            '~(&[\da-z]+)(?![\;\da-z])~i' => '$1;',
-            '~(&#x[\da-f]+)(?![\;\da-f])~i' => '$1;',
+        $this->getTypo()->getText()->html_entity_decode();
 
-            #A3 Замена буквы 'ё' на 'е'
-            'e-convert' => array(
+        #A2 Замена букв 'ё' на 'е'
+        if ($this->getOption('e-convert')) {
+            $this->applyRulesReplace(array(
                 'ё' => 'е',
                 'Ё' => 'Е',
-            ),
-        );
-        $this->applyRules($rules);
+            ));
+        }
 
-        $this->getTypo()->getText()->html_entity_decode(ENT_QUOTES);
+        #A3 Замена неверных кодов символов символом замены юникода (U+FFFD)
+        $this->applyRulesPregReplace(array(
+            '/&([\da-z]+|#(\d+|x[\da-f]+));/i' => Utility::chr(65533),
+        ));
 
-        $rules = array(
-            #A1 Замена всех неизвестных символов на &#65533;
-            '~&(#\d+|[\da-z]+|#x[\da-f]+)\;~i' => Utility::chr(65533),
-        );
-        $this->applyRules($rules);
-
-//        if(!$this->options['html-in-enabled'])
-//        {
-//            $this->getTypo()->getText()->htmlspecialchars();
-//        }
+        $this->getTypo()->getText()->htmlspecialchars();
     }
 
     /**
      * Стадия B.
      */
-//    public function stageB()
-//    {
-//        if ($this->getOption('encoding') !== self::MODE_NONE) {
+    public function stageB()
+    {
+//        $mode = $this->getOption('encoding');
+//
+//        if ($mode !== self::MODE_NONE) {
+//            $this->getTypo()->getText()->htmlentities(ENT_QUOTES);
+//
 //            $replace = array();
-//            switch ($this->getOption('encoding')) {
+//            switch ($mode) {
 //                case self::MODE_CODES :
-//                    foreach (self::getChars('ord') as $ent => $ord) {
+//                    foreach (Typo::getChars('ord') as $ent => $ord) {
 //                        $replace[$ent] = sprintf('&#%u;', $ord);
 //                    }
-//                    break;
+//                break;
 //                case self::MODE_HEX_CODES :
-//                    foreach (self::getChars('ord') as $ent => $ord) {
+//                    foreach (Typo::getChars('ord') as $ent => $ord) {
 //                        $replace[$ent] = sprintf('&#x%x;', $ord);
 //                    }
-//                    break;
+//                break;
 //                case self::MODE_NAMES :
-//                    foreach (array_keys(self::getChars('chr')) as $ent) {
+//                    foreach (array_keys(Typo::getChars('chr')) as $ent) {
 //                        $replace[$ent] = sprintf('&%s;', $ent);
 //                    };
-//                    break;
+//                break;
 //            }
 //
-//            // @todo: Заменить все символы, не поддерживаемый выходной кодировкой на HTML-сущности
-//
-//            $search = self::getChars('chr');
+//            $search = Typo::getChars('chr');
 //            unset($search['amp']);
 //            unset($replace['amp']);
 //            $this->getTypo()->getText()->replace(array_values($search), array_values($replace));
 //        }
-//    }
-
-    /**
-     * Стадия D.
-     */
-//    public function stageD()
-//    {
-//        $this->getTypo()->getText()->popStorage(self::REPLACER, self::INVISIBLE);
-//        $this->getTypo()->getText()->popStorage(self::REPLACER, self::VISIBLE);
-//
-//        // Вставлять <br> перед каждым переводом строки
-//        $this->getTypo()->getText()->preg_replace('~\n|\&NewLine\;~', '<br />');
-//        ////if($this->options['nl2br'])
-//        //   $this->getTypo()->getText()->nl2br();
-//    }
+    }
 }

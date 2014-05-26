@@ -3,12 +3,12 @@
 namespace Wheels\Typo\Module\Align;
 
 use Wheels\Typo\Typo;
-use Wheels\Typo\Module\AbstractModule;
+use Wheels\Typo\Module\Module;
 
 /**
  * Оптическое выравнивание.
  */
-class Align extends AbstractModule
+class Align extends Module
 {
     /**
      * Настройки по умолчанию.

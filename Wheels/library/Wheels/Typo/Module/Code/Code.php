@@ -3,7 +3,7 @@
 namespace Wheels\Typo\Module\Code;
 
 use Wheels\Typo\Typo;
-use Wheels\Typo\Module\AbstractModule;
+use Wheels\Typo\Module\Module;
 use Wheels\Utility;
 use Wheels\Typo\Exception;
 
@@ -13,7 +13,7 @@ use Wheels\Typo\Exception;
  * Использует тег &lt;code&gt; для отображения одной или нескольких строк текста, который представляет собой программный код.
  * Сюда относятся имена переменных, ключевые слова, тексты функции и т.д.
  */
-class Code extends AbstractModule
+class Code extends Module
 {
     /**
      * Настройки по умолчанию.
@@ -116,7 +116,7 @@ class Code extends AbstractModule
                 break;
 
             default :
-                AbstractModule::validateOption($name, $value);
+                Module::validateOption($name, $value);
         }
     }
 

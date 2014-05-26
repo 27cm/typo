@@ -3,7 +3,7 @@
 namespace Wheels\Typo\Module\Punct;
 
 use Wheels\Typo\Typo;
-use Wheels\Typo\Module\AbstractModule;
+use Wheels\Typo\Module\Module;
 use Wheels\Utility;
 
 /**
@@ -15,7 +15,7 @@ use Wheels\Utility;
  * @link http://en.wikipedia.org/wiki/Hyphen
  * @link http://www.quirksmode.org/oddsandends/wbr.html
  */
-class Dash extends AbstractModule
+class Dash extends Module
 {
     /**
      * @see \Wheels\Typo\Module::$default_options

@@ -3,14 +3,14 @@
 namespace Wheels\Typo\Module;
 
 use Wheels\Typo\Typo;
-use Wheels\Typo\Module\AbstractModule;
+use Wheels\Typo\Module\Module;
 
 /**
  * Числа, дроби и математические знаки.
  *
  * @link http://wikipedia.org/wiki/Punctuation
  */
-class Math extends AbstractModule
+class Math extends Module
 {
     /**
      * Настройки по умолчанию.

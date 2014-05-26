@@ -3,7 +3,7 @@
 namespace Wheels\Typo\Module\Punct;
 
 use Wheels\Typo\Typo;
-use Wheels\Typo\Module\AbstractModule;
+use Wheels\Typo\Module\Module;
 use Wheels\Utility;
 
 /**
@@ -11,7 +11,7 @@ use Wheels\Utility;
  *
  * @link http://wikipedia.org/wiki/Punctuation
  */
-class Punct extends AbstractModule
+class Punct extends Module
 {
     /**
      * @see \Wheels\Typo\Module::$order

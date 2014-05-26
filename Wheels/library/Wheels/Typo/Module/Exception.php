@@ -3,7 +3,7 @@
 namespace Wheels\Typo\Module;
 
 /**
- * @see \Wheels\Typo\Exception
+ * {@inheritDoc}
  */
 class Exception extends \Wheels\Typo\Exception
 {

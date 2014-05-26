@@ -14,6 +14,7 @@ if(isset($_REQUEST['text']))
     $input = $_REQUEST['text'];
 else
     $input =<<<TEXT
+    ё Ё
     0. §
     1. &sect
     2. &sect;
@@ -53,8 +54,10 @@ try
 //    $type = $option->getType();
 //    die(get_class($type));
 
-    $typo = new Typo(array('modules' => array('core')));
-    $output = $typo->process($input);
+    $typo = new Typo();
+
+    $options = array('modules' => array('core', 'html', 'emoticon/skype'));
+    $output = $typo->process($input, $options);
 
     $diff = new Diff($input, $output);
 }

@@ -11,7 +11,7 @@
 namespace Wheels\Typo\Type;
 
 use Wheels\Config\Option\Type\Tstring;
-use Wheels\Typo\Module\AbstractModule;
+use Wheels\Typo\Module\Module;
 
 /**
  * Модуль типографа.
@@ -27,7 +27,7 @@ class Tmodule extends Tstring
     public function convert($var)
     {
         if (is_string($var)) {
-            $var = AbstractModule::getModuleClassname($var);
+            $var = Module::getModuleClassname($var);
         }
 
         return parent::convert($var);

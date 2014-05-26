@@ -15,15 +15,15 @@ use Wheels\Typo\ITypo;
 /**
  * Коллекция модулей типографа.
  *
- * @method AbstractModule[] getArray()
- * @method AbstractModule offsetGet($offset)
+ * @method Module[] getArray()
+ * @method Module offsetGet($offset)
  */
 class Collection extends \Wheels\Datastructure\Collection implements ITypo
 {
     /**
      * Массив модулей типографа.
      *
-     * @var \Wheels\Typo\Module\AbstractModule[]
+     * @var \Wheels\Typo\Module\Module[]
      */
     protected $_array;
 
@@ -35,7 +35,7 @@ class Collection extends \Wheels\Datastructure\Collection implements ITypo
      */
     public function __construct(array $array = array())
     {
-        parent::__construct('Wheels\Typo\Module\AbstractModule', $array);
+        parent::__construct('Wheels\Typo\Module\Module', $array);
     }
 
     /**
@@ -44,7 +44,7 @@ class Collection extends \Wheels\Datastructure\Collection implements ITypo
     public function prepareOffset($offset)
     {
         if (is_string($offset)) {
-            $offset = AbstractModule::getModuleClassname($offset);
+            $offset = Module::getModuleClassname($offset);
         }
 
         return parent::prepareOffset($offset);

@@ -3,14 +3,14 @@
 namespace Wheels\Typo\Module\Space;
 
 use Wheels\Typo\Typo;
-use Wheels\Typo\Module\AbstractModule;
+use Wheels\Typo\Module\Module;
 
 /**
  * Пробелы.
  *
  * Расставляет и удаляет простые и неразрывные пробелы в тексте.
  */
-class Space extends AbstractModule
+class Space extends Module
 {
     /**
      * @see \Wheels\Typo\Module::$default_options

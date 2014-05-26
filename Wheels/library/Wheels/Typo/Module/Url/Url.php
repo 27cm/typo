@@ -3,7 +3,7 @@
 namespace Wheels\Typo\Module\Url;
 
 use Wheels\Typo\Typo;
-use Wheels\Typo\Module\AbstractModule;
+use Wheels\Typo\Module\Module;
 use Wheels\Utility;
 use Wheels\Typo\Exception;
 
@@ -16,7 +16,7 @@ use Wheels\Utility\IDNA;
  *
  * @link http://wikipedia.org/wiki/URL
  */
-class Url extends AbstractModule
+class Url extends Module
 {
     /**
      * @see \Wheels\Typo\_configSchema::$_config_schema
@@ -105,7 +105,7 @@ class Url extends AbstractModule
                 break;
 
             default :
-                AbstractModule::validateOption($name, $value);
+                Module::validateOption($name, $value);
         }
     }
 
@@ -417,7 +417,7 @@ class Url extends AbstractModule
      *
      * @return bool
      */
-    static public function condTarget(array $parts, AbstractModule $_this)
+    static public function condTarget(array $parts, Module $_this)
     {
         static $HTTP_HOST = null;
         if (!isset($HTTP_HOST))

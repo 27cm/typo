@@ -1,6 +1,6 @@
 <?php
 
-namespace Wheels\Config\Option\Type;
+namespace Tests\Wheels\Config\Option\Type;
 
 use Wheels\Config\Option\AbstractType;
 

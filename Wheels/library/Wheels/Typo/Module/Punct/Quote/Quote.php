@@ -3,7 +3,7 @@
 namespace Wheels\Typo\Module\Punct;
 
 use Wheels\Typo\Typo;
-use Wheels\Typo\Module\AbstractModule;
+use Wheels\Typo\Module\Module;
 use Wheels\Utility;
 use Wheels\Typo\Exception;
 
@@ -14,7 +14,7 @@ use Wheels\Typo\Exception;
  *
  * @link http://en.wikipedia.org/wiki/Quotation_mark
  */
-class Quote extends AbstractModule
+class Quote extends Module
 {
     /**
      * @see \Wheels\Typo\Module::$default_options
@@ -107,7 +107,7 @@ class Quote extends AbstractModule
                 break;
 
             default :
-                AbstractModule::validateOption($name, $value);
+                Module::validateOption($name, $value);
         }
     }
 

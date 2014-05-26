@@ -196,8 +196,9 @@ class Text
                 $this->substr_replace(array_shift($replace), $pos, $length);
                 $count++;
             }
-        } else
+        } else {
             $this->text = str_replace($search, $replace, $this->text, $count);
+        }
     }
 
     /**
@@ -392,9 +393,9 @@ class Text
      */
     public function htmlspecialchars($flags = null, $double_encode = true)
     {
-        if (is_null($flags))
-            $flags = ENT_COMPAT /*| ENT_HTML401*/
-            ;
+        if (is_null($flags)) {
+            $flags = ENT_COMPAT | ENT_HTML401;
+        }
 
         $this->text = htmlspecialchars($this->text, $flags, $this->encoding, $double_encode);
     }
@@ -408,9 +409,9 @@ class Text
      */
     public function html_entity_decode($flags = null)
     {
-        if (is_null($flags))
-            $flags = ENT_COMPAT /*| ENT_HTML401*/
-            ;
+        if (is_null($flags)) {
+            $flags = ENT_COMPAT | ENT_HTML401;
+        }
 
         $this->text = html_entity_decode($this->text, $flags, $this->encoding);
     }

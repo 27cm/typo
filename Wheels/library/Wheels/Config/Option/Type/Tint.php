@@ -23,6 +23,18 @@ class Tint extends Type
     /**
      * {@inheritDoc}
      */
+    public function convert($var)
+    {
+        if (is_scalar($var)) {
+            return intval($var);
+        }
+
+        return $var;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function validate($var)
     {
         return is_int($var);

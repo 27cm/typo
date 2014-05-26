@@ -26,5 +26,10 @@ return array(
             ),
             'default' => 'none',
         ),
+        'html-entity-fix' => array(
+            'desc'    => 'Исправление HTML-сущностей',
+            'type'    => 'bool',
+            'default' => true,
+        ),
     ),
 );

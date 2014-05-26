@@ -71,15 +71,16 @@ class Tarray extends Type
      */
     public function validate($var)
     {
-        if (is_array($var)) {
-            foreach ($var as $value) {
-                if (!$this->_type->validate($value)) {
-                    return false;
-                }
-            }
-            return true;
+        if (!is_array($var)) {
+            return false;
         }
 
-        return false;
+        foreach ($var as $value) {
+            if (!$this->_type->validate($value)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
