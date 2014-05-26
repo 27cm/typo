@@ -15,17 +15,10 @@ use Wheels\Utility\IDNA;
  * Выделяет ссылки в тексте.
  *
  * @link http://wikipedia.org/wiki/URL
+ * @link http://ru.wikipedia.org/wiki/%D0%9D%D0%BE%D1%80%D0%BC%D0%B0%D0%BB%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F_URL
  */
 class Url extends Module
 {
-    /**
-     * @see \Wheels\Typo\_configSchema::$_config_schema
-     */
-    static protected $_configSchema
-        = array(
-
-        );
-
     /**
      * @see \Wheels\Typo\Module::$_order
      */
@@ -58,7 +51,8 @@ class Url extends Module
     const IP = '(?<ip>(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?))';
 
     /** Хост (полностью прописанное доменное имя хоста в системе DNS или IP-адрес хоста) */
-    const HOST = '(?<host>(?:(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)|localhost|(?:[\wа-яё\-\~%]+\.)+(?:рф|com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum|travel|[a-z]{2})))';
+    // @link http://data.iana.org/TLD/tlds-alpha-by-domain.txt
+    const HOST = '(?<host>(?:(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)|localhost|(?:[\wа-яё\-\~%]+\.)+(?:ac|academy|accountants|actor|ad|ae|aero|af|ag|agency|ai|airforce|al|am|an|ao|aq|ar|archi|arpa|as|asia|associates|at|au|audio|autos|aw|ax|axa|az|ba|bar|bargains|bayern|bb|bd|be|beer|berlin|best|bf|bg|bh|bi|bid|bike|biz|bj|black|blackfriday|blue|bm|bn|bo|boutique|br|bs|bt|build|builders|buzz|bv|bw|by|bz|ca|cab|camera|camp|capital|cards|care|career|careers|cash|cat|catering|cc|cd|center|ceo|cf|cg|ch|cheap|christmas|church|ci|citic|ck|cl|claims|cleaning|clinic|clothing|club|cm|cn|co|codes|coffee|college|cologne|com|community|company|computer|condos|construction|consulting|contractors|cooking|cool|coop|country|cr|credit|creditcard|cruises|cu|cv|cw|cx|cy|cz|dance|dating|de|democrat|dental|desi|diamonds|digital|directory|discount|dj|dk|dm|dnp|do|domains|dz|ec|edu|education|ee|eg|email|engineering|enterprises|equipment|er|es|estate|et|eu|eus|events|exchange|expert|exposed|fail|farm|feedback|fi|finance|financial|fish|fishing|fitness|fj|fk|flights|florist|fm|fo|foo|foundation|fr|frogans|fund|furniture|futbol|ga|gal|gallery|gb|gd|ge|gf|gg|gh|gi|gift|gl|glass|globo|gm|gmo|gn|gop|gov|gp|gq|gr|graphics|gratis|gripe|gs|gt|gu|guide|guitars|guru|gw|gy|haus|hiphop|hk|hm|hn|holdings|holiday|homes|horse|house|hr|ht|hu|id|ie|il|im|immobilien|in|industries|info|ink|institute|insure|int|international|investments|io|iq|ir|is|it|je|jetzt|jm|jo|jobs|jp|juegos|kaufen|ke|kg|kh|ki|kim|kitchen|kiwi|km|kn|koeln|kp|kr|kred|kw|ky|kz|la|land|lb|lc|lease|li|life|lighting|limited|limo|link|lk|loans|london|lr|ls|lt|lu|luxe|luxury|lv|ly|ma|maison|management|mango|marketing|mc|md|me|media|meet|menu|mg|mh|miami|mil|mk|ml|mm|mn|mo|mobi|moda|moe|monash|moscow|motorcycles|mp|mq|mr|ms|mt|mu|museum|mv|mw|mx|my|mz|na|nagoya|name|nc|ne|net|neustar|nf|ng|ni|ninja|nl|no|np|nr|nu|nyc|nz|okinawa|om|onl|org|pa|paris|partners|parts|pe|pf|pg|ph|photo|photography|photos|pics|pictures|pink|pk|pl|plumbing|pm|pn|post|pr|pro|productions|properties|ps|pt|pub|pw|py|qa|qpon|quebec|re|recipes|red|reise|reisen|ren|rentals|repair|report|rest|reviews|rich|rio|ro|rocks|rodeo|rs|ru|ruhr|rw|ryukyu|sa|saarland|sb|sc|schule|sd|se|services|sexy|sg|sh|shiksha|shoes|si|singles|sj|sk|sl|sm|sn|so|social|sohu|solar|solutions|soy|sr|st|su|supplies|supply|support|surgery|sv|sx|sy|systems|sz|tattoo|tax|tc|td|technology|tel|tf|tg|th|tienda|tips|tj|tk|tl|tm|tn|to|today|tokyo|tools|town|toys|tp|tr|trade|training|travel|tt|tv|tw|tz|ua|ug|uk|university|uno|us|uy|uz|va|vacations|vc|ve|vegas|ventures|versicherung|vg|vi|viajes|villas|vision|vn|vodka|vote|voting|voto|voyage|vu|wang|watch|webcam|wed|wf|wien|wiki|works|ws|wtc|wtf|集团|在线|한국|ভারত|公益|公司|移动|我爱你|москва|қаз|онлайн|сайт|срб|орг|삼성|சிங்கப்பூர்|商标|商城|дети|中文网|中信|中国|中國|భారత్|ලංකා|ભારત|भारत|संगठन|网络|укр|香港|台湾|台灣|мон|الجزائر|عمان|ایران|امارات|بازار|الاردن|بھارت|المغرب|السعودية|مليسيا|شبكة|机构|组织机构|ไทย|سورية|рф|تونس|みんな|世界|ਭਾਰਤ|网址|游戏|مصر|قطر|இலங்கை|இந்தியா|新加坡|فلسطين|政务|xxx|xyz|yachts|ye|yokohama|yt|za|zm|zone|zw)))';
 
     /** Путь (уточняющая информация о месте нахождения ресурса; зависит от протокола) */
     const PATH = '(?<path>(?:/[\wа-яё\-\.\~%!\$&\'()*+,;=:@]*[\wа-яё\~%\$&])*/?)';
@@ -258,7 +252,7 @@ class Url extends Module
             . '(\?' . self::QUERY . ')?' . '(#' . self::HASH . ')?';
         $pattern = $this->preg_wrap($pattern);
 
-        $this->_typo->text->preg_replace_callback($pattern, $callback);
+        $this->getTypo()->getText()->preg_replace_callback($pattern, $callback);
     }
 
     /**

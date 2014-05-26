@@ -2,11 +2,11 @@
 
 namespace Tests\Wheels\Config\Option\Type;
 
-use Wheels\Config\Option\AbstractType;
+use Tests\Wheels\Config\Option\AbstractType;
 
 class TintTest extends AbstractType
 {
-    static protected $_testValidateData
+    static protected $_dataValidate
         = array(
             array(23, true),
             array(PHP_INT_MAX, true),

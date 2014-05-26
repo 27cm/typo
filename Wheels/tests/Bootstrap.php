@@ -2,7 +2,7 @@
 
 use Wheels\Loader;
 
-require_once '../library/Wheels.php';
+require_once '..' . DIRECTORY_SEPARATOR . 'library' . DIRECTORY_SEPARATOR . 'Wheels.php';
 
 define('TESTS_DIR', realpath(dirname(__FILE__)));
 // define('TESTS_CONFIG_DIR', dirname(__FILE__) . DS . 'config');

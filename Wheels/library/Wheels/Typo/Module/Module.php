@@ -49,6 +49,15 @@ abstract class Module extends AbstractTypo
     );
 
 
+    // --- Заменители ---
+
+    /** Видимый элемент. */
+    const VISIBLE = '[[[%s%u]]]';
+
+    /** Невидимый элемент. */
+    const INVISIBLE = '{{{%s%u}}}';
+
+
     // --- Открытые методы ---
 
     public function __construct(Typo $parent, array $options = array())

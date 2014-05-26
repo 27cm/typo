@@ -6,7 +6,6 @@ use Wheels\Typo\Module\Module;
 use Wheels\Typo\Typo;
 use Wheels\Utility;
 
-
 /**
  * Эмотиконы (смайлики).
  *
@@ -33,16 +32,10 @@ abstract class Emoticon extends Module
      */
     static public $smiles = array();
 
-    /**
-     * Массив номеров эмотиконов.
-     *
-     * @var int[]
-     */
-    static protected $emoticons = null;
 
+    // --- Заменители ---
 
-    // --- Заменитель ---
-
+    /** Эмотикон (смайлик). */
     const REPLACER = 'EMOTICON';
 
 
@@ -115,9 +108,6 @@ abstract class Emoticon extends Module
         $this->getTypo()->getText()->popStorage(self::REPLACER, Typo::VISIBLE);
     }
 
-    /**
-     * @param array $data
-     */
     public function setAttrs($data)
     {
         $attrs = array();

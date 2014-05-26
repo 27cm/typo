@@ -3,8 +3,9 @@
 namespace Wheels\Typo\Module\Core;
 
 use Wheels\Typo\Module\Module;
-use Wheels\Typo\Typo;
 use Wheels\Utility;
+
+use Normalizer;
 
 /**
  * Модуль-ядро типографа.
@@ -48,6 +49,7 @@ class Core extends Module
      * - Преобразует все HTML-сущности в соответствующие символы;
      * - Заменяет букву 'ё' на 'е';
      * - Заменяет неверные коды символов символом замены юникода (U+FFFD);
+     * - Нормализует Unicode символы;
      * - Преобразует специальные символы в HTML-сущности.
      */
     public function stageA()
@@ -76,6 +78,19 @@ class Core extends Module
         $this->applyRulesPregReplace(array(
             '/&([\da-z]+|#(\d+|x[\da-f]+));/i' => Utility::chr(65533),
         ));
+
+        #A4 Нормализация Unicode
+        // @link http://habrahabr.ru/post/45489/
+        if ($this->getOption('normalize')) {
+            // @bug: № заменяется на No
+            $this->getTypo()->getText()->normalize(Normalizer::FORM_KD);
+            $this->applyRulesReplace(array(
+                "\xD0\xB5\xCC\x88" => 'ё',
+                "\xD0\x95\xCC\x88" => 'Ё',
+                "\xD0\xB8\xCC\x86" => 'й',
+                "\xD0\x98\xCC\x86" => 'Й',
+            ));
+        }
 
         $this->getTypo()->getText()->htmlspecialchars();
     }

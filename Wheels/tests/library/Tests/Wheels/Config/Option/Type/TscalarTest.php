@@ -2,11 +2,11 @@
 
 namespace Tests\Wheels\Config\Option\Type;
 
-use Wheels\Config\Option\AbstractType;
+use Tests\Wheels\Config\Option\AbstractType;
 
 class TscalarTest extends AbstractType
 {
-    static protected $_testValidateData
+    static protected $_dataValidate
         = array(
             0  => array(23, true),
             1  => array(23.0, true),

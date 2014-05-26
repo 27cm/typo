@@ -66,15 +66,6 @@ class Typo extends AbstractTypo
     const VERSION = '0.1';
 
 
-    // --- Заменители ---
-
-    /** Видимый элемент. */
-    const VISIBLE = '[[[%s%u]]]';
-
-    /** Невидимый элемент. */
-    const INVISIBLE = '{{{%s%u}}}';
-
-
     // --- Открытые методы ---
 
     /**

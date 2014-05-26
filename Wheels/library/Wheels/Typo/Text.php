@@ -2,8 +2,11 @@
 
 namespace Wheels\Typo;
 
+use Wheels\Exception;
 use Wheels\Typo\Module;
 use Wheels\Utility;
+
+use Normalizer;
 
 /**
  * Текст.
@@ -107,6 +110,17 @@ class Text
     {
         return $this->text;
     }
+
+    public function normalize($form = Normalizer::FORM_C)
+    {
+        $result = Normalizer::normalize($this->text, $form);
+        if (is_null($result)) {
+            throw new Exception('В процессе нормализации текста возникла ошибка');
+        }
+
+        $this->text = $result;
+    }
+
 
     /**
      * Помещает фрагмент текста в хранилище.

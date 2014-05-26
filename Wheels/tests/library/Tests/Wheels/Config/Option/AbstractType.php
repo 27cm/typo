@@ -1,18 +1,13 @@
 <?php
 
-namespace Wheels\Config\Option;
+namespace Tests\Wheels\Config\Option;
+
+use Tests\TestCase;
 
 use Wheels\Config\Option\Type;
 
-use PHPUnit_Framework_TestCase;
-
-class AbstractType extends PHPUnit_Framework_TestCase
+class AbstractType extends TestCase
 {
-    /**
-     * @var string
-     */
-    static protected $_classname;
-
     /**
      * @var string
      */
@@ -26,22 +21,40 @@ class AbstractType extends PHPUnit_Framework_TestCase
     /**
      * @var array
      */
-    static protected $_testValidateData = array();
+    static protected $_dataConvert = array();
+    
+    /**
+     * @var array
+     */
+    static protected $_dataValidate = array();
 
     static public function setUpBeforeClass()
     {
-        static::$_classname = preg_replace('/Test$/', '', get_called_class());
-        static::$_typename = preg_replace('/^Wheels\Config\Option\Type\T/', '', static::$_classname);
+        static::$_typename = preg_replace('/^\\Wheels\\Config\\Option\\Type\\T/', '', static::getTestedClassname());
     }
-
+    
     public function testCreate()
     {
         static::$_type = Type::create(static::$_typename);
-        $this->assertInstanceOf(static::$_classname, static::$_type);
+        $this->assertInstanceOf(static::getTestedClassname(), static::$_type);
+    }
+    
+    /**
+     * @dataProvider dataConvert
+     */
+    public function testConvert($var, $expected)
+    {
+        $actual = static::$_type->convert($var);
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function dataConvert()
+    {
+        return static::$_dataConvert;
     }
 
     /**
-     * @dataProvider testValidateDataProvider
+     * @dataProvider dataValidate
      */
     public function testValidate($var, $expected)
     {
@@ -49,8 +62,8 @@ class AbstractType extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testValidateDataProvider()
+    public function dataValidate()
     {
-        return static::$_testValidateData;
+        return static::$_dataValidate;
     }
 }

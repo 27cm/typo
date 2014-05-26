@@ -2,6 +2,7 @@
 
 namespace Tests\Wheels\Typo\Module;
 
+use Tests\TestCase;
 use Tests\JSONTestIterator;
 
 use Wheels\Typo\Typo;
@@ -11,7 +12,7 @@ use Wheels\Typo\Typo;
  *
  * Конкретные классы тестов находятся в директории Module, во всех них тестируются загруженные XML-файлы из папки resources через метод testXMLFiles
  */
-abstract class AbstractModule extends PHPUnit_Framework_TestCase
+abstract class AbstractModule extends TestCase
 {
     /**
      * @var \Wheels\Typo\Typo
@@ -29,23 +30,29 @@ abstract class AbstractModule extends PHPUnit_Framework_TestCase
     static public function setUpBeforeClass()
     {
         static::$typo = new Typo();
-        static::$typo->setConfigDir(TESTS_DIR . DS . get_called_class() . DS . 'config');
-    }
-
-    public function JSONProvider()
-    {
-        return new JSONTestIterator(TESTS_DIR . DS . get_called_class() . DS . 'resources' . DS . 'tests.json');
+        
+        $dir = static::getDir('config');
+        static::$typo->setConfigDir($dir);
     }
 
     /**
-     * @dataProvider JSONProvider
+     * @dataProvider dataCases
      */
-    public function testJSONFiles($input, $expected, $desc, $section)
+    public function testCases($input, $expected, $desc, array $groups = null)
     {
         static::$typo->setDefaultOptions();
-        static::$typo->setOptionsFromGroups($section, true);
+
+        if (!is_null($groups)) {
+            static::$typo->setOptionsFromGroups($groups, true);
+        }
 
         $actual = static::$typo->process($input);
         $this->assertEquals($expected, $actual, $desc);
+    }
+    
+    public function dataCases()
+    {
+        $dir = static::getDir('resources');
+        return new JSONTestIterator($dir . DS . 'tests.json');
     }
 }

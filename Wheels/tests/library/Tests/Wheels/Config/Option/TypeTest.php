@@ -1,24 +1,24 @@
 <?php
 
-namespace Wheels\Config\Option;
+namespace Tests\Wheels\Config\Option;
+
+use Tests\TestCase;
 
 use Wheels\Config\Option\Type;
 
-use PHPUnit_Framework_TestCase;
-
-class TypeTest extends PHPUnit_Framework_TestCase
+class TypeTest extends TestCase
 {
     public function testCreate()
     {
-        $classname = 'Wheels\Config\Option\Type\Ttype';
+        $classname = 'Tests\Wheels\Config\Option\Type\Ttype';
 
-        $actual = Type::create('type');
+        $actual = Type::create($classname);
         $this->assertInstanceOf($classname, $actual);
 
         $actual = Type::create($classname);
         $this->assertInstanceOf($classname, $actual);
 
-        $actual = Type::create('type[]');
+        $actual = Type::create($classname . '[]');
         $this->assertInstanceOf('Wheels\Config\Option\Type\Tarray', $actual);
         $this->assertAttributeInstanceOf($classname, '_type', $actual);
     }
@@ -35,11 +35,13 @@ class TypeTest extends PHPUnit_Framework_TestCase
 
     public function testCreateExceptionB()
     {
+        $classname = 'Tests\Wheels\Config\Option\Type\Twrong';
+        
         $this->setExpectedException(
             '\Wheels\Config\Option\Type\Exception',
-            'Класс Wheels\Config\Option\Type\Twrong не является наследником Wheels\Config\Option\Type'
+            "Класс {$classname} не является наследником Wheels\Config\Option\Type"
         );
 
-        Type::create('wrong');
+        Type::create($classname);
     }
 }

@@ -14,21 +14,7 @@ if(isset($_REQUEST['text']))
     $input = $_REQUEST['text'];
 else
     $input =<<<TEXT
-    ё Ё
-    0. §
-    1. &sect
-    2. &sect;
-    3. &#X00A7;
-    4. &#x00a7;
-    5. &#xA7
-    6. &#xA7;
-    7. &#xa7;
-    8. &#167
-    9. &#167;
-    10. &#0167;
-    11. &#000167;
-    12. &#189256756767;
-    12. &#xA7 ;
+ё Ё
 TEXT;
 
 use Wheels\Typo\Typo;
@@ -56,7 +42,9 @@ try
 
     $typo = new Typo();
 
-    $options = array('modules' => array('core', 'html', 'emoticon/skype'));
+    $options = array(
+        'modules' => array('core', 'html', 'emoticon/skype'),
+    );
     $output = $typo->process($input, $options);
 
     $diff = new Diff($input, $output);

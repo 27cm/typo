@@ -1,6 +1,6 @@
 <?php
 
-namespace Wheels\Datastructure\Collection;
+namespace Tests\Wheels\Datastructure\Collection;
 
 class A
 {

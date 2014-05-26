@@ -1,15 +1,15 @@
 <?php
 
-namespace Wheels\Datastructure;
+namespace Tests\Wheels\Datastructure;
+
+use Tests\TestCase;
+use Tests\Wheels\Datastructure\Collection\A;
+use Tests\Wheels\Datastructure\Collection\B;
+use Tests\Wheels\Datastructure\Collection\A\C;
 
 use Wheels\Datastructure\Collection;
-use Wheels\Datastructure\Collection\A;
-use Wheels\Datastructure\Collection\B;
-use Wheels\Datastructure\Collection\A\C;
 
-use PHPUnit_Framework_TestCase;
-
-class CollectionTest extends PHPUnit_Framework_TestCase
+class CollectionTest extends TestCase
 {
     public function testConstruct()
     {

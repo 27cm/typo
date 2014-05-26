@@ -208,8 +208,8 @@ abstract class AbstractTypo implements ITypo, IAllowModifications
     static protected function _getDir($key)
     {
         $dirs = array(
-            'root'   => WHEELS_DIR . DS . get_called_class() . '/..',
-            'config' => WHEELS_DIR . DS . get_called_class() . '/../_config',
+            'root'   => WHEELS_DIR . DS . get_called_class() . DS . '..',
+            'config' => WHEELS_DIR . DS . get_called_class() . DS . '..' . DS . '_config',
         );
 
         return $dirs[$key];

@@ -2,14 +2,15 @@
 
 namespace Tests\Wheels\Config;
 
+use Tests\TestCase;
+
 use Wheels\Config\Option;
 use Wheels\Config\Option\Type\Tmixed;
 use Wheels\Config\Option\Type\Tstring;
 
 use ReflectionClass;
-use PHPUnit_Framework_TestCase;
 
-class OptionTest extends PHPUnit_Framework_TestCase
+class OptionTest extends TestCase
 {
     public function testGetName()
     {

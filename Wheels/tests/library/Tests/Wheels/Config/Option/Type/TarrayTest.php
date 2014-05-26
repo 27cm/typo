@@ -2,11 +2,11 @@
 
 namespace Tests\Wheels\Config\Option\Type;
 
-use Wheels\Config\Option\AbstractType;
+use Tests\Wheels\Config\Option\AbstractType;
 
 class TarrayTest extends AbstractType
 {
-    static protected $_testValidateData = array(
+    static protected $_dataValidate = array(
         array(array('this', 'is', 'an array'), true),
         array(array(), true),
         array('string', false),

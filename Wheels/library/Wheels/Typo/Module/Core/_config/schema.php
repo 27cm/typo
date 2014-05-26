@@ -31,5 +31,10 @@ return array(
             'type'    => 'bool',
             'default' => true,
         ),
+        'normalize' => array(
+            'desc'    => 'Нормализация Unicode',
+            'type'    => 'bool',
+            'default' => false,
+        ),
     ),
 );

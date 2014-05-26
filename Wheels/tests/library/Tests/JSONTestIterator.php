@@ -22,7 +22,7 @@ class JSONTestIterator implements Iterator
             foreach ($testGroup['group'] as $test) {
                 $input = $test['input'];
                 $expected = $test['expected'];
-                $section = $test['section'] ? : $testGroup['section'] ? : $jsonTests['section'] ? : 'default';
+                $section = $test['section'] ? : $testGroup['section'] ? : $jsonTests['section'] ? : null;
 
                 $this->tests[] = array($input, $expected, $desc, $section);
             }

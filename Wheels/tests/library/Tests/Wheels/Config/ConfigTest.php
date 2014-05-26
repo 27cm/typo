@@ -2,13 +2,13 @@
 
 namespace Tests\Wheels\Config;
 
+use Tests\TestCase;
+
 use Wheels\Config\Config;
 use Wheels\Config\Option;
 use Wheels\Config\Option\Collection;
 
-use PHPUnit_Framework_TestCase;
-
-class ConfigTest extends PHPUnit_Framework_TestCase
+class ConfigTest extends TestCase
 {
     /**
      * @var \Wheels\Config
@@ -154,7 +154,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $name = 'unknown';
         $this->setExpectedException(
             '\Wheels\Config\Exception',
-            "Группа настроек '$name' не найдена"
+            "Неизвестная группа значений параметров '{$name}'"
         );
 
         $actual = $config->getGroup($name);
@@ -449,23 +449,10 @@ class ConfigTest extends PHPUnit_Framework_TestCase
             "Раздел 'options' описания конфигурации должен быть массивом"
         );
 
-        $config = array(
+        $schema = array(
             'options' => 1,
         );
-        Config::create($config);
-    }
-
-    public function testCreateExceptionC()
-    {
-        $this->setExpectedException(
-            '\Wheels\Config\Exception',
-            'Описание параметра настроек должно быть массивом'
-        );
-
-        $config = array(
-            'options' => array(1),
-        );
-        Config::create($config);
+        Config::create($schema);
     }
 
     public function testAddGroupsFromFile()
@@ -527,36 +514,36 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testSetOptionsValuesFromFileExceptionA()
-    {
-        $filename = static::$configDir . DS . 'unknown.ini';
-
-        $this->setExpectedException(
-            '\Wheels\Config\Exception',
-            "Файл '$filename' не найден"
-        );
-
-        static::$config->setOptionsValuesFromFile($filename);
-    }
-
-    public function testSetOptionsValuesFromFileExceptionB()
-    {
-        $filename = static::$configDir . DS . 'config.ini';
-
-        if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
-            $this->setExpectedException(
-                '\Wheels\Config\Exception',
-                "Файл '$filename' закрыт для чтения"
-            );
-        }
-
-        // Закрываем файл для чтения
-        $mode = fileperms($filename);
-        chmod($filename, 0333);
-
-        static::$config->setOptionsValuesFromFile($filename);
-
-        // Восстанавливаем права доступа к файлу
-        chmod($filename, $mode);
-    }
+//    public function testSetOptionsValuesFromFileExceptionA()
+//    {
+//        $filename = static::$configDir . DS . 'unknown.ini';
+//
+//        $this->setExpectedException(
+//            '\Wheels\Config\Exception',
+//            "Файл '$filename' не найден"
+//        );
+//
+//        static::$config->setOptionsValuesFromFile($filename);
+//    }
+//
+//    public function testSetOptionsValuesFromFileExceptionB()
+//    {
+//        $filename = static::$configDir . DS . 'config.ini';
+//
+//        if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+//            $this->setExpectedException(
+//                '\Wheels\Config\Exception',
+//                "Файл '$filename' закрыт для чтения"
+//            );
+//        }
+//
+//        // Закрываем файл для чтения
+//        $mode = fileperms($filename);
+//        chmod($filename, 0333);
+//
+//        static::$config->setOptionsValuesFromFile($filename);
+//
+//        // Восстанавливаем права доступа к файлу
+//        chmod($filename, $mode);
+//    }
 }

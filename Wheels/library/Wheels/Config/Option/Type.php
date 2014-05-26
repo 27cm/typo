@@ -55,14 +55,14 @@ abstract class Type
             if (class_exists($alt_classname)) {
                 $name = $alt_classname;
             } else {
-                throw new Exception("Тип (класс) $name не найден");
+                throw new Exception("Тип (класс) {$name} не найден");
             }
         }
 
         if (is_subclass_of($name, __CLASS__)) {
             return new $name();
         } else {
-            throw new Exception("Класс $name не является наследником " . __CLASS__);
+            throw new Exception("Класс {$name} не является наследником " . __CLASS__);
         }
     }
 

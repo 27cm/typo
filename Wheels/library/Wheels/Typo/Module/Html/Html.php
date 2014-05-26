@@ -2,21 +2,20 @@
 
 namespace Wheels\Typo\Module\Html;
 
-use Wheels\Typo\Typo;
 use Wheels\Typo\Text;
 use Wheels\Typo\Module\Module;
 
 /**
- * Модуль, предотвращающий типографирование HTML тегов в тексте.
+ * HTML.
+ *
+ * Предотвращает типографирование HTML тегов в тексте.
  *
  * @link http://wikipedia.org/wiki/HTML
  */
 class Html extends Module
 {
     /**
-     * Приоритет выполнения стадий.
-     *
-     * @var array
+     * {@inheritDoc}
      */
     static protected $_order = array(
         'A' => 10,
@@ -26,18 +25,18 @@ class Html extends Module
     );
 
     /**
-     * Невидимые HTML блоки.
+     * Невидимые HTML блоки. Остальные HTML
      *
      * @var string|string[]
      */
-    static $invisible_blocks = array('<!-- -->', 'comment', 'head', 'script', 'style');
+    static protected $invisibleBlocks = array('<!-- -->', 'comment', 'head', 'script', 'style');
 
     /**
      * Видимые HTML теги.
      *
      * @var string|string[]
      */
-    static $visible_tags = array('img', 'input');
+    static $visibleTags = array('img', 'input');
 
 
     // --- Заменители ---
@@ -61,14 +60,14 @@ class Html extends Module
     {
         $safe_blocks = $this->getOption('safe-blocks');
 
-        $safe_blocks_visible = array_diff($safe_blocks, static::$invisible_blocks);
-        $safe_blocks_invisible = array_intersect($safe_blocks, static::$invisible_blocks);
+        $safe_blocks_visible = array_diff($safe_blocks, static::$invisibleBlocks);
+        $safe_blocks_invisible = array_intersect($safe_blocks, static::$invisibleBlocks);
 
-        $this->removeBlocks($safe_blocks_visible, self::REPLACER_BLOCK, Typo::VISIBLE);
-        $this->removeBlocks($safe_blocks_invisible, self::REPLACER_BLOCK, Typo::INVISIBLE);
+        $this->removeBlocks($safe_blocks_visible, self::REPLACER_BLOCK, self::VISIBLE);
+        $this->removeBlocks($safe_blocks_invisible, self::REPLACER_BLOCK, self::INVISIBLE);
 
-        $this->removeTags(static::$visible_tags, self::REPLACER_TAG, Typo::VISIBLE);
-        $this->removeAllTags(self::REPLACER_TAG, Typo::INVISIBLE);
+        $this->removeTags(static::$visibleTags, self::REPLACER_TAG, self::VISIBLE);
+        $this->removeAllTags(self::REPLACER_TAG, self::INVISIBLE);
     }
 
     /**
@@ -79,11 +78,11 @@ class Html extends Module
      */
     public function stageC()
     {
-        $this->getTypo()->getText()->popStorage(self::REPLACER_TAG, Typo::INVISIBLE);
-        $this->getTypo()->getText()->popStorage(self::REPLACER_TAG, Typo::VISIBLE);
+        $this->getTypo()->getText()->popStorage(self::REPLACER_TAG, self::INVISIBLE);
+        $this->getTypo()->getText()->popStorage(self::REPLACER_TAG, self::VISIBLE);
 
-        $this->getTypo()->getText()->popStorage(self::REPLACER_BLOCK, Typo::INVISIBLE);
-        $this->getTypo()->getText()->popStorage(self::REPLACER_BLOCK, Typo::VISIBLE);
+        $this->getTypo()->getText()->popStorage(self::REPLACER_BLOCK, self::INVISIBLE);
+        $this->getTypo()->getText()->popStorage(self::REPLACER_BLOCK, self::VISIBLE);
     }
 
 
@@ -141,7 +140,7 @@ class Html extends Module
      * @param string $replacer Имя строки для замены.
      * @param string $type     Тип заменителя.
      */
-    public function removeAllTags($replacer, $type)
+    protected function removeAllTags($replacer, $type)
     {
         $this->preg_replace_tags_storage('~<[^>]*\w+[^>]*>~s', $replacer, $type);
     }

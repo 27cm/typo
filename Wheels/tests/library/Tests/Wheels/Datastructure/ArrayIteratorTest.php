@@ -1,12 +1,12 @@
 <?php
 
-namespace Wheels\Datastructure;
+namespace Tests\Wheels\Datastructure;
+
+use Tests\TestCase;
 
 use Wheels\Datastructure\ArrayIterator;
 
-use PHPUnit_Framework_TestCase;
-
-class ArrayIteratorTest extends PHPUnit_Framework_TestCase
+class ArrayIteratorTest extends TestCase
 {
     public function testConstruct()
     {

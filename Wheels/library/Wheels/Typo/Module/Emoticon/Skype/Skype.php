@@ -49,43 +49,43 @@ class Skype extends Emoticon
         array(
             'id'       => 6,
             'name'     => 'wink',
-            'title'    => 'Wink',
+            'title'    => 'Подмигиваю',
             'replaces' => array('(wink)', ';)', ';-)', ';=)'),
         ),
         array(
             'id'       => 7,
             'name'     => 'cry',
-            'title'    => '',
+            'title'    => 'Плачу',
             'replaces' => array('(cry)', ';(', ';-(', ';=(', ':\'('),
         ),
         array(
             'id'       => 8,
             'name'     => 'sweat',
-            'title'    => '',
+            'title'    => 'Потею',
             'replaces' => array('(sweat)', '(:|'),
         ),
         array(
             'id'       => 9,
             'name'     => 'speechless',
-            'title'    => '',
+            'title'    => 'Нет слов',
             'replaces' => array('(speechless)', ':|', ':=|', ':-|'),
         ),
         array(
             'id'       => 10,
             'name'     => 'kiss',
-            'title'    => '',
+            'title'    => 'Поцелуй',
             'replaces' => array('(kiss)', '(xo)', ':*', ':=*', ':-*'),
         ),
         array(
             'id'       => 11,
             'name'     => 'tongueout',
-            'title'    => '',
+            'title'    => 'Показываю язык',
             'replaces' => array('(tongueout)', ':P', ':=P', ':-P', ':p', ':=p', ':-p'),
         ),
         array(
             'id'       => 12,
-            'name'     => '',
-            'title'    => '',
+            'name'     => 'blush',
+            'title'    => 'Краснею',
             'replaces' => array('(blush)', ':$', ':-$', ':=$', ':">'),
         ),
         array(
@@ -168,8 +168,8 @@ class Skype extends Emoticon
         ),
         array(
             'id'       => 26,
-            'name'     => '',
-            'title'    => '',
+            'name'     => 'mmm',
+            'title'    => 'Мммм...',
             'replaces' => array('(mm)', '(mmm)', '(mmmm)'),
         ),
         array(
@@ -192,8 +192,8 @@ class Skype extends Emoticon
         ),
         array(
             'id'       => 30,
-            'name'     => '',
-            'title'    => '',
+            'name'     => 'facepalm',
+            'title'    => 'Что же делать?',
             'replaces' => array('(facepalm)', '(fail)'),
         ),
         array(
@@ -204,8 +204,8 @@ class Skype extends Emoticon
         ),
         array(
             'id'       => 32,
-            'name'     => '',
-            'title'    => '',
+            'name'     => 'angel',
+            'title'    => 'Ангел',
             'replaces' => array('(angel)', '(a)', '(A)'),
         ),
         array(
@@ -216,8 +216,8 @@ class Skype extends Emoticon
         ),
         array(
             'id'       => 34,
-            'name'     => '',
-            'title'    => '',
+            'name'     => 'wait',
+            'title'    => 'Ожидание',
             'replaces' => array('(wait)'),
         ),
         array(
@@ -608,7 +608,7 @@ class Skype extends Emoticon
     );
 
     /*
-    public $text3 = array(
+    array(
         'Afghanistan' => array('(flag:AF)'),
         'Albania' => array('(flag:AL)'),
         'Algeria' => array('(flag:DZ)'),
