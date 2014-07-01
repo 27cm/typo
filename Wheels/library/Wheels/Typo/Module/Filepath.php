@@ -92,7 +92,7 @@ class Filepath extends Module
         $otherPaths = '/?(\w+/)*\w*\.' . $extensionAlterations;
         $this->getTypo()->getText()->preg_replace_storage(
             '~\b((' . $windowsPath . ')|(' . $otherPaths . '))(?=(\{\{\{\w+\}\}\})*\b)~iu', self::REPLACER,
-            Typo::VISIBLE
+            self::VISIBLE
         );
     }
 
@@ -105,6 +105,6 @@ class Filepath extends Module
      */
     public function stageD()
     {
-        $this->getTypo()->getText()->popStorage(self::REPLACER, Typo::VISIBLE);
+        $this->getTypo()->getText()->popStorage(self::REPLACER, self::VISIBLE);
     }
 }

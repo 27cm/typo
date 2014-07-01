@@ -55,6 +55,8 @@ class Html extends Module
      *
      * - Заменяет безопасные блоки на [[[BLOCK1]]], {{{BLOCK2}}}, ...
      * - Заменяет теги на [[[TAG1]]], {{{TAG2}}}, ...
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
      */
     public function stageA()
     {
@@ -75,6 +77,8 @@ class Html extends Module
      *
      * - Восстанавливает теги;
      * - Восстанавливает безопасные блоки.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
      */
     public function stageC()
     {
@@ -94,6 +98,8 @@ class Html extends Module
      * @param array  $blocks   Массив названий HTML тегов.
      * @param string $replacer Имя строки для замены.
      * @param string $type     Тип заменителя.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
      */
     protected function removeBlocks(array $blocks, $replacer, $type)
     {
@@ -122,6 +128,8 @@ class Html extends Module
      * @param array  $tags     Массив названий HTML тегов.
      * @param string $replacer Имя строки для замены.
      * @param string $type     Тип заменителя.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
      */
     protected function removeTags(array $tags, $replacer, $type)
     {
@@ -139,12 +147,21 @@ class Html extends Module
      *
      * @param string $replacer Имя строки для замены.
      * @param string $type     Тип заменителя.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
      */
     protected function removeAllTags($replacer, $type)
     {
         $this->preg_replace_tags_storage('~<[^>]*\w+[^>]*>~s', $replacer, $type);
     }
 
+    /**
+     * @param $pattern
+     * @param $replacer
+     * @param $type
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
     protected function preg_replace_tags_storage($pattern, $replacer, $type)
     {
         $attrs = $this->getOption('typo-attrs');

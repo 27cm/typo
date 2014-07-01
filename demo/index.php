@@ -14,7 +14,7 @@ if(isset($_REQUEST['text']))
     $input = $_REQUEST['text'];
 else
     $input =<<<TEXT
-ё Ё
+""""текст""""
 TEXT;
 
 use Wheels\Typo\Typo;
@@ -43,8 +43,13 @@ try
     $typo = new Typo();
 
     $options = array(
-        'modules' => array('core', 'html', 'emoticon/skype'),
+//        'modules' => array('core', 'html', 'emoticon/skype'),
     );
+
+    $typo->setConfigDir($root . DS . 'demo');
+    $typo->addGroupsFromFile('config.ini');
+    $typo->setOptionsFromGroup('default');
+
     $output = $typo->process($input, $options);
 
     $diff = new Diff($input, $output);

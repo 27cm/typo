@@ -10,16 +10,24 @@
 namespace Wheels\Typo;
 
 use Wheels\Typo\Module\Collection as ModulesCollection;
+use Wheels\Typo\Config\Config as TypoConfig;
 use Wheels\Typo\Module\Module;
 use Wheels\Utility;
 
 /**
  * Типограф.
  *
- * @version 0.1 2014-02-16
+ * @version 1.0
  */
 class Typo extends AbstractTypo
 {
+    /**
+     * Конфигурация.
+     *
+     * @var \Wheels\Typo\Config\Config
+     */
+    protected $_config;
+
     /**
      * Текст.
      *
@@ -42,11 +50,6 @@ class Typo extends AbstractTypo
     protected $_stageNum;
 
     /**
-     * @var array
-     */
-    protected $_savedOptions = array();
-
-    /**
      * Коды символов.
      *
      * @link http://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references
@@ -63,7 +66,7 @@ class Typo extends AbstractTypo
      *
      * @var string
      */
-    const VERSION = '0.1';
+    const VERSION = '1.0';
 
 
     // --- Открытые методы ---
@@ -76,7 +79,9 @@ class Typo extends AbstractTypo
         $this->_modules = new ModulesCollection();
         $this->_text = new Text();
 
-        parent::__construct($options);
+        $schema = static::_getConfigSchema();
+        $this->_config = TypoConfig::create($schema, array($this, array(), false));
+        $this->setOptions($options);
 
         $this->getConfig()->getOption('modules')->addEventListener('setValue', array($this, 'onConfigModulesSet'));
         $this->onConfigModulesSet();
@@ -120,7 +125,7 @@ class Typo extends AbstractTypo
             }
         }
 
-        // Восстанавление кодировки текста
+        // Восстановление кодировки текста
         mb_internal_encoding($encoding);
 
         $this->setAllowModifications(true);
@@ -180,142 +185,40 @@ class Typo extends AbstractTypo
         return $this->getModules()->offsetExists($name);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function setDefaultOptions()
+    public function addModule(Module $module)
     {
-        parent::setDefaultOptions();
-        $this->getModules()->setDefaultOptions();
+        // @todo: добавить проверку, есть ли указанный модуль в конфиге ????
+        $this->_modules[] = $module;
+    }
+
+    public function removeModule($name)
+    {
+        unset($this->_modules[$name]);
     }
 
     /**
-     * {@inheritDoc}
+     * Обработчик события изменения значения параметра 'modules'.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
      */
-    public function setOptionsFromGroup($name, $required = false)
+    public function onConfigModulesSet()
     {
-        parent::setOptionsFromGroup($name, $required);
-        $this->getModules()->setOptionsFromGroup($name, $required);
-    }
+        $classnames = $this->getOption('modules');
+        $modules = array_keys($this->getModules()->getArray());
 
-    /**
-     * {@inheritDoc}
-     */
-    public function setOptionsFromGroups(array $names, $required = false)
-    {
-        parent::setOptionsFromGroups($names, $required);
-        $this->getModules()->setOptionsFromGroups($names, $required);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setConfigDir($dir)
-    {
-        parent::setConfigDir($dir);
-        $this->getModules()->setConfigDir($dir);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getOptions()
-    {
-        $options = parent::getOptions();
-
-        $keys = array();
-        $modulesOptions = $this->getModules()->getOptions();
-        foreach (array_keys($modulesOptions) as $name) {
-            $keys[] = 'module.' . $name;
-        }
-        $modulesOptions = array_values($modulesOptions);
-        $modulesOptions = array_combine($keys, $modulesOptions);
-
-        return array_merge($options, $modulesOptions);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setOptions(array $options)
-    {
-        // @todo: Написать наследника Config
-        $o = $this->getConfig()->getOptions();
-
-        foreach ($options as $name => $value) {
-            if ($o->prepareOffset($name) === $o->prepareOffset('modules')) {
-                $this->setOption($name, $value);
-                unset($options[$name]);
-                break;
+        foreach ($modules as $classname) {
+            if (!in_array($classname, $classnames, true)) {
+                $this->removeModule($classname);
             }
         }
 
-        foreach ($options as $name => $value) {
-            $this->setOption($name, $value);
+        foreach ($classnames as $classname) {
+            if (!$this->hasModule($classname)) {
+                /** @var \Wheels\Typo\Module\Module $module */
+                $module = new $classname($this);
+                $this->addModule($module);
+            }
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setOption($name, $value)
-    {
-        if (preg_match('~^module\.([^\.]+)$~i', $name, $matches)) {
-            $moduleName = $matches[1];
-            $this->getModule($moduleName)->setOptions($value);
-        } elseif (preg_match('~^(?:module\.)?([^\.]+)\.([^\.]+)$~i', $name, $matches)) {
-            $moduleName = $matches[1];
-            $optionName = $matches[2];
-            $this->getModule($moduleName)->setOption($optionName, $value);
-        } else {
-            parent::setOption($name, $value);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getOption($name)
-    {
-        if (preg_match('~^module\.([^\.]+)$~i', $name, $matches)) {
-            $moduleName = $matches[1];
-            return $this->getModule($moduleName)->getOptions();
-        } elseif (preg_match('~^(?:module\.)?([^\.]+)\.([^\.]+)$~i', $name, $matches)) {
-            $moduleName = $matches[1];
-            $optionName = $matches[2];
-            return $this->getModule($moduleName)->getOption($optionName);
-        } else {
-            return parent::getOption($name);
-        }
-    }
-
-    /**
-     * Сохраняет настройки.
-     *
-     * @return void Этот метод не возвращает значения после выполнения.
-     */
-    public function saveOptions()
-    {
-        $this->_savedOptions = $this->getOptions();
-    }
-
-    /**
-     * Восстанавливает настройки.
-     *
-     * @return void Этот метод не возвращает значения после выполнения.
-     */
-    public function restoreOptions()
-    {
-        $this->setOptions($this->_savedOptions);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setAllowModifications($value)
-    {
-        $this->getModules()->setAllowModifications($value);
-        parent::setAllowModifications($value);
     }
 
     /**
@@ -361,51 +264,5 @@ class Typo extends AbstractTypo
         }
 
         return (isset($mode) ? self::$_chars[$mode] : self::$_chars);
-    }
-
-
-    // --- Защищённые методы ---
-
-    /**
-     * Обработчик события изменения значения параметра 'modules'.
-     *
-     * @return void Этот метод не возвращает значения после выполнения.
-     */
-    public function onConfigModulesSet()
-    {
-        $classnames = $this->getOption('modules');
-        $modules = array_keys($this->getModules()->getArray());
-
-        foreach ($modules as $classname) {
-            if (!in_array($classname, $classnames, true)) {
-                unset($this->_modules[$classname]);
-            }
-        }
-
-        foreach ($classnames as $classname) {
-            if (!$this->_hasModule($classname)) {
-                /** @var \Wheels\Typo\Module\Module $module */
-                $module = new $classname($this);
-                $this->_addModule($module);
-            }
-        }
-    }
-
-    /**
-     * Устанавливает модули, указанные в параметре 'modules'.
-     */
-    protected function _setModules()
-    {
-
-    }
-
-    protected function _addModule(Module $module)
-    {
-        $this->_modules[] = $module;
-    }
-
-    protected function _hasModule($name)
-    {
-        return $this->getModules()->offsetExists($name);
     }
 }

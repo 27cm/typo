@@ -25,7 +25,12 @@ abstract class Module extends AbstractTypo
      */
     protected $_typo;
 
-    protected $_helpers = array();
+    /**
+     * Вспомогательные элементы регулярных выражений.
+     *
+     * @var array
+     */
+    static protected $_helpers = array();
 
     /**
      * Область работы модуля.
@@ -50,6 +55,8 @@ abstract class Module extends AbstractTypo
 
 
     // --- Заменители ---
+
+    const REPLACER = 'X';
 
     /** Видимый элемент. */
     const VISIBLE = '[[[%s%u]]]';
@@ -129,12 +136,18 @@ abstract class Module extends AbstractTypo
         return static::$_order[$stage];
     }
 
+    static public function addHelpers(array $helpers)
+    {
+        static::$_helpers = array_merge(static::$_helpers, $helpers);
+    }
+
     public function applyRulesReplace(array $rules)
     {
         $this->getTypo()->getText()->replace(array_keys($rules), array_values($rules));
     }
 
-    public function applyRulesPregReplace(array $rules)
+    // @todo: перенести в Text
+    public function applyRulesPregReplace(array $rules, $text = null)
     {
         $patterns = array();
         $replaces = array();
@@ -146,22 +159,36 @@ abstract class Module extends AbstractTypo
         $patterns = array_keys($rules);
         $replaces = array_values($rules);
 
-        static::pregHelpers($patterns/*, $helpers*/);
+        static::pregHelpers($patterns);
 
         for ($i = 0, $count = sizeof($patterns); $i < $count; $i++) {
             if (is_callable($replaces[$i])) {
-                $this->getTypo()->getText()->preg_replace_callback($patterns[$i], $replaces[$i]);
-            } /*elseif (is_array($replaces[$i])) {
+                if (isset($text)) {
+                    $text = preg_replace_callback($patterns[$i], $replaces[$i], $text);
+                }
+                else {
+                    $this->getTypo()->getText()->preg_replace_callback($patterns[$i], $replaces[$i]);
+                }
+            } elseif (is_array($replaces[$i])) {
                 $_this = $this;
-                $callback = function ($matches) use ($_this, $replaces, $i, $helpers) {
-                    return $_this->applyRules($replaces[$i], $helpers, $matches[0]);
+                $callback = function ($matches) use ($_this, $replaces, $i) {
+                    return $_this->applyRulesPregReplace($replaces[$i], $matches[0]);
                 };
                 $this->getTypo()->getText()->preg_replace_callback($patterns[$i], $callback);
-            }*/ else {
-                $this->getTypo()->getText()->preg_replace($patterns[$i], $replaces[$i]);
+            } else {
+                if (isset($text))
+                    $text = preg_replace($patterns[$i], $replaces[$i], $text);
+                else
+                    $this->getTypo()->getText()->preg_replace($patterns[$i], $replaces[$i]);
             }
         }
+
+        if (isset($text)) {
+            return $text;
+        }
     }
+
+
 
     /**
      * Применяет правила к тексту.
@@ -269,15 +296,14 @@ abstract class Module extends AbstractTypo
      * @staticvar array $std_helpers    Стандартные вспомогательные элементы регулярных выражений.
      *
      * @param string|string[] $pattern Регулярное выражение или массив регулярных выражений.
-     * @param array           $helpers Вспомогательные элементы регулярных выражений.
      *
      * @return void
      */
-    static protected function pregHelpers(&$pattern, array $helpers = array())
+    static protected function pregHelpers(&$pattern)
     {
         static $std_helpers = array(
             // Буквы
-            '{a}' => '[a-zA-Zа-яА-ЯёЁ]',
+            '{a}' => '[a-zа-яё]',
 
             // Видимый элемент
             '{b}' => '(?:\[\[\[\w+\]\]\])',
@@ -287,19 +313,17 @@ abstract class Module extends AbstractTypo
             // @todo: Отменить регистронезависимость
             '{m}' => '(?:(?:[изафпнмсдгкМГТПЭЗИ]|мк|да)?(?:[бгмлтБВН]|Па|Гц|байт|бит|флоп\/?с)|(?:[yzafpnmcdhkMGTPEZY\xB5]|da)?(?:[bgmlLtBVN]|Pa|Hz|byte|bit|FLOPS|flop\/?s))',
 
-            // Знаки препинания
-            '{p}' => '[!?:;,.]',
-
             // Невидимый элемент
             '{t}' => '(?:\{\{\{\w+\}\}\})',
         );
 
-        if (is_array($pattern))
+        if (is_array($pattern)) {
             $patterns = $pattern;
-        else
+        } else {
             $patterns = array($pattern);
+        }
 
-        $helpers = array_merge($std_helpers, $helpers);
+        $helpers = array_merge($std_helpers, static::$_helpers);
         $helpers_keys = array_keys($helpers);
         $helpers_values = array_values($helpers);
 

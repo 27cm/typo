@@ -1,8 +1,8 @@
 <?php
-namespace Module;
 
-use AbstractModule;
+namespace Tests\Wheels\Typo\Module;
 
-class UrlTest extends AbstractModule
+class UrlTest extends Module
 {
+
 }

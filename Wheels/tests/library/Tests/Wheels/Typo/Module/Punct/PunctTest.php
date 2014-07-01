@@ -1,8 +1,10 @@
 <?php
-namespace Module;
 
-use AbstractModule;
+namespace Tests\Wheels\Typo\Module\Punct;
 
-class PunctTest extends AbstractModule
+use Tests\Wheels\Typo\Module\Module;
+
+class PunctTest extends Module
 {
+
 }

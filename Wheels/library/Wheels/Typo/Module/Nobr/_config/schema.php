@@ -13,6 +13,7 @@ return array(
             'desc'    => 'Закрывающий тег для неразрывных конструкций',
             'type'    => 'string',
             'default' => '</span>',
+//                        </nobr>
         ),
     ),
 );

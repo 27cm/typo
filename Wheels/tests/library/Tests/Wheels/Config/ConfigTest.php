@@ -24,7 +24,7 @@ class ConfigTest extends TestCase
 
     static public function setUpBeforeClass()
     {
-        static::$configDir = realpath(TESTS_DIR . DS . 'config' . DS . str_replace(__NAMESPACE__, '', __CLASS__));
+        static::$configDir = realpath(WHEELS_TESTS_DIR . DS . 'config' . DS . str_replace(__NAMESPACE__, '', __CLASS__));
 
         $config = array(
             'options' => array(

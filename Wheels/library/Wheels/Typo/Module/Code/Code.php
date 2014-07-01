@@ -180,13 +180,13 @@ class Code extends Module
 
                     $data = $_this->applyRules($rules, array(), "<pre{$m[1]}><code>{$m[2]}</code></pre>");
 
-                    return $_this->getTypo()->getText()->pushStorage($data, Code::REPLACER, Typo::VISIBLE);
+                    return $_this->getTypo()->getText()->pushStorage($data, Code::REPLACER, self::VISIBLE);
                 },
         );
 
         $this->applyRules($rules);
 
-        $this->getTypo()->getText()->preg_replace_storage('~<\h*code(\h[^>]*)?>.*<\/code>~isU', self::REPLACER, Typo::VISIBLE);
+        $this->getTypo()->getText()->preg_replace_storage('~<\h*code(\h[^>]*)?>.*<\/code>~isU', self::REPLACER, self::VISIBLE);
     }
 
     /**
@@ -196,6 +196,6 @@ class Code extends Module
      */
     public function stageD()
     {
-        $this->getTypo()->getText()->popStorage(self::REPLACER, Typo::VISIBLE);
+        $this->getTypo()->getText()->popStorage(self::REPLACER, self::VISIBLE);
     }
 }

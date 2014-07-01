@@ -2,11 +2,10 @@
 
 use Wheels\Loader;
 
-require_once '..' . DIRECTORY_SEPARATOR . 'library' . DIRECTORY_SEPARATOR . 'Wheels.php';
+define('DS', DIRECTORY_SEPARATOR);
+define('WHEELS_TESTS_DIR', realpath(dirname(__FILE__)));
+define('WHEELS_TESTS_LIBRARY_DIR', WHEELS_TESTS_DIR . DS . 'library');
 
-define('TESTS_DIR', realpath(dirname(__FILE__)));
-// define('TESTS_CONFIG_DIR', dirname(__FILE__) . DS . 'config');
-define('TESTS_LIB_DIR', dirname(__FILE__) . DS . 'library');
-// define('TESTS_RES_DIR', dirname(__FILE__) . DS . 'resources');
+require_once '..' . DS . 'library' . DS . 'Wheels.php';
 
-Loader::staticRegister('Tests', TESTS_LIB_DIR);
+Loader::staticRegister('Tests', WHEELS_TESTS_LIBRARY_DIR);

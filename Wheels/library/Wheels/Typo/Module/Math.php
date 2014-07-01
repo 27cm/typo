@@ -145,8 +145,8 @@ class Math extends Module
 
         if (is_null($tag)) {
             $tag = array(
-                'open'  => $this->getTypo()->getText()->pushStorage('<sup><small>', Typo::REPLACER, Typo::INVISIBLE),
-                'close' => $this->getTypo()->getText()->pushStorage('</small></sup>', Typo::REPLACER, Typo::INVISIBLE),
+                'open'  => $this->getTypo()->getText()->pushStorage('<sup><small>', Typo::REPLACER, self::INVISIBLE),
+                'close' => $this->getTypo()->getText()->pushStorage('</small></sup>', Typo::REPLACER, self::INVISIBLE),
             );
         }
 
@@ -166,8 +166,8 @@ class Math extends Module
 
         if (is_null($tag)) {
             $tag = array(
-                'open'  => $this->getTypo()->getText()->pushStorage('<sub><small>', Typo::REPLACER, Typo::INVISIBLE),
-                'close' => $this->getTypo()->getText()->pushStorage('</small></sub>', Typo::REPLACER, Typo::INVISIBLE),
+                'open'  => $this->getTypo()->getText()->pushStorage('<sub><small>', Typo::REPLACER, self::INVISIBLE),
+                'close' => $this->getTypo()->getText()->pushStorage('</small></sub>', Typo::REPLACER, self::INVISIBLE),
             );
         }
 

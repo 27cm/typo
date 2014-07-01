@@ -442,6 +442,10 @@ class Option implements OptionInterface, IAllowModifications
      */
     protected function _filter($value)
     {
+        if ((is_string($value) || is_int($value)) && array_key_exists($value, $this->_aliases)) {
+            $value = $this->_aliases[$value];
+        }
+
         $value = $this->getType()->convert($value);
 
         if ((is_string($value) || is_int($value)) && array_key_exists($value, $this->_aliases)) {

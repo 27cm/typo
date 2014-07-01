@@ -11,10 +11,6 @@ if (!extension_loaded('mbstring')) {
 //    }
 }
 
-/**
- * @version 1.0beta
- */
-
 use Wheels\Loader;
 
 /**
@@ -47,5 +43,4 @@ require_once(WHEELS_DIR . DS . 'Wheels' . DS . 'functions.php');
 
 require_once(WHEELS_DIR . DS . 'Wheels' . DS . 'Loader.php');
 
-$loader = new Loader('Wheels', WHEELS_DIR);
-$loader->register();
+Loader::staticRegister('Wheels', WHEELS_DIR);

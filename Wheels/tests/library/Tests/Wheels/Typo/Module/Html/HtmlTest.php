@@ -1,8 +1,10 @@
 <?php
-namespace Module;
 
-use AbstractModule;
+namespace Tests\Wheels\Typo\Module\Html;
 
-class HtmlTest extends AbstractModule
+use Tests\Wheels\Typo\Module\Module;
+
+class HtmlTest extends Module
 {
+    
 }

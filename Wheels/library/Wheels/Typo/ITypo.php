@@ -31,21 +31,17 @@ interface ITypo
      * Устанавливает значения параметров из заданной группы значений параметров.
      *
      * @param scalar $name     Название группы значений параметров.
-     * @param bool   $required Если параметр принимает значение false,
-     *                         то отсутствующая группа будет проигнорированна.
      *
      * @return void Этот метод не возвращает значения после выполнения.
      */
-    public function setOptionsFromGroup($name, $required = false);
+    public function setOptionsFromGroup($name);
 
     /**
      * Устанавливает значения параметров из заданных групп значений параметров.
      *
      * @param scalar[] $names    Массив названий групп.
-     * @param bool     $required Если параметр принимает значение false,
-     *                           то отсутствующая группа будет проигнорированна.
      *
      * @return void Этот метод не возвращает значения после выполнения.
      */
-    public function setOptionsFromGroups(array $names, $required = false);
+    public function setOptionsFromGroups(array $names);
 }

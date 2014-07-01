@@ -1,0 +1,12 @@
+{
+    "desc": "",
+    "options": "default",
+    "tests": [
+        {
+            "desc": "Безопасные блоки, содержимое которых не обрабатывается типографом",
+            "options": "safe-blocks",
+            "input": "<p &#43; attr=\"&#65;\" attr='&#66;'>&#67; <br class=\"&#65;\"><span>&#68; &#69;</span></p><!-- &#70;\r\n&#71;\r\n\n-->\r\n<comment>&#72;</comment>\r\n<style>&#73;</style>",
+            "expected": "<p &#43; attr=\"&#65;\" attr='&#66;'>C <br class=\"&#65;\"><span>D E</span></p><!-- &#70;\r\n&#71;\r\n\n-->\r\n<comment>&#72;</comment>\r\n<style>I</style>"
+        }
+    ]
+}

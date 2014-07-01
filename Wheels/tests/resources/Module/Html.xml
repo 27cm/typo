@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<tests>
-    <group desc="Обработка тега code">
-        <test>
-            <input><![CDATA[ <p> Параграф</p>]]></input>
-            <expected><![CDATA[ <p> Параграф</p>]]></expected>
-        </test>
-    </group>
-</tests>

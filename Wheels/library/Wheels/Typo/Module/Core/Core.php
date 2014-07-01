@@ -45,20 +45,26 @@ class Core extends Module
     /**
      * Стадия A.
      *
-     * - Исправляет ошибки в записе HTML-сущностей (лишние пробелы "&nbsp ;", забытые точки с запятой "&gt&thinsp", ведущие пробелы "&#000032;");
+     * - Исправляет ошибки в записе HTML-сущностей
      * - Преобразует все HTML-сущности в соответствующие символы;
      * - Заменяет букву 'ё' на 'е';
      * - Заменяет неверные коды символов символом замены юникода (U+FFFD);
-     * - Нормализует Unicode символы;
-     * - Преобразует специальные символы в HTML-сущности.
+     * - Нормализует Unicode символы.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
      */
     public function stageA()
     {
         #A1 Исправление HTML-сущностей
         if ($this->getOption('html-entity-fix')) {
             $this->applyRulesPregReplace(array(
+                // Удаление лишних пробелов
                 '/(&([\da-z]+|#(\d+|x[\da-f]+)))\h+;/iu' => '$1;',
+
+                // Добавление забытых точек с запятой
                 '/(&([\da-z]+|#(\d+|x[\da-f]+)))\b(?!;)/i' => '$1;',
+
+                // Удаление лишних нулей в кодах символов
                 '/(&#)0+((0|[1-9]\d*);)/' => '$1$2',
                 '/(&#x)0+((0|[1-9a-f][\da-f]*);)/i' => '$1$2',
             ));
@@ -75,28 +81,35 @@ class Core extends Module
         }
 
         #A3 Замена неверных кодов символов символом замены юникода (U+FFFD)
-        $this->applyRulesPregReplace(array(
-            '/&([\da-z]+|#(\d+|x[\da-f]+));/i' => Utility::chr(65533),
-        ));
-
-        #A4 Нормализация Unicode
-        // @link http://habrahabr.ru/post/45489/
-        if ($this->getOption('normalize')) {
-            // @bug: № заменяется на No
-            $this->getTypo()->getText()->normalize(Normalizer::FORM_KD);
-            $this->applyRulesReplace(array(
-                "\xD0\xB5\xCC\x88" => 'ё',
-                "\xD0\x95\xCC\x88" => 'Ё',
-                "\xD0\xB8\xCC\x86" => 'й',
-                "\xD0\x98\xCC\x86" => 'Й',
+        if ($this->getOption('html-entity-fix')) {
+            $this->applyRulesPregReplace(array(
+                '/&([\da-z]+|#(\d+|x[\da-f]+));/i' => Utility::chr(65533),
             ));
         }
 
-        $this->getTypo()->getText()->htmlspecialchars();
+        #A4 Нормализация Unicode
+        // @link http://habrahabr.ru/post/45489/
+//        if ($this->getOption('normalize')) {
+//            // @bug: № заменяется на No
+//            $this->getTypo()->getText()->normalize(Normalizer::FORM_KD);
+//            $this->applyRulesReplace(array(
+//                "\xD0\xB5\xCC\x88" => 'ё',
+//                "\xD0\x95\xCC\x88" => 'Ё',
+//                "\xD0\xB8\xCC\x86" => 'й',
+//                "\xD0\x98\xCC\x86" => 'Й',
+//            ));
+//        }
+
+        #A5 Время
+        $this->applyRulesPregReplace(array(
+            '/(\b\d{2})-(\d{2})\b(?={t}*[\h.,])/u' => '$1:$2',
+        ));
     }
 
     /**
      * Стадия B.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
      */
     public function stageB()
     {
@@ -129,5 +142,17 @@ class Core extends Module
 //            unset($replace['amp']);
 //            $this->getTypo()->getText()->replace(array_values($search), array_values($replace));
 //        }
+    }
+
+    /**
+     * Стадия C.
+     *
+     * - Преобразует специальные символы в HTML-сущности.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function stageC()
+    {
+        $this->getTypo()->getText()->htmlspecialchars();
     }
 }

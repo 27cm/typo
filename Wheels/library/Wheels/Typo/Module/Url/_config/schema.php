@@ -2,18 +2,22 @@
 
 return array(
     'options' => array(
-        'attrs'       => array(
-            'desc'    => 'Дополнительные атрибуты',
-            'type'    => 'array',
+        'attrs' => array(
+            'desc'    => 'Атрибуты',
+            'type'    => 'Wheels\Typo\Type\Tattrs',
             'default' => array(
                 'target' => array(
-                    'name'  => 'target',
                     'value' => '_blank',
-                    'cond'  => '\Wheels\Typo\Module\Url::condTarget',
+                    'cond'  => 'Wheels\Typo\Module\Url\Url::condTarget',
                 ),
             ),
         ),
-        'idn-convert' => array(
+        'normalize' => array(
+            'desc'    => 'Нормализация (канонизация) URL',
+            'type'    => 'bool',
+            'default' => true,
+        ),
+        'idna' => array(
             'desc'    => 'Преобразование интернационализованных доменных имён (IDN)',
             'type'    => 'bool',
             'default' => true,

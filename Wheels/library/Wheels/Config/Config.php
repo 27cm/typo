@@ -20,7 +20,7 @@ use Wheels\Utility;
  * включающие названия, типы, значения параметров по умолчанию и т.п.
  *
  * Для удобства наборы значений параметров можно объединять в именованные группы.
- * Группы значений параметров могут пыть загружены из ini-файла.
+ * Группы значений параметров могут быть загружены из ini-файла.
  */
 class Config
 {
@@ -44,6 +44,13 @@ class Config
      * @var string
      */
     protected $_dir;
+
+    /**
+     * Сохранённые значения параметров.
+     *
+     * @var array
+     */
+    protected $_savedOptionsValues = array();
 
 
     // --- Константы ---
@@ -413,6 +420,26 @@ class Config
     }
 
     /**
+     * Сохраняет текущие значения параметров.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function saveOptionsValues()
+    {
+        $this->_savedOptionsValues = $this->getOptionsValues();
+    }
+
+    /**
+     * Восстанавливает ранее сохранённые значения параметров.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function restoreOptionsValues()
+    {
+        $this->setOptionsValues($this->_savedOptionsValues);
+    }
+
+    /**
      * Создаёт объект класса по его описанию.
      *
      * @param array $schema  Ассоциативный массив с описанием конфигурации.
@@ -420,12 +447,13 @@ class Config
      *                       * options             - массив описаний параметров;
      *                       * groups              - массив групп значений параметров;
      *                       * case-sensitive      - регистрозависимость имён параметров.
+     * @param array $args
      *
-     * @return \Wheels\Config Конфигурация с заданным описанием.
+     * @return \Wheels\Config\Config Конфигурация с заданным описанием.
      *
      * @throws \Wheels\Config\Exception
      */
-    static public function create(array $schema)
+    static public function create(array $schema, array $args = array())
     {
         $sections = array('options', 'case-sensitive', 'allow-modifications', 'groups');
 
@@ -434,12 +462,18 @@ class Config
             throw new Exception('Неизвестные разделы описания конфигурации: ' . implode(', ', $diff));
         }
 
-        if (array_key_exists('case-sensitive', $schema)) {
-            $caseSensitive = $schema['case-sensitive'];
-            $obj = new self(array(), $caseSensitive);
-        } else {
-            $obj = new self(array());
-        }
+//        if (array_key_exists('case-sensitive', $schema)) {
+//            // $caseSensitive = $schema['case-sensitive'];
+//            $obj = new static(array(), $caseSensitive);
+//        } else {
+//            $obj = new static(array());
+//        }
+
+        $class = get_called_class();
+        $reflect  = new \ReflectionClass($class);
+        $obj = $reflect->newInstanceArgs($args);
+
+        // $obj = call_user_func_array(array($class, '__construct'), $args);
 
         if (array_key_exists('options', $schema)) {
             $options = $schema['options'];
@@ -504,7 +538,7 @@ class Config
             throw new Exception("Ошибка чтения файла '$filename': [$errno] $message ($file:$line)");
         };
         set_error_handler($err_handler, E_WARNING);
-        $data = parse_ini_file($filename, true);
+        $data = parse_ini_file($filename, true, INI_SCANNER_RAW);
         restore_error_handler();
 
         $processedData = array();

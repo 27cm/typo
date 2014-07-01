@@ -89,7 +89,7 @@ class Twitter extends Url
 
                         $data = 'Ретвит' . Utility::createElement('a', "@{$login}", $attrs);
 
-                        return $_this->getTypo()->getText()->pushStorage($data, Twitter::REPLACER, Typo::VISIBLE);
+                        return $_this->getTypo()->getText()->pushStorage($data, Twitter::REPLACER, self::VISIBLE);
                     },
 
                 // Логины (@login)
@@ -106,7 +106,7 @@ class Twitter extends Url
 
                         $data = Utility::createElement('a', $m[0], $attrs);
 
-                        return $_this->getTypo()->getText()->pushStorage($data, Twitter::REPLACER, Typo::VISIBLE);
+                        return $_this->getTypo()->getText()->pushStorage($data, Twitter::REPLACER, self::VISIBLE);
                     },
 
                 // Хештеги
@@ -122,7 +122,7 @@ class Twitter extends Url
 
                         $data = Utility::createElement('a', $m[0], $attrs);
 
-                        return $_this->getTypo()->getText()->pushStorage($data, Twitter::REPLACER, Typo::VISIBLE);
+                        return $_this->getTypo()->getText()->pushStorage($data, Twitter::REPLACER, self::VISIBLE);
                     },
             );
 

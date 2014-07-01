@@ -98,7 +98,7 @@ class Collection extends \Wheels\Datastructure\Collection implements ITypo
     /**
      * {@inheritDoc}
      */
-    public function setOptionsFromGroup($name, $required = false)
+    public function setOptionsFromGroup($name)
     {
         return $this->__call(__FUNCTION__, func_get_args());
     }
@@ -106,7 +106,7 @@ class Collection extends \Wheels\Datastructure\Collection implements ITypo
     /**
      * {@inheritDoc}
      */
-    public function setOptionsFromGroups(array $names, $required = false)
+    public function setOptionsFromGroups(array $names)
     {
         return $this->__call(__FUNCTION__, func_get_args());
     }

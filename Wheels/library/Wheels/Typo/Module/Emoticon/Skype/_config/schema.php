@@ -19,7 +19,7 @@ return array(
         ),
         'attrs' => array(
             'desc'    => 'Атрибуты',
-            'type'    => '\Wheels\Typo\Type\Tattrs',
+            'type'    => 'Wheels\Typo\Type\Tattrs',
             'default' => array(
                 'src' => array(
                     'value' => '/img/emoticons/skype/{id}.gif',
@@ -38,5 +38,6 @@ return array(
                 ),
             ),
         ),
+        /* @todo: Добавить параметр, ограничивающий выбор смайликов */
     ),
 );

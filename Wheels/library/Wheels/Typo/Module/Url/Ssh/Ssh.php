@@ -103,7 +103,7 @@ class Ssh extends Url
                 $data = $value;
             }
 
-            return $_this->getTypo()->getText()->pushStorage($data, Ssh::REPLACER, Typo::VISIBLE);
+            return $_this->getTypo()->getText()->pushStorage($data, Ssh::REPLACER, self::VISIBLE);
         };
 
         // <схема>://[<логин>[;fingerprint=<отпечаток>]@]<хост>[:<порт>][<URL-путь>]

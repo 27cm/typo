@@ -2,11 +2,8 @@
 
 namespace Wheels\Typo\Module\Url;
 
-use Wheels\Typo\Typo;
 use Wheels\Typo\Module\Module;
 use Wheels\Utility;
-use Wheels\Typo\Exception;
-
 use Wheels\Utility\IDNA;
 
 /**
@@ -20,17 +17,16 @@ use Wheels\Utility\IDNA;
 class Url extends Module
 {
     /**
-     * @see \Wheels\Typo\Module::$_order
+     * {@inheritDoc}
      */
-    static protected $_order
-        = array(
-            'A' => 20,
-            'B' => 0,
-            'C' => 0,
-            'D' => 20,
-            'E' => 0,
-            'F' => 0,
-        );
+    static protected $_order = array(
+        'A' => 20,
+        'B' => 0,
+        'C' => 0,
+        'D' => 20,
+        'E' => 0,
+        'F' => 0,
+    );
 
 
     // --- Регулярные выражения ---
@@ -73,64 +69,6 @@ class Url extends Module
 
 
     // --- Открытые методы ---
-
-    /**
-     * @see \Wheels\Typo\Module::validateOption()
-     */
-    public function validateOption($name, &$value)
-    {
-        switch ($name) {
-            case 'attrs' :
-                if (!is_array($value)) {
-                    return self::throwException(
-                        Exception::E_OPTION_VALUE,
-                        "Значение параметра '$name' должно быть массивом, а не " . gettype($value)
-                    );
-                }
-
-                foreach ($value as &$attr) {
-                    if (!is_array($attr) || !array_key_exists('name', $attr) || !array_key_exists('value', $attr))
-                        return self::throwException(
-                            Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть массивом элементов array('name' => '...', 'value' => '...', ['cond' => '...'])"
-                        );
-                    if (!array_key_exists('cond', $attr))
-                        $attr['cond'] = true;
-                }
-                break;
-
-            default :
-                Module::validateOption($name, $value);
-        }
-    }
-
-    /**
-     *
-     * @param type  $parts
-     * @param array $attrs
-     */
-    public function setAttrs($parts, array &$attrs)
-    {
-        foreach ($this->getOption('attrs') as $attr) {
-            $a_cond = $attr['cond'];
-            if (is_callable($a_cond))
-                $a_cond = call_user_func($a_cond, $parts, $this);
-
-            if ($a_cond) {
-                $a_name = $attr['name'];
-                if (is_callable($a_name))
-                    $a_name = call_user_func($a_name, $parts, $this);
-
-                $a_value = $attr['value'];
-                if (is_callable($a_value))
-                    $a_value = call_user_func($a_value, $parts, $this);
-
-                $attrs[$a_name] = $a_value;
-            }
-        }
-    }
-
-
-    // --- Защищенные методы ---
 
     /**
      * Стадия A.
@@ -234,15 +172,15 @@ class Url extends Module
 
             $value = htmlentities($value, ENT_QUOTES, 'utf-8');
 
-            if ($_this->_typo->getOption('html-out-enabled')) {
+//            if ($_this->_typo->getOption('html-out-enabled')) {
                 $attrs = array('href' => $href);
                 $_this->setAttrs($parts, $attrs);
 
                 $data = Utility::createElement('a', $value, $attrs);
-            } else
-                $data = $value;
+//            } else
+//                $data = $value;
 
-            return $_this->getTypo()->getText()->pushStorage($data, Url::REPLACER, Typo::VISIBLE);
+            return $_this->getTypo()->getText()->pushStorage($data, Url::REPLACER, self::VISIBLE);
         };
 
         // [[<схема>:]//|mailto:][<логин>[:<пароль>]@][<www>.]<хост>[:<порт>][<URL‐путь>][?<параметры>][#<якорь>]
@@ -262,27 +200,34 @@ class Url extends Module
      */
     public function stageD()
     {
-        $class = get_called_class();
-
-        $this->getTypo()->getText()->popStorage($class::REPLACER, Typo::VISIBLE);
+        $this->getTypo()->getText()->popStorage(static::REPLACER, self::VISIBLE);
     }
 
     /**
-     * Создаёт регулярное выражение для выделения ссылок.
      *
-     * @param string $pattern Базовое регулярное выражение.
-     *
-     * @return string
+     * @param type  $parts
+     * @param array $attrs
      */
-    protected function preg_wrap($pattern)
+    public function setAttrs($parts, array &$attrs)
     {
-        $pattern = '~(?<=[\wа-яё]|\s|\b|^)' . $pattern . '(?![\wа-яё])~iu';
+        foreach ($this->getOption('attrs') as $attr) {
+            $a_cond = $attr['cond'];
+            if (is_callable($a_cond))
+                $a_cond = call_user_func($a_cond, $parts, $this);
 
-        return $pattern;
+            if ($a_cond) {
+                $a_name = $attr['name'];
+                if (is_callable($a_name))
+                    $a_name = call_user_func($a_name, $parts, $this);
+
+                $a_value = $attr['value'];
+                if (is_callable($a_value))
+                    $a_value = call_user_func($a_value, $parts, $this);
+
+                $attrs[$a_name] = $a_value;
+            }
+        }
     }
-
-
-    // --- Статические методы ---
 
     /**
      * URL-кодирование хоста.
@@ -418,5 +363,19 @@ class Url extends Module
             $HTTP_HOST = self::url_host_encode($_SERVER['HTTP_HOST'], $_this->getOption('idna'));
 
         return ($parts['host'] != $HTTP_HOST);
+    }
+
+    /**
+     * Создаёт регулярное выражение для выделения ссылок.
+     *
+     * @param string $pattern Базовое регулярное выражение.
+     *
+     * @return string
+     */
+    protected function preg_wrap($pattern)
+    {
+        $pattern = '~(?<=[\wа-яё]|\s|\b|^)' . $pattern . '(?![\wа-яё])~iu';
+
+        return $pattern;
     }
 }

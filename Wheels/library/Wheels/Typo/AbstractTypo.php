@@ -11,12 +11,11 @@ namespace Wheels\Typo;
 
 use Wheels\Config\Config;
 use Wheels\Utility;
-use Wheels\Typo\Base\Exception;
 
 use Wheels\IAllowModifications;
 
 /**
- * Класс AbstractTypo.
+ *
  */
 abstract class AbstractTypo implements ITypo, IAllowModifications
 {
@@ -38,8 +37,7 @@ abstract class AbstractTypo implements ITypo, IAllowModifications
     public function __construct(array $options = array())
     {
         $schema = static::_getConfigSchema();
-        $this->_config = Config::create($schema);
-
+        $this->_config = Config::create($schema, array(array(), false));
         $this->setOptions($options);
     }
 
@@ -90,23 +88,28 @@ abstract class AbstractTypo implements ITypo, IAllowModifications
      */
     public function setConfigDir($dir)
     {
-        $dir = $dir . DS . get_called_class();
-        $dir = Utility::realpath($dir);
-
-        if (!is_dir($dir) && !mkdir($dir, 0777, true)) {
-            throw new Exception("Не удалось создать директорию '{$dir}'");
-        }
-
-        $filename = 'config.ini';
-
-        $filepath = Utility::realpath($dir . DS . $filename);
-        if (!file_exists($filepath)) {
-            $file = fopen($filepath, 'w');
-            fclose($file);
-        }
+//        $dir = $dir . DS . get_called_class();
+//        $dir = Utility::realpath($dir);
+//
+//        if (!is_dir($dir) && !mkdir($dir, 0777, true)) {
+//            throw new Exception("Не удалось создать директорию '{$dir}'");
+//        }
+//
+//        $filename = 'config.ini';
+//
+//        $filepath = Utility::realpath($dir . DS . $filename);
+//        if (!file_exists($filepath)) {
+//            $file = fopen($filepath, 'w');
+//            fclose($file);
+//        }
 
         $this->getConfig()->setDir($dir);
-        $this->getConfig()->addGroupsFromFile($filename);
+
+    }
+
+    public function addGroupsFromFile($filename)
+    {
+       $this->getConfig()->addGroupsFromFile($filename);
     }
 
     /**
@@ -153,27 +156,37 @@ abstract class AbstractTypo implements ITypo, IAllowModifications
     /**
      * {@inheritDoc}
      */
-    public function setOptionsFromGroup($name, $required = false)
+    public function setOptionsFromGroup($name)
     {
-        if ($required || $this->getConfig()->hasGroup($name)) {
-            $this->getConfig()->setOptionsValuesFromGroup($name);
-        }
+        $this->getConfig()->setOptionsValuesFromGroup($name);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function setOptionsFromGroups(array $names, $required = false)
+    public function setOptionsFromGroups(array $names)
     {
-        if (!$required) {
-            foreach ($names as $i => $name) {
-                if (!$this->getConfig()->hasGroup($name)) {
-                    unset($names[$i]);
-                }
-            }
-        }
-
         $this->getConfig()->setOptionsValuesFromGroups($names);
+    }
+
+    /**
+     * Сохраняет настройки.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function saveOptions()
+    {
+        $this->getConfig()->saveOptionsValues();
+    }
+
+    /**
+     * Восстанавливает настройки.
+     *
+     * @return void Этот метод не возвращает значения после выполнения.
+     */
+    public function restoreOptions()
+    {
+        $this->getConfig()->restoreOptionsValues();
     }
 
 
@@ -184,7 +197,7 @@ abstract class AbstractTypo implements ITypo, IAllowModifications
      *
      * @return array Описание конфигурации.
      *
-     * @throws \Wheels\Typo\Base\Exception
+     * @throws \Wheels\Typo\Exception
      */
     static protected function _getConfigSchema()
     {

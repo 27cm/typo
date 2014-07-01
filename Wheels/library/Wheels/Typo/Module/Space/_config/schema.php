@@ -2,10 +2,10 @@
 
 return array(
     'options' => array(
-        'nessesary' => array(
-            'desc'    => 'Принудительная замена',
+        'normalize' => array(
+            'desc'    => 'Нормализация пробелов',
             'type'    => 'bool',
-            'default' => true
+            'default' => true,
         ),
         'nbsp' => array(
             'desc'    => 'Расстановка неразрывных пробелов',

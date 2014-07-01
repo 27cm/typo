@@ -91,7 +91,7 @@ abstract class Emoticon extends Module
                 }
 
                 $elem = Utility::createElement($_this->getOption('tag'), null, $attrs);
-                return $_this->getTypo()->getText()->pushStorage($elem, Emoticon::REPLACER, Typo::VISIBLE);
+                return $_this->getTypo()->getText()->pushStorage($elem, Emoticon::REPLACER, self::VISIBLE);
             };
 
             $this->getTypo()->getText()->replace_callback(array_keys($emoticons[$class]), $callback);
@@ -105,7 +105,7 @@ abstract class Emoticon extends Module
      */
     public function stageD()
     {
-        $this->getTypo()->getText()->popStorage(self::REPLACER, Typo::VISIBLE);
+        $this->getTypo()->getText()->popStorage(self::REPLACER, self::VISIBLE);
     }
 
     public function setAttrs($data)
