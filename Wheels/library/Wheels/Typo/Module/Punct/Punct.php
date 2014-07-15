@@ -69,6 +69,7 @@ class Punct extends Module
      */
     public function stageB()
     {
+        $_this = $this;
         $c = Typo::getChars('chr');
 
         #B1 Нормализация пунктуации
@@ -178,6 +179,18 @@ class Punct extends Module
                 },
             ));
 
+            // Оптическое выравнивание кавычек
+            if ($this->getOption('hanging-punct')) {
+                $this->applyRulesPregReplace(array(
+                    '/(\s)(' . $q1['open'] . ')/u' => function($m) use ($_this) {
+                        return $_this->wrap($m[1], 'oqoute_sp_s') . $this->wrap($m[2], 'oqoute_sp_q');
+                    },
+                    '/(?<=\n|\r|^)' . $q1['open'] . '/u' => function($m) use ($_this) {
+                        return $_this->wrap($m[0], 'oquote_nl');
+                    },
+                ));
+            }
+
             $level = 0;
             $offset = 0;
             $stack = array();
@@ -212,6 +225,21 @@ class Punct extends Module
                     $offset += $delta;
                 }
             }
+        }
+
+        #B15 Оптическое выравнивание (висячая пунктуация)
+        if ($this->getOption('hanging-punct')) {
+            $this->applyRulesPregReplace(array(
+                '/(\s)(\()/u' => function($m) use ($_this) {
+                    return $_this->wrap($m[1], 'obracket_sp_s') . $this->wrap($m[2], 'obracket_sp_b');
+                },
+                '/(?<=\n|\r|^)\(/u' => function($m) use ($_this) {
+                    return $_this->wrap($m[0], 'obracket_nl_b');
+                },
+                '/(?<={a})(,)(\s)/iu' => function($m) use ($_this) {
+                    return $_this->wrap($m[1], 'comma_b') . $this->wrap($m[2], 'comma_e');
+                },
+            ));
         }
     }
 
@@ -264,5 +292,15 @@ class Punct extends Module
     public function stageD()
     {
         $this->getTypo()->getText()->popStorage(self::REPLACER, self::INVISIBLE);
+    }
+
+    public function wrap($value, $key)
+    {
+        $t = $this->getOption('hanging-punct-tags');
+
+        $name  = $t[$key]['name'];
+        $attrs = $t[$key]['attrs'];
+
+        return Utility::createElement($name, $value, $attrs);
     }
 }

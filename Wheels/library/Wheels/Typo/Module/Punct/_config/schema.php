@@ -42,6 +42,25 @@ return array(
 //                       'rsquo' (американский английский)
 //                       'rdquo' (британский английский)
         ),
+        'hanging-punct' => array(
+            'desc'    => 'Оптическое выравнивание (висячая пунктуация)',
+            'type'    => 'bool',
+            'default' => true,
+        ),
+        'hanging-punct-tags' => array(
+            'desc'    => 'Теги для оптического выравнивания (висячей пунктуации)',
+            'type'    => 'array',
+            'default' => array(
+                'obracket_sp_s' => array('name' => 'span', 'attrs' => array('style' => 'margin-right:0.3em')),
+                'obracket_sp_b' => array('name' => 'span', 'attrs' => array('style' => 'margin-left:-0.3em')),
+                'obracket_nl_b' => array('name' => 'span', 'attrs' => array('style' => 'margin-left:-0.3em')),
+                'comma_b'       => array('name' => 'span', 'attrs' => array('style' => 'margin-right:-0.2em')),
+                'comma_e'       => array('name' => 'span', 'attrs' => array('style' => 'margin-left:0.2em')),
+                'oquote_nl'     => array('name' => 'span', 'attrs' => array('style' => 'margin-left:-0.44em')),
+                'oqoute_sp_s'   => array('name' => 'span', 'attrs' => array('style' => 'margin-right:0.44em')),
+                'oqoute_sp_q'   => array('name' => 'span', 'attrs' => array('style' => 'margin-left:-0.44em')),
+            ),
+        ),
         'hyphenation' => array(
             'desc'    => 'Расстановка мягких переносов (мест возможного переноса) в словах',
             'type'    => 'string',
