@@ -11,6 +11,9 @@
     <script src="js/respond.min.js"></script>
     <![endif]-->
     <style>
+        p {
+            white-space: pre-wrap;
+        }
         ins, del {
             text-decoration: none;
             display: inline-block;
@@ -127,6 +130,13 @@
         </div>
     </form>
     <div><?php if(isset($output)) echo $output; ?></div>
+    <div><?php if(isset($output)) {
+            $log = $typo->getText()->log;
+            foreach ($log as $o) {
+                $logDiff = new \Wheels\Diff(htmlspecialchars($o->old), htmlspecialchars($o->new));
+                echo '<p><b>' . nl2br($o->message) . '</b><br />' . $logDiff->renderDiffToHTML2() . '</p>';
+            }
+        } ?></div>
     <div><?php /*echo $diff->renderDiffToHTML2(); /* какие-то баги с е Е */ ?></div>
 </div>
 

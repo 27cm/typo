@@ -201,7 +201,7 @@ abstract class AbstractTypo implements ITypo, IAllowModifications
      */
     static protected function _getConfigSchema()
     {
-        $filename = Utility::realpath(static::_getDir('config') . '/schema.php');
+        $filename = Utility::realpath(static::_getDir('data') . '/schema.php');
         if (!file_exists($filename)) {
             throw new Exception("Файл с описанием конфигурации '{$filename}' не найден");
         }
@@ -222,7 +222,7 @@ abstract class AbstractTypo implements ITypo, IAllowModifications
     {
         $dirs = array(
             'root'   => WHEELS_DIR . DS . get_called_class() . DS . '..',
-            'config' => WHEELS_DIR . DS . get_called_class() . DS . '..' . DS . '_config',
+            'data' => WHEELS_DIR . DS . get_called_class() . DS . '..' . DS . '_data',
         );
 
         return $dirs[$key];

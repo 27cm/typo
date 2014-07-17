@@ -85,46 +85,6 @@ abstract class Module extends AbstractTypo
     }
 
     /**
-     * Проверка значения параметра (с возможной корректировкой).
-     *
-     * @param string $name  Название параметра.
-     * @param mixed  $value Значение параметра.
-     */
-//    public function validateOption($name, &$value)
-//    {
-//        // $scheme = static::getConfigSchema($name);
-//
-//        switch ($name) {
-//            case 'modules' :
-//                if ((bool) $value == false)
-//                    $value = array();
-//
-//                if (is_string($value))
-//                    $value = explode(',', $value);
-//
-//                if (!is_array($value))
-//                    return self::throwException(
-//                        Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть строкой или массивом строк"
-//                    );
-//
-//                foreach ($value as &$module) {
-//                    if (!is_string($module))
-//                        return self::throwException(
-//                            Exception::E_OPTION_VALUE, "Значение параметра '$name' должно быть строкой или массивом строк"
-//                        );
-//                }
-//
-//                foreach ($value as &$module) {
-//                    $module = self::getModuleClassname($module);
-//                }
-//                break;
-//
-//            default :
-//                $value = (bool) $value;
-//        }
-//    }
-
-    /**
      * Возвращает приоритет выполнения для стадии.
      *
      * @param $stage
@@ -188,8 +148,6 @@ abstract class Module extends AbstractTypo
         }
     }
 
-
-
     /**
      * Применяет правила к тексту.
      *
@@ -204,15 +162,8 @@ abstract class Module extends AbstractTypo
         $patterns = array();
         $replaces = array();
         foreach ($rules as $key => $value) {
-//            if (is_array($value) && $this->getConfig()->hasOption($key)) {
-//                if ($this->getOption($key)) {
-//                    $patterns = array_merge($patterns, array_keys($value));
-//                    $replaces = array_merge($replaces, array_values($value));
-//                }
-//            } else {
-                $patterns[] = $key;
-                $replaces[] = $value;
-//            }
+            $patterns[] = $key;
+            $replaces[] = $value;
         }
 
         self::pregHelpers($patterns, $helpers);

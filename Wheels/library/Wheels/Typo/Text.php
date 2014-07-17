@@ -14,6 +14,22 @@ use Normalizer;
 class Text
 {
     /**
+     * Журнал изменений (лог).
+     *
+     * @var array
+     */
+    public $log = array();
+
+    /**
+     * Включение/выключение ведения журнала изменений.
+     *
+     * @var bool
+     */
+    protected $logging;
+
+    protected $textSaved;
+
+    /**
      * Текст.
      *
      * @var string
@@ -58,14 +74,28 @@ class Text
      * @param string $type     Тип.
      * @param string $encoding Кодировка текста. Если не указана, то будет определена автоматически.
      */
-    public function __construct($text = '', $type = self::TYPE_HTML, $encoding = null)
+    public function __construct($text = '', $type = self::TYPE_HTML, $encoding = null, $logging = false)
     {
+        $this->logging = $logging;
+
         $this->setText($text, $encoding);
         $this->setType($type);
     }
 
 
     // --- Открытые методы ---
+
+    public function log($message)
+    {
+        if ($this->logging && $this->textSaved != $this->text) {
+            $this->log[] = (object) array(
+                'message' => $message,
+                'old'     => $this->textSaved,
+                'new'     => $this->text,
+            );
+            $this->textSaved = $this->text;
+        }
+    }
 
     /**
      * Устанавливает значение текста.
@@ -77,12 +107,17 @@ class Text
      */
     public function setText($value, $encoding = null)
     {
-        $this->text = (string)$value;
+        $this->text = (string) $value;
 
         if (is_null($encoding))
             $this->encoding = Utility::detectCharset($this->text);
         else {
             $this->encoding = $encoding;
+        }
+
+        if ($this->logging) {
+            $this->log = array();
+            $this->textSaved = $this->text;
         }
     }
 
@@ -213,6 +248,10 @@ class Text
         } else {
             $this->text = str_replace($search, $replace, $this->text, $count);
         }
+
+        if ($count > 0) {
+            $this->log('Search');
+        }
     }
 
     /**
@@ -240,6 +279,10 @@ class Text
                 $replacedLength = mb_strlen($replaced);
                 $count++;
             }
+        }
+
+        if ($count > 0) {
+            $this->log('Search');
         }
     }
 
@@ -323,6 +366,10 @@ class Text
     public function preg_replace($pattern, $replacement, $limit = -1, &$count = null)
     {
         $this->text = preg_replace($pattern, $replacement, $this->text, $limit, $count);
+
+        if ($count > 0) {
+            $this->log('Pattern: ' . $pattern . PHP_EOL . 'Replacement: ' . $replacement);
+        }
     }
 
     /**
@@ -338,6 +385,10 @@ class Text
     public function preg_replace_callback($pattern, $callback, $limit = -1, &$count = null)
     {
         $this->text = preg_replace_callback($pattern, $callback, $this->text, $limit, $count);
+
+        if ($count > 0) {
+            $this->log('Pattern: ' . $pattern);
+        }
     }
 
     /**
